@@ -735,7 +735,7 @@ function renderDemos(){
   var tbody = document.getElementById('tabla-demos');
   if(!demos.length){ tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>Sin demos</p></div></td></tr>'; return; }
   tbody.innerHTML = demos.map(function(d){
-    var delBtn = '<button class="btn btn-out btn-sm btn-icon" class="btn btn-out btn-sm btn-icon del-btn" data-tabla="demos" data-id="' + String(d.id).trim() + '" title="Eliminar">&#128465;</button>';
+    var delBtn = '<button class="btn btn-out btn-sm btn-icon del-btn" data-tabla="demos" data-id="' + String(d.id).trim() + '" title="Eliminar">&#128465;</button>';
     return '<tr><td class="td-name">' + d.cliente + '</td><td><span class="demo-tag">' + d.tipo + '</span></td><td><span style="font-family:var(--mono);font-size:.78rem;color:#7878a0">' + d.fecha + '</span></td><td>' + demoBadge(d.estado) + '</td><td><span style="font-family:var(--mono);font-size:.84rem;color:#9d70ff;font-weight:600">' + d.valor + '€</span></td><td><span style="font-size:.8rem;color:#7878a0">' + (d.notas||'-') + '</span></td><td>' + delBtn + '</td></tr>';
   }).join('');
 }
@@ -746,7 +746,7 @@ function renderTareas(){
   grid.innerHTML = tareas.map(function(t){
     var color = t.prio==='urgente'?'var(--err)':t.prio==='alta'?'var(--warn)':'var(--g)';
     var done = t.done === 'true';
-    var delBtn = '<button class="btn btn-out btn-sm btn-icon" class="btn btn-out btn-sm btn-icon del-btn" data-tabla="tareas" data-id="' + String(t.id).trim() + '" title="Eliminar">&#128465;</button>';
+    var delBtn = '<button class="btn btn-out btn-sm btn-icon del-btn" data-tabla="tareas" data-id="' + String(t.id).trim() + '" title="Eliminar">&#128465;</button>';
     var cb = '<div class="task-cb tog-btn' + (done?' done':'') + '" data-id="' + String(t.id).trim() + '">' + (done?'&#10003;':'') + '</div>';
     return '<div class="task-item">' + cb + '<div style="flex:1"><div class="task-title' + (done?' done':'') + '">' + t.titulo + '</div><div class="task-meta">' + (t.cliente?'<span>'+t.cliente+'</span>':'') + (t.fecha?'<span class="task-due">'+t.fecha+'</span>':'') + '<span style="color:'+color+';text-transform:uppercase;font-size:.68rem;letter-spacing:.06em;font-weight:700">'+t.prio+'</span></div></div>' + delBtn + '</div>';
   }).join('');
