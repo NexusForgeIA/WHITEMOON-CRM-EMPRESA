@@ -167,6 +167,88 @@ select.form-in option{background:var(--bg3)}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:rgba(124,77,255,.3);border-radius:2px}
+
+/* ══ RESPONSIVE MOBILE ══ */
+
+/* Hamburger button */
+.ham-btn{display:none;background:none;border:none;color:var(--muted);cursor:pointer;padding:6px;font-size:1.2rem;line-height:1}
+
+/* Mobile sidebar overlay */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:150;backdrop-filter:blur(3px)}
+.sidebar-overlay.open{display:block}
+
+@media(max-width:768px){
+
+  /* Layout: single column */
+  .shell{grid-template-columns:1fr;grid-template-rows:56px 1fr}
+
+  /* Topbar */
+  .topbar-brand{width:auto;border-right:none;padding:0 14px}
+  .topbar-date{display:none}
+  .topbar-right{gap:6px}
+  .ham-btn{display:flex;align-items:center;justify-content:center;margin-right:4px}
+
+  /* Sidebar: slide in from left */
+  .sidebar{
+    position:fixed;left:-240px;top:56px;bottom:0;width:220px;
+    z-index:200;transition:left .25s ease;
+    border-right:1px solid var(--border);
+    box-shadow:4px 0 20px rgba(0,0,0,.4);
+  }
+  .sidebar.open{left:0}
+
+  /* Main: full width, scrollable */
+  .main{padding:16px;gap:16px;overflow-y:auto}
+
+  /* Stats: 2 cols */
+  .stats-row{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-card{padding:14px}
+  .stat-n{font-size:1.6rem}
+
+  /* Dashboard 2-col panels → single col */
+  .main [style*="grid-template-columns:1fr 1fr"]{
+    display:flex!important;flex-direction:column!important;gap:14px!important
+  }
+
+  /* Tables: horizontal scroll */
+  .table-wrap{overflow-x:auto}
+  table{min-width:500px}
+  .table-head-row{flex-wrap:wrap;gap:8px}
+  .search-in{width:100%}
+
+  /* Pipeline: horizontal scroll */
+  .pipeline{
+    display:flex;overflow-x:auto;gap:10px;
+    padding-bottom:10px;
+    -webkit-overflow-scrolling:touch;
+    scroll-snap-type:x mandatory;
+  }
+  .pipe-col{min-width:180px;scroll-snap-align:start;flex-shrink:0}
+
+  /* Tasks: single col */
+  .tasks-grid{grid-template-columns:1fr}
+
+  /* Fact: single col */
+  .fact-grid{grid-template-columns:1fr}
+
+  /* Page header: stack */
+  .page-hdr{flex-wrap:wrap;gap:10px}
+  .page-hdr h1{font-size:1.1rem}
+  .page-hdr>div,.page-hdr>button{flex-wrap:wrap}
+
+  /* Modal: full screen on mobile */
+  .modal-bg{padding:0;align-items:flex-end}
+  .modal{border-radius:18px 18px 0 0;max-height:90vh;width:100%;max-width:100%}
+
+  /* Sync btn: hide text */
+  #sync-txt{display:none}
+  .sync-btn{padding:6px 10px}
+}
+
+@media(max-width:400px){
+  .stats-row{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -178,6 +260,7 @@ select.form-in option{background:var(--bg3)}
   <div class="loading-bar"><div class="loading-progress"></div></div>
 </div>
 
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <div class="shell">
 
 <!-- TOPBAR -->
@@ -187,6 +270,7 @@ select.form-in option{background:var(--bg3)}
     <span class="topbar-name">WHITE<span>MOON</span> CRM</span>
   </div>
   <div class="topbar-right">
+    <button class="ham-btn" id="ham-btn" onclick="toggleSidebar()" title="Menu">&#9776;</button>
     <button class="sync-btn" id="sync-btn" onclick="syncAll()">
       <span class="sync-dot" id="sync-dot"></span>
       <span id="sync-txt">Sincronizado</span>
@@ -791,6 +875,22 @@ document.addEventListener('click', function(e){
 
 updateDate();
 setInterval(updateDate, 30000);
+function toggleSidebar(){
+  var sb = document.querySelector('.sidebar');
+  var ov = document.getElementById('sidebar-overlay');
+  sb.classList.toggle('open');
+  ov.classList.toggle('open');
+}
+// Close sidebar when nav item clicked on mobile
+document.querySelectorAll('.nav-item').forEach(function(item){
+  item.addEventListener('click', function(){
+    if(window.innerWidth <= 768){
+      document.querySelector('.sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('open');
+    }
+  });
+});
+
 initLoad();
 </script>
 </body>
