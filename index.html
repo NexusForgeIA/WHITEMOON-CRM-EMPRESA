@@ -217,6 +217,7 @@ select.form-in option{background:var(--bg3)}
   <div class="page active" id="page-dashboard">
     <div class="page-hdr"><h1>Dashboard <span>WhiteMoon</span></h1>
       <div style="display:flex;gap:8px">
+        <button class="btn btn-out btn-sm" onclick="clearSampleData()" title="Eliminar datos de ejemplo" style="color:var(--err);border-color:rgba(255,71,87,.3)">Limpiar datos ejemplo</button>
         <button class="btn btn-out btn-sm" onclick="showPage('clientes')">Ver clientes</button>
         <button class="btn btn-p btn-sm" onclick="openModal('modal-cliente')">+ Nuevo cliente</button>
       </div>
@@ -484,6 +485,16 @@ function initLoad() {
   setTimeout(function(){ document.getElementById('loading-screen').classList.add('hide'); render(); }, 8000);
 }
 
+function clearSampleData(){
+  if(!confirm('Eliminar todos los datos de ejemplo? Esta accion no se puede deshacer.')) return;
+  clientes = []; proyectos = []; demos = []; tareas = [];
+  pushData('clientes', clientes);
+  pushData('proyectos', proyectos);
+  pushData('demos', demos);
+  pushData('tareas', tareas);
+  render();
+  showToast('Datos de ejemplo eliminados');
+}
 function defClientes(){
   return [
     {id:'1',nombre:'Clinica Estetica Madrid',sector:'Clinica / Salud',tel:'611 234 567',email:'info@clinica.es',estado:'activo',plan:'Advance 399/mes',notas:'Chatbot activo.',fecha:'2024-11-15',demos:'Chatbot Clinica'},
@@ -610,13 +621,25 @@ function saveTarea(){
 }
 
 function togTarea(id){
-  var t = tareas.find(function(x){ return x.id === id; });
+  var t = tareas.find(function(x){ return String(x.id) === String(id); });
   if(t){ t.done = t.done === 'true' ? 'false' : 'true'; pushData('tareas', tareas); render(); }
 }
-function delCliente(id){ clientes = clientes.filter(function(c){ return c.id !== id; }); pushData('clientes', clientes); render(); }
-function delProyecto(id){ proyectos = proyectos.filter(function(p){ return p.id !== id; }); pushData('proyectos', proyectos); render(); }
-function delDemo(id){ demos = demos.filter(function(d){ return d.id !== id; }); pushData('demos', demos); render(); }
-function delTarea(id){ tareas = tareas.filter(function(t){ return t.id !== id; }); pushData('tareas', tareas); render(); }
+function delCliente(id){ 
+  clientes = clientes.filter(function(c){ return String(c.id) !== String(id); }); 
+  pushData('clientes', clientes); render(); 
+}
+function delProyecto(id){ 
+  proyectos = proyectos.filter(function(p){ return String(p.id) !== String(id); }); 
+  pushData('proyectos', proyectos); render(); 
+}
+function delDemo(id){ 
+  demos = demos.filter(function(d){ return String(d.id) !== String(id); }); 
+  pushData('demos', demos); render(); 
+}
+function delTarea(id){ 
+  tareas = tareas.filter(function(t){ return String(t.id) !== String(id); }); 
+  pushData('tareas', tareas); render(); 
+}
 function filterClientes(q){ render(q.toLowerCase()); }
 
 function badgeHTML(estado){
@@ -676,7 +699,7 @@ function renderClientes(q){
   if(!list.length){ tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>Sin clientes</p></div></td></tr>'; return; }
   tbody.innerHTML = list.map(function(c){
     var ds = c.demos ? c.demos.split(',').map(function(d){ return '<span class="demo-tag">' + d.trim() + '</span>'; }).join('') : '<span style="color:#3a3a58">-</span>';
-    var delBtn = '<button class="btn btn-out btn-sm btn-icon del-btn" data-tabla="clientes" data-id="' + c.id + '" title="Eliminar">&#128465;</button>';
+    var delBtn = '<button class="btn btn-out btn-sm btn-icon del-btn" data-tabla="clientes" data-id="' + String(c.id).trim() + '" title="Eliminar">&#128465;</button>';
     return '<tr><td><div class="td-name">' + c.nombre + '</div><div class="td-sub">' + c.email + '</div></td><td><span style="font-size:.82rem;color:#7878a0">' + c.sector + '</span></td><td>' + badgeHTML(c.estado) + '</td><td><span style="font-size:.8rem;color:#9d70ff;font-family:var(--mono)">' + (c.plan||'-') + '</span></td><td><span style="font-size:.82rem;font-family:var(--mono)">' + c.tel + '</span></td><td>' + ds + '</td><td>' + delBtn + '</td></tr>';
   }).join('');
 }
@@ -703,7 +726,7 @@ function renderProyectos(){
   if(!proyectos.length){ tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>Sin proyectos activos</p></div></td></tr>'; return; }
   tbody.innerHTML = proyectos.map(function(p){
     var planLabel = p.plan==='299'?'Basic 299€/mes':p.plan==='399'?'Advance 399€/mes':p.plan==='4599'?'Enterprise':'Custom';
-    var delBtn = '<button class="btn btn-out btn-sm btn-icon del-btn" data-tabla="proyectos" data-id="' + p.id + '" title="Eliminar">&#128465;</button>';
+    var delBtn = '<button class="btn btn-out btn-sm btn-icon del-btn" data-tabla="proyectos" data-id="' + String(p.id).trim() + '" title="Eliminar">&#128465;</button>';
     return '<tr><td class="td-name">' + p.cliente + '</td><td><span style="font-family:var(--mono);font-size:.8rem;color:#00d4aa">' + p.dominio + '</span></td><td><span style="font-size:.8rem;color:#7878a0">' + p.tipo + '</span></td><td><span style="font-size:.8rem;color:#9d70ff;font-family:var(--mono)">' + planLabel + '</span></td><td><span style="font-family:var(--mono);font-size:.84rem;color:#2ed573;font-weight:600">' + (parseInt(p.plan)||0) + '€</span></td><td><span style="font-family:var(--mono);font-size:.78rem;color:#ff9800">' + (p.renov||'-') + '</span></td><td>' + delBtn + '</td></tr>';
   }).join('');
 }
@@ -712,7 +735,7 @@ function renderDemos(){
   var tbody = document.getElementById('tabla-demos');
   if(!demos.length){ tbody.innerHTML = '<tr><td colspan="7"><div class="empty"><p>Sin demos</p></div></td></tr>'; return; }
   tbody.innerHTML = demos.map(function(d){
-    var delBtn = '<button class="btn btn-out btn-sm btn-icon" class="btn btn-out btn-sm btn-icon del-btn" data-tabla="demos" data-id="' + d.id + '" title="Eliminar">&#128465;</button>';
+    var delBtn = '<button class="btn btn-out btn-sm btn-icon" class="btn btn-out btn-sm btn-icon del-btn" data-tabla="demos" data-id="' + String(d.id).trim() + '" title="Eliminar">&#128465;</button>';
     return '<tr><td class="td-name">' + d.cliente + '</td><td><span class="demo-tag">' + d.tipo + '</span></td><td><span style="font-family:var(--mono);font-size:.78rem;color:#7878a0">' + d.fecha + '</span></td><td>' + demoBadge(d.estado) + '</td><td><span style="font-family:var(--mono);font-size:.84rem;color:#9d70ff;font-weight:600">' + d.valor + '€</span></td><td><span style="font-size:.8rem;color:#7878a0">' + (d.notas||'-') + '</span></td><td>' + delBtn + '</td></tr>';
   }).join('');
 }
@@ -723,8 +746,8 @@ function renderTareas(){
   grid.innerHTML = tareas.map(function(t){
     var color = t.prio==='urgente'?'var(--err)':t.prio==='alta'?'var(--warn)':'var(--g)';
     var done = t.done === 'true';
-    var delBtn = '<button class="btn btn-out btn-sm btn-icon" class="btn btn-out btn-sm btn-icon del-btn" data-tabla="tareas" data-id="' + t.id + '" title="Eliminar">&#128465;</button>';
-    var cb = '<div class="task-cb tog-btn' + (done?' done':'') + '" data-id="' + t.id + '">' + (done?'&#10003;':'') + '</div>';
+    var delBtn = '<button class="btn btn-out btn-sm btn-icon" class="btn btn-out btn-sm btn-icon del-btn" data-tabla="tareas" data-id="' + String(t.id).trim() + '" title="Eliminar">&#128465;</button>';
+    var cb = '<div class="task-cb tog-btn' + (done?' done':'') + '" data-id="' + String(t.id).trim() + '">' + (done?'&#10003;':'') + '</div>';
     return '<div class="task-item">' + cb + '<div style="flex:1"><div class="task-title' + (done?' done':'') + '">' + t.titulo + '</div><div class="task-meta">' + (t.cliente?'<span>'+t.cliente+'</span>':'') + (t.fecha?'<span class="task-due">'+t.fecha+'</span>':'') + '<span style="color:'+color+';text-transform:uppercase;font-size:.68rem;letter-spacing:.06em;font-weight:700">'+t.prio+'</span></div></div>' + delBtn + '</div>';
   }).join('');
 }
@@ -755,7 +778,7 @@ document.addEventListener('click', function(e){
   var btn = e.target.closest('.del-btn');
   if(btn){
     var tabla = btn.getAttribute('data-tabla');
-    var id = btn.getAttribute('data-id');
+    var id = String(btn.getAttribute('data-id')).trim();
     if(tabla === 'clientes') delCliente(id);
     else if(tabla === 'proyectos') delProyecto(id);
     else if(tabla === 'demos') delDemo(id);
