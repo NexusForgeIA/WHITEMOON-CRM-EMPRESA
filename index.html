@@ -647,7 +647,7 @@ var SECTORS=[
 {kws:['fisioterapia','fisio','rehabilitacion','osteopat','quiropract','masaje','masajista','kinesio','podolog','podologia','fisioterapia deportiva','terapia manual','acupuntura','quiromasaje','drenaje linfatico'],s:'Fisioterapia / Rehabilitación',ico:'🦴',n:'fisioterapia'},
 {kws:['dentista','medico','clinica','doctor','salud','hospital','consulta medica','medicina','cirugia','traumatolog','dermatolog','ginecolog','urolog','cardiolog','neurolog','endocrin','pediatr','geriatr','oncolog','alergi','otorrino','nutricion','dieta','nutricionist'],s:'Clínica Médica / Salud',ico:'🏥',n:'clinica'},
 {kws:['seguro','asegurador','insurance','poliza','corredor seguros','broker seguros','mutua','cobertura','accidente','vida seguro','hogar seguro','coche seguro'],s:'Seguros',ico:'🛡️',n:'seguros'},
-{kws:['conta','contable','contabilidad','gestor','gestoria','asesoria fiscal','impuesto','renta','iva','declaracion','nomina','facturacion','auditoria','accounting','bookkeeping','tax','hacienda'],s:'Gestoría / Contabilidad',ico:'📊',n:'gestoria'},
+{kws:['conta','contable','contabilidad','gestor','gestoria','asesoria fiscal','impuesto','renta','iva','declaracion','nomina','facturacion','auditoria','accounting','bookkeeping','tax','hacienda','asesoria','asesoramiento','tramite','tramitacion','modelo 303','modelo 130','modelo 347','irpf','sociedades','autónomo','autonomo','alta autonomo','constitucion empresa','licencia apertura','subvencion','seguridad social','certificado digital','legalización','apostilla','registro mercantil','impuesto sucesiones','plusvalia','catastro','ibi','tributario','fiscal','laboral nomina'],s:'Gestoría / Contabilidad',ico:'📊',n:'gestoria'},
 {kws:['fotograf','photo','video','videograf','boda foto','estudio fotograf','retrato','reportaje','camara','produccion audiovisual','film','cine','drone','postproduccion'],s:'Fotografía / Vídeo',ico:'📷',n:'fotografia'},
 {kws:['arquitect','ingenieria','ingeniero','aparejador','topograf','diseno','design','interiorismo','proyectos','planos','urbanismo','edificacion','estudio arquitectura','render','infografia 3d'],s:'Arquitectura / Ingeniería',ico:'📐',n:'arquitectura'},
 {kws:['marketing','publicidad','agencia digital','seo','sem','social media','community manager','branding','diseño web','web design','ecommerce','tienda online','desarrollo web','programacion','software','app','aplicacion','informatica','tecnologia','it ','sistemas','soporte tecnico','consultoria digital','ads','google ads','facebook ads'],s:'Marketing / Agencia Digital',ico:'📱',n:'marketing'},
@@ -684,14 +684,22 @@ var SECTORS=[
 {kws:['proteccion laboral','ropa trabajo','epi ','equipos proteccion','calzado seguridad','vestuario laboral','uniformes'],s:'Vestuario Laboral / EPIs',ico:'🦺',n:'proteccion'},
 {kws:['asesor inmigra','visado','permiso residencia','nie ','nacionalidad','tramite extranjeria','abogado extranjeria','immigration'],s:'Asesoría Inmigración',ico:'🌍',n:'inmigracion'},
 ];
-function detectSector(url){
-  var u=url.toLowerCase().replace(/[-_\.\/]/g,' ');
+function detectSector(text){
+  var u=text.toLowerCase().replace(/[-_\.\/]/g,' ');
+  // Score each sector by counting keyword matches — most matches wins
+  var best=null,bestScore=0;
   for(var i=0;i<SECTORS.length;i++){
+    var hits=0;
     for(var j=0;j<SECTORS[i].kws.length;j++){
-      if(u.includes(SECTORS[i].kws[j])) return SECTORS[i];
+      // Count all occurrences of each keyword
+      var kw=SECTORS[i].kws[j];
+      var pos=0,count=0;
+      while((pos=u.indexOf(kw,pos))!==-1){count++;pos+=kw.length}
+      hits+=count;
     }
+    if(hits>bestScore){bestScore=hits;best=SECTORS[i]}
   }
-  return null;
+  return bestScore>=1?best:null;
 }
 function getSectorByNicho(n){
   for(var i=0;i<SECTORS.length;i++) if(SECTORS[i].n===n) return SECTORS[i];
@@ -750,11 +758,15 @@ function analyzeHTML(url,html){
   });
   var chat=scripts.includes('tidio')||scripts.includes('intercom')||scripts.includes('drift.com')||scripts.includes('hubspot.com/conversations')||scripts.includes('zendesk')||scripts.includes('crisp.chat')||scripts.includes('livechat')||scripts.includes('tawk.to')||scripts.includes('chat-widget')||scripts.includes('chatwidget')||scripts.includes('botpress')||scripts.includes('dialogflow')||scripts.includes('manychat')||scripts.includes('landbot')||scripts.includes('collect.chat')||scripts.includes('chatra')||scripts.includes('olark')||scripts.includes('freshchat')||scripts.includes('smartsupp')||scripts.includes('jivochat')||scripts.includes('userlike')||scripts.includes('kommunicate')||scripts.includes('chatfuel')||scripts.includes('voiceflow');
 
-  // WhatsApp detection
-  var wa=h.includes('wa.me')||h.includes('whatsapp')||h.includes('api.whatsapp')||h.includes('wa.link')||h.includes('wasap');
+  // WhatsApp detection — only check actual links, not mentions in text
+  var waLinks='';
+  doc.querySelectorAll('a[href]').forEach(function(a){waLinks+=' '+(a.getAttribute('href')||'').toLowerCase()});
+  var wa=waLinks.includes('wa.me')||waLinks.includes('api.whatsapp.com')||waLinks.includes('wa.link')||waLinks.includes('whatsapp.com/send');
 
-  // Google Maps / GMB
-  var gmb=h.includes('google.com/maps')||h.includes('maps.google')||h.includes('goo.gl/maps')||h.includes('google-map')||h.includes('googlemap')||h.includes('maps.googleapis');
+  // Google Maps / GMB — check links, embeds, AND assume yes if address/location detected
+  var gmb=h.includes('google.com/maps')||h.includes('maps.google')||h.includes('goo.gl/maps')||h.includes('google-map')||h.includes('googlemap')||h.includes('maps.googleapis')||h.includes('maps.app.goo')||h.includes('place/')||h.includes('schema.org/localbusiness')||h.includes('postaladdress')||h.includes('streetaddress');
+  // If not detected via links, check if the site has ANY address/location markers (most local biz have GMB)
+  if(!gmb){gmb=h.includes('calle ')||h.includes('avenida ')||h.includes('c/ ')||h.includes('av. ')||h.includes('plaza ')||h.includes('paseo ')||h.includes('dirección')||h.includes('ubicación')||h.includes('nos encontr')||h.includes('cómo llegar')||h.includes('nuestra oficina')||h.includes('nuestro local')||h.includes('dónde estamos')}
 
   // Analytics
   var analytics=h.includes('google-analytics')||h.includes('googletagmanager')||h.includes('gtag')||h.includes('ga.js')||h.includes('analytics.js')||h.includes('gtm.js')||h.includes('facebook.com/tr')||h.includes('pixel')||h.includes('hotjar')||h.includes('clarity.ms')||h.includes('matomo')||h.includes('plausible');
@@ -783,22 +795,47 @@ function analyzeHTML(url,html){
 
   // ═══ EXTRACT REAL BUSINESS DATA FROM HTML ═══
 
-  // Business name: try title, og:title, h1
+  // Business name: priority — og:title > title > h1. Clean aggressively.
   var bizName='';
   var ogTitle=doc.querySelector('meta[property="og:title"]');
   if(ogTitle)bizName=ogTitle.getAttribute('content')||'';
-  if(!bizName){var t=doc.querySelector('title');if(t)bizName=t.textContent||'';}
-  if(!bizName){var h1=doc.querySelector('h1');if(h1)bizName=h1.textContent||'';}
-  bizName=bizName.replace(/\|.*|—.*|-\s*Home|-\s*Inicio/gi,'').trim().substring(0,80);
+  if(!bizName){var titleEl=doc.querySelector('title');if(titleEl)bizName=titleEl.textContent||'';}
+  if(!bizName){var h1El=doc.querySelector('h1');if(h1El)bizName=h1El.textContent||'';}
+  // Clean: remove domain, separators, generic words
+  bizName=bizName.replace(/https?:\/\/[^\s]+/g,'')
+    .replace(/\|.*|—.*|–.*|\s*-\s*(Home|Inicio|Principal|Bienvenido|Welcome|Página).*$/gi,'')
+    .replace(/\.com|\.es|\.org|\.net|\.eu|\.info/gi,'')
+    .replace(/www\./gi,'')
+    .replace(/\s+/g,' ')
+    .trim().substring(0,80);
+  // If still empty or looks like a domain, try h1 or first h2
+  if(!bizName||bizName.length<3||bizName.includes('.')){
+    var headings=doc.querySelectorAll('h1,h2');
+    for(var hi=0;hi<headings.length;hi++){
+      var ht=headings[hi].textContent.trim();
+      if(ht.length>3&&ht.length<60&&!/cookie|menu|nav|buscar|search/i.test(ht)){bizName=ht;break}
+    }
+  }
 
-  // Phone numbers
+  // Phone numbers — prioritize tel: links (most reliable), then visible text
   var phones=[];
-  var phoneRegex=/(?:\+34[\s.-]?)?(?:6\d{2}|7\d{2}|9\d{2})[\s.-]?\d{3}[\s.-]?\d{3}/g;
-  var phoneMatches=html.match(phoneRegex);
-  if(phoneMatches)phones=phoneMatches.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,3);
-  // Also check tel: links
-  var telLinks=doc.querySelectorAll('a[href^="tel:"]');
-  telLinks.forEach(function(a){var t=a.getAttribute('href').replace('tel:','').trim();if(t&&phones.indexOf(t)<0)phones.push(t)});
+  // 1st priority: tel: links
+  doc.querySelectorAll('a[href^="tel:"]').forEach(function(a){
+    var t=a.getAttribute('href').replace('tel:','').replace(/\s/g,'').trim();
+    if(t.length>=9&&phones.indexOf(t)<0)phones.push(t);
+  });
+  // 2nd priority: visible phone numbers in body text (not in scripts)
+  if(phones.length===0){
+    var bodyText=doc.body?doc.body.textContent:'';
+    var phoneRegex=/(?:\+34[\s.-]?)?(?:9\d{2}|6\d{2}|7[1-9]\d)[\s.-]?\d{2,3}[\s.-]?\d{2,3}[\s.-]?\d{0,2}/g;
+    var phoneMatches=bodyText.match(phoneRegex);
+    if(phoneMatches){
+      phones=phoneMatches.map(function(p){return p.replace(/[\s.-]/g,'')})
+        .filter(function(p){return p.length>=9&&p.length<=15})
+        .filter(function(v,i,a){return a.indexOf(v)===i})
+        .slice(0,2);
+    }
+  }
 
   // Email
   var emails=[];
@@ -865,18 +902,17 @@ function analyzeHTML(url,html){
   if(h.includes('sitemap'))seo+=5;
   seo=Math.min(95,Math.max(10,seo+rnd(-5,5)));
 
-  // Score — every business has SOME opportunity (min 25 for voice agent alone)
-  var score=25; // Base: any business can benefit from a voice agent
-  if(!chat)score+=25;  // No chatbot = biggest opportunity
-  if(!wa)score+=12;    // No WhatsApp
-  if(!gmb)score+=8;    // No Google Maps
-  if(!rrss.facebook.ok)score+=5; // No Facebook
-  if(!rrss.instagram.ok)score+=5; // No Instagram
-  if(!booking)score+=8; // No booking system
-  if(!cta)score+=4;    // No clear CTA
-  if(!mobile)score+=5; // Not responsive
-  if(!analytics)score+=3; // No tracking
-  score=Math.min(98,score);
+  // Score = % de servicios vendibles sobre el total que ofrecemos
+  // Cada servicio WhiteMoon que podemos vender suma al porcentaje
+  var totalServices=6; // Total servicios que ofrece WhiteMoon
+  var sellable=0;
+  if(!chat)sellable++;      // 1. Chatbot IA
+  if(!chat)sellable++;      // 2. Agente de Voz IA (si no tiene chatbot, tampoco tiene agente)
+  if(!wa)sellable++;         // 3. WhatsApp Business + Bot
+  if(!booking)sellable++;    // 4. Sistema de reservas
+  if(!rrss.facebook.ok||!rrss.instagram.ok)sellable++; // 5. Gestión RRSS
+  if(!analytics||!cta||!mobile)sellable++; // 6. Optimización web / SEO
+  var score=Math.round((sellable/totalServices)*100);
 
   // Problems
   var probs=[];
@@ -924,63 +960,83 @@ function buildCP(d){
   var waNum=d.waNumber||'';
   var svcList=svcs.length?svcs.join(', '):'Consultar en la web';
 
-  // Generate service-specific conversation flows based on sector + detected services
+  // Generate service-specific conversation flows STRICTLY based on detected sector
   var svcFlows='';
-  var h=d.description?d.description.toLowerCase():'';
-  var allText=(svcs.join(' ')+' '+h+' '+(d.bizName||'')).toLowerCase();
+  var allText=(svcs.join(' ')+' '+(d.description||'')+' '+(d.bizName||'')).toLowerCase();
 
-  // ABOGADOS — detect specialties and generate specific intake flows
-  if(d.nicho==='abogado'||allText.match(/abogad|legal|juridic|derecho|letrad|bufete|litigi|demanda|reclamacion/)){
-    svcFlows+='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
-    if(allText.match(/bancario|microcrédito|micropréstamo|microprestamo|microcredito|usura|revolving|tarjeta revolving|clausula suelo|hipoteca|intereses abusivos/)){
-      svcFlows+='\n### DERECHO BANCARIO / RECLAMACIONES MICROCRÉDITOS\nCuando el cliente menciona microcréditos, préstamos rápidos, tarjetas revolving o intereses abusivos:\n1. "Entiendo tu situación. Para ayudarte necesito algunos datos. ¿Cuántos contratos de microcrédito o préstamo rápido tienes actualmente?"\n2. "¿Con qué empresas? (Ej: Vivus, Creditea, Moneyman, Wandoo, Cashper, Zaplo...)"\n3. "¿Cuál es el importe total que solicitaste originalmente?"\n4. "¿Cuánto llevas pagado en total hasta ahora?"\n5. "¿Estás al día en los pagos o tienes algún impago?"\n6. "¿Has recibido alguna comunicación de empresa de recobro o amenaza de embargo?"\n7. "¿Tienes copia de los contratos o algún documento?"\n→ Recoger: nombre, teléfono, email\n→ "Perfecto, con estos datos el equipo de '+biz+' puede valorar tu caso. Te contactamos en menos de 24h para darte una primera valoración gratuita."\n';
+  // GESTORÍA / CONTABILIDAD
+  if(d.nicho==='gestoria'){
+    svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    svcFlows+='\n### CONSULTA INICIAL\n1. "¿Eres autónomo, empresa o particular?"\n2. "¿Qué trámite o servicio necesitas?"\n3. "¿Tienes gestor actualmente o es la primera vez?"\n→ Recoger: nombre, teléfono, email, tipo de cliente\n';
+    if(allText.match(/autónom|autonomo|alta|baja|cuota/))svcFlows+='\n### AUTÓNOMOS\n1. "¿Quieres darte de alta como autónomo o ya lo eres?"\n2. "¿Qué actividad vas a realizar?"\n3. "¿Necesitas ayuda con la cuota, impuestos trimestrales o ambos?"\n→ Explicar: "Podemos gestionar tu alta en 24-48h y encargarnos de todas tus obligaciones fiscales."\n';
+    if(allText.match(/renta|irpf|declaracion|impuesto/))svcFlows+='\n### DECLARACIÓN DE LA RENTA / IMPUESTOS\n1. "¿Es para la declaración de la renta anual o impuestos trimestrales?"\n2. "¿Eres autónomo, asalariado o tienes rentas de alquiler?"\n3. "¿Tienes toda la documentación preparada?"\n→ "Te podemos hacer un estudio previo para optimizar tu resultado."\n';
+    if(allText.match(/sociedad|empresa|sl |pyme|constitucion/))svcFlows+='\n### EMPRESAS / SOCIEDADES\n1. "¿Necesitas constituir una sociedad nueva o gestionar una existente?"\n2. "¿Qué tipo de sociedad? (SL, SA, cooperativa...)"\n3. "¿Cuántos empleados tiene o va a tener?"\n→ Ofrecer presupuesto personalizado.\n';
+    if(allText.match(/nomina|laboral|contrato|seguridad social|empleado/))svcFlows+='\n### GESTIÓN LABORAL / NÓMINAS\n1. "¿Cuántos empleados tienes?"\n2. "¿Necesitas gestión de nóminas, contratos o ambos?"\n3. "¿Tienes alguna incidencia urgente? (despido, baja, ERTE...)"\n→ Recoger datos para presupuesto de gestión laboral.\n';
+    if(allText.match(/herencia|sucesion|donacion|testamento/))svcFlows+='\n### HERENCIAS Y SUCESIONES\n1. "¿Se trata de una herencia o una donación en vida?"\n2. "¿En qué comunidad autónoma se encuentran los bienes?"\n3. "¿Hay testamento?"\n4. "¿Cuántos herederos hay?"\n→ "Necesitamos estos datos para calcular los impuestos y gestionar todo el trámite."\n';
+    if(!svcFlows.includes('### '))svcFlows+='\n### CONSULTA GENERAL\n1. "¿En qué podemos ayudarte? (fiscal, laboral, contable, trámites...)"\n2. "¿Es un trámite puntual o necesitas servicio continuado?"\n→ Recoger datos y derivar al departamento adecuado.\n';
+  }
+
+  // ABOGADOS — only if detected as abogado, not gestoria
+  else if(d.nicho==='abogado'){
+    svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    if(allText.match(/bancario|microcrédito|micropréstamo|microprestamo|microcredito|usura|revolving|clausula suelo|intereses abusivos/)){
+      svcFlows+='\n### DERECHO BANCARIO / MICROCRÉDITOS\n1. "¿Cuántos contratos de microcrédito o préstamo rápido tienes actualmente?"\n2. "¿Con qué empresas? (Vivus, Creditea, Moneyman, Wandoo, Cashper...)"\n3. "¿Cuál es el importe total que solicitaste originalmente?"\n4. "¿Cuánto llevas pagado en total hasta ahora?"\n5. "¿Estás al día en los pagos o tienes algún impago?"\n6. "¿Has recibido comunicación de empresa de recobro o amenaza de embargo?"\n7. "¿Tienes copia de los contratos?"\n→ Recoger: nombre, teléfono, email\n→ "Con estos datos el equipo de '+biz+' puede valorar tu caso. Te contactamos en menos de 24h con una primera valoración gratuita."\n';
     }
-    if(allText.match(/familia|divorcio|custodia|pension|alimento|separacion|matrimon/)){
-      svcFlows+='\n### DERECHO DE FAMILIA\nCuando el cliente menciona divorcio, custodia o temas familiares:\n1. "¿Se trata de un divorcio/separación de mutuo acuerdo o contencioso?"\n2. "¿Hay hijos menores en común?"\n3. "¿Hay bienes compartidos (vivienda, cuentas, vehículos)?"\n4. "¿Tu pareja tiene abogado ya?"\n→ Recoger datos de contacto para consulta inicial.\n';
+    if(allText.match(/familia|divorcio|custodia|pension|alimento|separacion/)){
+      svcFlows+='\n### DERECHO DE FAMILIA\n1. "¿Se trata de divorcio/separación de mutuo acuerdo o contencioso?"\n2. "¿Hay hijos menores?"\n3. "¿Hay bienes compartidos (vivienda, cuentas)?"\n4. "¿Tu pareja tiene abogado?"\n→ Recoger datos para consulta inicial.\n';
     }
-    if(allText.match(/laboral|despido|finiquito|nómina|trabajo|erte|prestacion|desempleo/)){
-      svcFlows+='\n### DERECHO LABORAL\nCuando menciona despido, problemas laborales:\n1. "¿Cuándo te comunicaron el despido/situación?"\n2. "¿Tienes la carta de despido o documento?"\n3. "¿Cuánto tiempo llevas/llevabas en la empresa?"\n4. "¿Qué tipo de contrato tenías?"\n→ URGENTE si despido <20 días: "Es importante actuar rápido. El plazo para reclamar es de 20 días hábiles."\n';
+    if(allText.match(/laboral|despido|finiquito|erte/)){
+      svcFlows+='\n### DERECHO LABORAL\n1. "¿Cuándo te comunicaron el despido?"\n2. "¿Tienes la carta de despido?"\n3. "¿Cuánto tiempo llevabas en la empresa?"\n4. "¿Tipo de contrato?"\n→ URGENTE si <20 días: "El plazo para reclamar es de 20 días hábiles."\n';
     }
-    if(allText.match(/accidente|lesion|negligencia|indemnizacion|seguro|siniestro/)){
-      svcFlows+='\n### ACCIDENTES / INDEMNIZACIONES\nCuando menciona accidente o lesiones:\n1. "¿Cuándo ocurrió el accidente?"\n2. "¿Qué tipo de accidente? (tráfico, laboral, caída, médico...)"\n3. "¿Tienes informe médico de las lesiones?"\n4. "¿Has presentado denuncia o parte al seguro?"\n→ Recoger datos y derivar urgente al equipo.\n';
+    if(allText.match(/accidente|lesion|indemnizacion/)){
+      svcFlows+='\n### ACCIDENTES / INDEMNIZACIONES\n1. "¿Cuándo ocurrió?"\n2. "¿Tipo de accidente? (tráfico, laboral, caída...)"\n3. "¿Tienes informe médico?"\n4. "¿Has denunciado o dado parte al seguro?"\n→ Recoger datos y derivar urgente.\n';
     }
-    if(allText.match(/extranjeria|visa|visado|nie|residencia|permiso|nacionalidad|inmigra/)){
-      svcFlows+='\n### EXTRANJERÍA / INMIGRACIÓN\nCuando menciona papeles, residencia, NIE:\n1. "¿Qué trámite necesitas? (residencia, trabajo, reagrupación, nacionalidad...)"\n2. "¿Cuál es tu situación actual? (con/sin papeles, visado turista, etc.)"\n3. "¿Cuánto tiempo llevas en España?"\n4. "¿Tienes padrón y documentación básica?"\n→ Recoger datos para valorar el caso.\n';
+    if(allText.match(/extranjeria|nie|residencia|nacionalidad/)){
+      svcFlows+='\n### EXTRANJERÍA\n1. "¿Qué trámite necesitas? (residencia, trabajo, reagrupación, nacionalidad...)"\n2. "¿Situación actual? (con/sin papeles, visado turista...)"\n3. "¿Tiempo en España?"\n4. "¿Tienes padrón?"\n→ Recoger datos para valorar.\n';
     }
-    // Default for any law firm
-    if(!svcFlows.includes('### ')){
-      svcFlows+='\n### CONSULTA GENERAL LEGAL\n1. "¿En qué área necesitas ayuda? (Ej: laboral, familia, reclamaciones, herencias...)"\n2. "¿Podrías contarme brevemente tu situación?"\n3. "¿Tienes algún documento relacionado?"\n4. "¿Hay algún plazo urgente que debamos tener en cuenta?"\n→ Recoger: nombre, teléfono, email, breve resumen\n→ "El equipo de '+biz+' te contactará en menos de 24h con una primera valoración."\n';
-    }
+    if(!svcFlows.includes('### '))svcFlows+='\n### CONSULTA LEGAL GENERAL\n1. "¿En qué área necesitas ayuda?"\n2. "Cuéntame brevemente tu situación"\n3. "¿Tienes documentación?"\n4. "¿Hay plazo urgente?"\n→ Recoger: nombre, teléfono, email, resumen\n';
   }
 
   // CLÍNICAS DENTALES
-  else if(d.nicho==='dental'||allText.match(/dental|diente|ortodoncia|implante/)){
+  else if(d.nicho==='dental'){
     svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
-    svcFlows+='\n### PRIMERA VISITA / REVISIÓN\n1. "¿Es tu primera visita a '+biz+'?"\n2. "¿Tienes alguna molestia concreta o quieres una revisión general?"\n3. "¿Cuándo fue tu última visita al dentista?"\n→ Agendar primera consulta gratuita si aplica.\n';
-    if(allText.match(/ortodoncia|brackets|invisible|invisalign/)){
-      svcFlows+='\n### ORTODONCIA\n1. "¿Quieres información sobre ortodoncia para ti o para un menor?"\n2. "¿Has llevado ortodoncia antes?"\n3. "¿Tienes preferencia? (brackets metálicos, estéticos, invisibles...)"\n→ Agendar estudio de ortodoncia.\n';
-    }
-    if(allText.match(/implante|protesis|diente perdido/)){
-      svcFlows+='\n### IMPLANTES\n1. "¿Cuántos dientes necesitas reponer?"\n2. "¿Hace cuánto perdiste el/los diente(s)?"\n3. "¿Tienes algún problema de salud que debamos saber?"\n→ Agendar valoración de implantes.\n';
-    }
+    svcFlows+='\n### PRIMERA VISITA\n1. "¿Es tu primera visita a '+biz+'?"\n2. "¿Tienes molestia concreta o revisión general?"\n3. "¿Cuándo fue tu última visita al dentista?"\n→ Agendar consulta.\n';
+    if(allText.match(/ortodoncia|brackets|invisalign/))svcFlows+='\n### ORTODONCIA\n1. "¿Para ti o para un menor?"\n2. "¿Has llevado ortodoncia antes?"\n3. "¿Preferencia? (metálicos, estéticos, invisibles...)"\n→ Agendar estudio.\n';
+    if(allText.match(/implante|protesis/))svcFlows+='\n### IMPLANTES\n1. "¿Cuántos dientes necesitas reponer?"\n2. "¿Hace cuánto los perdiste?"\n3. "¿Algún problema de salud?"\n→ Agendar valoración.\n';
   }
 
-  // CENTROS DE BELLEZA / ESTÉTICA
-  else if(d.nicho==='belleza'||allText.match(/belleza|estetica|facial|corporal|depilacion|laser/)){
+  // CENTROS DE BELLEZA
+  else if(d.nicho==='belleza'||d.nicho==='peluqueria'){
     svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
-    svcFlows+='\n### PRIMERA VISITA\n1. "¿Has visitado '+biz+' antes?"\n2. "¿Qué tratamiento te interesa?"\n3. "¿Tienes alguna alergia o condición de la piel que debamos saber?"\n→ Ofrecer diagnóstico gratuito si aplica.\n';
-    svcs.forEach(function(s){
-      var sl=s.toLowerCase();
-      if(sl.match(/depilacion|laser/)) svcFlows+='\n### '+s.toUpperCase()+'\n1. "¿Qué zona quieres tratar?"\n2. "¿Has hecho sesiones de depilación láser antes?"\n3. "¿Cuál es tu tipo de piel y color de vello?"\n→ Agendar sesión de valoración.\n';
-      else if(sl.match(/facial|limpieza|peeling/)) svcFlows+='\n### '+s.toUpperCase()+'\n1. "¿Cuál es tu principal preocupación? (arrugas, manchas, acné, hidratación...)"\n2. "¿Qué productos usas actualmente?"\n→ Recomendar tratamiento y agendar.\n';
-    });
+    svcFlows+='\n### PRIMERA VISITA\n1. "¿Has visitado '+biz+' antes?"\n2. "¿Qué tratamiento te interesa?"\n3. "¿Alguna alergia o condición?"\n→ Ofrecer diagnóstico.\n';
+    svcs.forEach(function(s){var sl=s.toLowerCase();if(sl.match(/depilacion|laser/))svcFlows+='\n### '+s.toUpperCase()+'\n1. "¿Qué zona?"\n2. "¿Sesiones anteriores?"\n3. "¿Tipo de piel?"\n→ Agendar valoración.\n';});
+  }
+
+  // FISIOTERAPIA / REHABILITACIÓN
+  else if(d.nicho==='fisioterapia'){
+    svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    svcFlows+='\n### PRIMERA CONSULTA\n1. "¿Qué molestia o lesión tienes?"\n2. "¿Desde cuándo?"\n3. "¿Tienes diagnóstico médico o pruebas?"\n4. "¿Has recibido tratamiento previo?"\n→ Agendar primera valoración.\n';
+  }
+
+  // INMOBILIARIA
+  else if(d.nicho==='inmobiliaria'){
+    svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    svcFlows+='\n### COMPRADOR / INQUILINO\n1. "¿Buscas comprar o alquilar?"\n2. "¿Qué zona te interesa?"\n3. "¿Cuántas habitaciones necesitas?"\n4. "¿Presupuesto aproximado?"\n→ "Te buscamos opciones que encajen y te contactamos."\n';
+    svcFlows+='\n### VENDEDOR / PROPIETARIO\n1. "¿Quieres vender o alquilar tu propiedad?"\n2. "¿Qué tipo de inmueble? (piso, casa, local...)"\n3. "¿En qué zona está?"\n4. "¿Tiene hipoteca pendiente?"\n→ "Podemos hacerte una valoración gratuita. ¿Cuándo te viene bien?"\n';
+  }
+
+  // RESTAURANTE
+  else if(d.nicho==='restaurante'){
+    svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    svcFlows+='\n### RESERVAS\n1. "¿Para cuántas personas?"\n2. "¿Qué día y hora?"\n3. "¿Alguna preferencia? (terraza, interior, zona privada...)"\n4. "¿Alguna alergia o intolerancia?"\n→ Confirmar reserva + nombre + teléfono.\n';
+    svcFlows+='\n### CARTA / MENÚ\n→ Informar de los platos destacados y redirigir a la carta online.\n';
   }
 
   // GENERIC — generate flows from detected services
   else if(svcs.length>0){
     svcFlows='\n\n## FLUJOS POR SERVICIO DETECTADO\n';
-    svcs.slice(0,5).forEach(function(s){
-      svcFlows+='\n### '+s.toUpperCase()+'\nCuando el cliente pregunta por "'+s+'":\n1. Informar brevemente sobre el servicio\n2. Preguntar qué necesita específicamente\n3. Recoger datos de contacto\n4. Agendar consulta/cita\n';
+    svcs.slice(0,6).forEach(function(s){
+      svcFlows+='\n### '+s.toUpperCase()+'\nCuando el cliente pregunta por "'+s+'":\n1. Informar brevemente\n2. Preguntar qué necesita específicamente\n3. Recoger nombre + teléfono\n4. Agendar consulta/cita\n';
     });
   }
 
@@ -1046,8 +1102,8 @@ function renderProsResults(){
   if(!results.length){c.innerHTML='';return}
   var html='';
   results.forEach(function(r,i){
-    var sc=r.score>=65?'var(--green2)':r.score>=40?'var(--orange2)':'var(--red2)';
-    var hot=r.score>=55;
+    var sc=r.score>=67?'var(--green2)':r.score>=34?'var(--orange2)':'var(--red2)';
+    var hot=r.score>=50;
     var noChat=!r.chat,noWa=!r.wa,noFb=!r.rrss.facebook.ok,noIg=!r.rrss.instagram.ok;
     var cid='pc-'+i;
     html+='<div class="card mb12" style="'+(hot?'border-color:rgba(255,140,66,.25);background:rgba(255,140,66,.02)':'')+'">';
@@ -1055,7 +1111,7 @@ function renderProsResults(){
     html+='<div class="flex jcb aic mb8" style="cursor:pointer" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">';
     html+='<div><div style="font-size:.88rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+r.sectorIco+' '+r.domain+'<span class="tag tag-g" style="margin-left:4px">HTML</span>'+(hot?'<span class="hot-badge">VENDER</span>':'')+'</div>';
     html+='<div style="font-size:.68rem;color:var(--text2);margin-top:2px">'+r.sector+' · '+r.cms+' · '+r.probs.length+' oportunidades</div></div>';
-    html+='<div style="text-align:right"><div class="pros-score" style="color:'+sc+'">'+r.score+'</div><div style="font-size:.56rem;color:var(--muted)">potencial</div></div></div>';
+    html+='<div style="text-align:right"><div class="pros-score" style="color:'+sc+'">'+r.score+'%</div><div style="font-size:.56rem;color:var(--muted)">% venta</div></div></div>';
     // Flags
     html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+'</div>';
     // Actions
