@@ -973,33 +973,90 @@ function analyzeHTML(url,html){
     if(href.includes('twitter.com/')||href.includes('x.com/'))socialUrls.twitter=href;
   });
 
-  // Speed/SEO heuristics from HTML quality
+  // ═══ SEO AUDIT — Deep analysis for selling web redesign ═══
+  var seoIssues=[];
+  var seoScore=0;
+  var seoMax=14; // Total checks
+
+  // 1. Meta description
+  var hasMetaDesc=!!doc.querySelector('meta[name="description"]');
+  var metaDesc=hasMetaDesc?(doc.querySelector('meta[name="description"]').getAttribute('content')||''):'';
+  if(hasMetaDesc&&metaDesc.length>50){seoScore++}else{seoIssues.push(hasMetaDesc?'Meta description muy corta ('+metaDesc.length+' chars, ideal 120-160)':'Sin meta description — Google no muestra resumen')}
+
+  // 2. Title tag
+  var hasTitle=!!doc.querySelector('title');
+  var titleLen=hasTitle?(doc.querySelector('title').textContent||'').length:0;
+  if(hasTitle&&titleLen>20&&titleLen<70){seoScore++}else{seoIssues.push(hasTitle?(titleLen<20?'Title demasiado corto ('+titleLen+' chars)':'Title demasiado largo ('+titleLen+' chars, máx 60)'):'Sin etiqueta <title> — crítico para SEO')}
+
+  // 3. H1
+  var h1s=doc.querySelectorAll('h1');
+  if(h1s.length===1){seoScore++}else{seoIssues.push(h1s.length===0?'Sin H1 — Google no entiende el tema principal':'Múltiples H1 ('+h1s.length+') — solo debe haber uno')}
+
+  // 4. Heading hierarchy
+  var h2s=doc.querySelectorAll('h2');
+  if(h2s.length>=2){seoScore++}else{seoIssues.push('Pocos H2 ('+h2s.length+') — estructura de contenido débil')}
+
+  // 5. Alt text on images
+  var imgs=doc.querySelectorAll('img');
+  var imgsNoAlt=0;
+  imgs.forEach(function(img){if(!img.getAttribute('alt'))imgsNoAlt++});
+  if(imgs.length===0||imgsNoAlt===0){seoScore++}else{seoIssues.push(imgsNoAlt+'/'+imgs.length+' imágenes sin alt text — invisible para Google Images')}
+
+  // 6. Open Graph tags
+  var hasOG=!!doc.querySelector('meta[property="og:title"]');
+  if(hasOG){seoScore++}else{seoIssues.push('Sin Open Graph tags — previews pobres en redes sociales')}
+
+  // 7. Schema.org / JSON-LD
+  var hasSchema=h.includes('schema.org')||h.includes('application/ld+json');
+  if(hasSchema){seoScore++}else{seoIssues.push('Sin Schema.org / datos estructurados — sin rich snippets en Google')}
+
+  // 8. Canonical
+  var hasCanonical=!!doc.querySelector('link[rel="canonical"]');
+  if(hasCanonical){seoScore++}else{seoIssues.push('Sin canonical URL — riesgo de contenido duplicado')}
+
+  // 9. SSL
+  if(ssl){seoScore++}else{seoIssues.push('Sin HTTPS — penalizado por Google y marcado como "No seguro"')}
+
+  // 10. Viewport / responsive
+  if(mobile){seoScore++}else{seoIssues.push('Sin viewport meta — no optimizado para móvil (Google Mobile-First)')}
+
+  // 11. Page speed signals
+  var hasLazy=h.includes('loading="lazy"')||h.includes('lazy');
+  var hasDefer=h.includes('defer')||h.includes('async');
+  if(hasLazy&&hasDefer){seoScore++}else{seoIssues.push(!hasLazy&&!hasDefer?'Sin lazy loading ni scripts async — web lenta':'Falta '+(hasLazy?'scripts async/defer':'lazy loading en imágenes'))}
+
+  // 12. HTML size / bloat
+  var htmlSize=html.length;
+  if(htmlSize<300000){seoScore++}else{seoIssues.push('HTML pesado ('+Math.round(htmlSize/1024)+'KB) — ralentiza carga y SEO')}
+
+  // 13. Internal links
+  var internalLinks=doc.querySelectorAll('a[href^="/"],a[href^="'+url+'"]');
+  if(internalLinks.length>=3){seoScore++}else{seoIssues.push('Pocos enlaces internos ('+internalLinks.length+') — mala distribución de autoridad')}
+
+  // 14. CMS render type (JS vs HTML)
+  var isJSRendered=h.includes('__next')||h.includes('__nuxt')||h.includes('react-root')||h.includes('ng-app')||h.includes('vue-app');
+  var isSSR=h.includes('data-server-rendered')||h.includes('__next_data__');
+  if(!isJSRendered||isSSR){seoScore++}else{seoIssues.push('Web renderizada por JavaScript (SPA) — Google puede no indexar todo el contenido')}
+
+  var seo=Math.round((seoScore/seoMax)*100);
+  var seoGrade=seo>=80?'A':seo>=60?'B':seo>=40?'C':seo>=20?'D':'F';
+  var needsWebRedesign=seo<60||isJSRendered||!hasSchema||!hasMetaDesc;
+
+  // Speed heuristic
   var speed=50;
-  if(h.includes('defer')||h.includes('async'))speed+=10;
-  if(h.includes('lazy'))speed+=8;
-  if(h.length>500000)speed-=15;
-  if(h.includes('minified')||h.length<50000)speed+=10;
-  speed=Math.min(95,Math.max(15,speed+rnd(-8,8)));
+  if(hasDefer)speed+=10;if(hasLazy)speed+=10;if(htmlSize>500000)speed-=15;if(htmlSize<80000)speed+=10;
+  speed=Math.min(95,Math.max(15,speed));
 
-  var seo=30;
-  if(h.includes('<meta name="description"'))seo+=15;
-  if(h.includes('<h1'))seo+=10;
-  if(h.includes('og:title'))seo+=8;
-  if(h.includes('schema.org')||h.includes('json-ld'))seo+=12;
-  if(h.includes('canonical'))seo+=8;
-  if(h.includes('sitemap'))seo+=5;
-  seo=Math.min(95,Math.max(10,seo+rnd(-5,5)));
-
-  // Score = % de servicios vendibles sobre el total que ofrecemos
-  // Cada servicio WhiteMoon que podemos vender suma al porcentaje
-  var totalServices=6; // Total servicios que ofrece WhiteMoon
+  // Score = % de servicios vendibles
+  var totalServices=7; // Added SEO/Web as 7th service
   var sellable=0;
   if(!chat)sellable++;      // 1. Chatbot IA
-  if(!chat)sellable++;      // 2. Agente de Voz IA (si no tiene chatbot, tampoco tiene agente)
+  if(!chat)sellable++;      // 2. Agente de Voz IA
   if(!wa)sellable++;         // 3. WhatsApp Business + Bot
   if(!booking)sellable++;    // 4. Sistema de reservas
   if(!rrss.facebook.ok||!rrss.instagram.ok)sellable++; // 5. Gestión RRSS
-  if(!analytics||!cta||!mobile)sellable++; // 6. Optimización web / SEO
+  if(!analytics||!cta||!mobile)sellable++; // 6. Optimización web
+  if(needsWebRedesign)sellable++; // 7. Web SEO + Rediseño
   var score=Math.round((sellable/totalServices)*100);
 
   // Problems
@@ -1017,8 +1074,10 @@ function analyzeHTML(url,html){
   if(!rrss.tiktok.ok)probs.push('Sin TikTok — alcance orgánico gratuito perdido');
   if(!rrss.linkedin.ok)probs.push('Sin LinkedIn — networking profesional perdido');
   if(!rrss.youtube.ok)probs.push('Sin YouTube — segundo buscador del mundo');
+  if(needsWebRedesign)probs.push('SEO deficiente ('+seo+'%) — necesita web optimizada');
+  if(isJSRendered&&!isSSR)probs.push('Web SPA/JavaScript — Google no indexa bien el contenido');
 
-  return{url,domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score,ssl,mobile,chat,wa,gmb,analytics,cta,booking,speed,seo,cms,rrss,probs,bizName:bizName,phones:phones,emails:emails,address:address,services:services,hours:hours,waNumber:waNumber,description:description,socialUrls:socialUrls};
+  return{url,domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score,ssl,mobile,chat,wa,gmb,analytics,cta,booking,speed,seo,seoGrade:seoGrade,seoIssues:seoIssues,needsWebRedesign:needsWebRedesign,isJSRendered:isJSRendered,cms,rrss,probs,bizName:bizName,phones:phones,emails:emails,address:address,services:services,hours:hours,waNumber:waNumber,description:description,socialUrls:socialUrls};
 }
 
 
@@ -1201,7 +1260,7 @@ function renderProsResults(){
     html+='<div style="font-size:.68rem;color:var(--text2);margin-top:2px">'+r.sector+' · '+r.cms+' · '+r.probs.length+' oportunidades</div></div>';
     html+='<div style="text-align:right"><div class="pros-score" style="color:'+sc+'">'+r.score+'%</div><div style="font-size:.56rem;color:var(--muted)">% venta</div></div></div>';
     // Flags
-    html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+'</div>';
+    html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+(r.needsWebRedesign?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>SEO '+r.seoGrade+'</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>SEO '+r.seoGrade+'</span>')+'</div>';
     // Actions
     html+='<div class="flex gap8 fwrap mb4"><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar web</a><button class="btn btn-ghost btn-xs" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">Servicios + Prompts ▾</button></div>';
     // Expandable detail
@@ -1212,7 +1271,16 @@ function renderProsResults(){
     if(noWa)html+='<div class="svc-row"><div class="svc-dot si-g"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">WhatsApp Business + Bot IA</div><div style="font-size:.66rem;color:var(--text2)">Respuesta automática 24h</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Incluido en Pack Advance</div></div></div>';
     if(!r.booking)html+='<div class="svc-row"><div class="svc-dot si-c"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Sistema de Reservas Online</div><div style="font-size:.66rem;color:var(--text2)">Pack Pyme — 1.800€ (Web + Chatbot + Reservas)</div></div></div>';
     if(noFb||noIg)html+='<div class="svc-row"><div class="svc-dot si-o"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Gestión RRSS con IA</div><div style="font-size:.66rem;color:var(--text2)">LaunchPack — 99€/mes · Accelerator — 199€/mes</div></div></div>';
+    if(r.needsWebRedesign)html+='<div class="svc-row"><div class="svc-dot" style="background:rgba(239,68,68,.12);color:#ef4444"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Web SEO Optimizada + Rediseño</div><div style="font-size:.66rem;color:var(--text2)">Web renderizada con SEO profesional — '+(r.isJSRendered?'actualmente SPA/JS (no indexable)':'SEO actual: '+r.seo+'% (grado '+r.seoGrade+')')+'</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Pack Pyme — 1.800€ setup</div></div></div>';
     html+='</div>';
+    // SEO audit
+    if(r.seoIssues&&r.seoIssues.length>0){
+      var seoCol=r.seo>=70?'var(--green2)':r.seo>=40?'var(--orange2)':'var(--red2)';
+      html+='<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:'+seoCol+';margin-bottom:7px;display:flex;align-items:center;gap:6px">🔍 Auditoría SEO — '+r.seo+'% (Grado '+r.seoGrade+')</div>';
+      html+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">';
+      r.seoIssues.forEach(function(issue){html+='<span class="tag tag-o" style="font-size:.62rem">'+issue+'</span>'});
+      html+='</div>';
+    }
     // Prompts
     html+='<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">📋 Prompts de venta</div>';
     var tabs='<div class="tabs" style="margin-bottom:8px">';
