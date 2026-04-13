@@ -470,31 +470,39 @@ html,body{height:100%;font-family:'Outfit',sans-serif;background:#06060f;color:#
   </div>
 
   <!-- API KEY MODAL -->
-  <div id="api-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(8px)" onclick="if(event.target===this)this.style.display='none'">
-    <div style="background:var(--card);border:1px solid var(--wm-border);border-radius:16px;padding:28px;width:100%;max-width:480px;box-shadow:var(--shadow)">
-      <div style="font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:6px">Configurar API Key de Anthropic</div>
-      <div style="font-size:.8rem;color:var(--text2);margin-bottom:18px;line-height:1.65">Necesitas una API key de Anthropic para que el análisis sea real. Se guarda solo en tu navegador (localStorage) y nunca se envía a ningún servidor excepto a api.anthropic.com.</div>
-      <div style="margin-bottom:16px">
-        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:7px">Tu API Key</div>
-        <input id="api-key-input" type="password" class="input mono-input" placeholder="sk-ant-api03-..." autocomplete="off" style="font-size:.8rem">
-      </div>
-      <div style="background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:18px;border:1px solid var(--border2)">
-        <div style="font-size:.72rem;font-weight:700;color:var(--wm-purple3);margin-bottom:6px">¿Cómo obtener tu API Key?</div>
-        <div style="font-size:.72rem;color:var(--text2);line-height:1.75">
-          1. Ve a <a href="https://console.anthropic.com" target="_blank" style="color:var(--wm-purple3)">console.anthropic.com</a><br>
-          2. Inicia sesión o crea una cuenta<br>
-          3. En el menú lateral: <b style="color:var(--text)">API Keys → Create Key</b><br>
-          4. Copia la clave y pégala arriba
+  <div id="api-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;overflow-y:auto" onclick="if(event.target===this)this.style.display='none'">
+    <div style="min-height:100%;display:flex;align-items:flex-start;justify-content:center;padding:40px 16px">
+      <div style="background:var(--card);border:1px solid var(--wm-border);border-radius:16px;padding:28px;width:100%;max-width:460px" onclick="event.stopPropagation()">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+          <div style="font-size:1.05rem;font-weight:800;color:#fff">Configurar API Key</div>
+          <button onclick="document.getElementById('api-modal').style.display='none'" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;line-height:1;padding:4px">✕</button>
+        </div>
+        <div style="font-size:.78rem;color:var(--text2);margin-bottom:18px;line-height:1.65;background:var(--bg3);border-radius:8px;padding:12px;border:1px solid var(--border2)">
+          Pega aquí tu API key de Anthropic. Se guarda solo en tu navegador y solo se usa para llamar a <b style="color:var(--text)">api.anthropic.com</b>.
+        </div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">Tu API Key de Anthropic</div>
+          <input id="api-key-input" type="text" class="input mono-input" placeholder="sk-ant-api03-..." autocomplete="off" style="font-size:.82rem;letter-spacing:.04em">
+          <div style="font-size:.68rem;color:var(--muted);margin-top:5px">Empieza por <span style="color:var(--wm-purple3)">sk-ant-</span> · Se guarda en tu navegador</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:16px">
+          <button class="btn btn-primary" onclick="saveApiKey()" style="flex:1">
+            <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Guardar y activar
+          </button>
+          <button class="btn btn-ghost" onclick="document.getElementById('api-modal').style.display='none'">Cancelar</button>
+        </div>
+        <div id="api-key-error" style="font-size:.74rem;color:var(--rose2);margin-bottom:12px;display:none;padding:8px 10px;background:rgba(244,63,94,.08);border-radius:6px;border:1px solid rgba(244,63,94,.2)"></div>
+        <div style="background:var(--bg3);border-radius:8px;padding:14px;border:1px solid var(--border2)">
+          <div style="font-size:.72rem;font-weight:700;color:var(--wm-purple3);margin-bottom:8px">¿Cómo obtener tu API Key?</div>
+          <div style="font-size:.72rem;color:var(--text2);line-height:2">
+            1. Ve a <a href="https://console.anthropic.com" target="_blank" style="color:var(--wm-purple3);text-decoration:underline">console.anthropic.com</a><br>
+            2. Inicia sesión o crea una cuenta gratuita<br>
+            3. Menú lateral → <b style="color:var(--text)">API Keys</b> → <b style="color:var(--text)">Create Key</b><br>
+            4. Copia la clave completa y pégala arriba
+          </div>
         </div>
       </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-primary" onclick="saveApiKey()" style="flex:1">
-          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          Guardar y activar
-        </button>
-        <button class="btn btn-ghost" onclick="document.getElementById('api-modal').style.display='none'">Cancelar</button>
-      </div>
-      <div id="api-key-error" style="font-size:.74rem;color:var(--rose2);margin-top:10px;display:none"></div>
     </div>
   </div>
 </header>
