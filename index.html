@@ -367,6 +367,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       Mis Tarifas
       <span class="nav-badge nb-c">€</span>
     </button>
+    <button class="nav-item" onclick="goPage('p-demo',this)">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      Demo Web + Chatbot
+      <span class="nav-badge nb-p">NEW</span>
+    </button>
   </div>
   <div class="sb-recents">
     <div class="sb-label">Recientes</div>
@@ -597,6 +602,89 @@ Todos los planes: Sin permanencia · Activación 48h · IVA no incluido
 </div>
 
 <div class="toast" id="toast"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span id="toast-msg">Copiado</span></div>
+
+<!-- ════ DEMO WEB + CHATBOT ════ -->
+<div class="page" id="p-demo">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Demo Web + Chatbot IA</div>
+    <div class="page-sub">Genera una landing page demo con chatbot IA integrado para enseñar al cliente. Usa los datos del negocio analizado o configúralo manualmente.</div>
+  </div>
+
+  <div class="card mb16">
+    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Datos del negocio</div>
+
+    <!-- Auto-fill from last analysis -->
+    <div style="margin-bottom:12px">
+      <button class="btn btn-ghost btn-xs" onclick="fillDemoFromAnalysis()" id="demo-autofill-btn">Cargar datos del último análisis</button>
+    </div>
+
+    <div class="g2 mb12">
+      <div class="field-group"><span class="field-label">Nombre del negocio</span><input class="input" id="demo-biz" placeholder="Clínica Dental Sonríe"></div>
+      <div class="field-group"><span class="field-label">Sector</span><input class="input" id="demo-sector" placeholder="Clínica Dental"></div>
+    </div>
+    <div class="g2 mb12">
+      <div class="field-group"><span class="field-label">Teléfono</span><input class="input" id="demo-phone" placeholder="+34 912 345 678"></div>
+      <div class="field-group"><span class="field-label">Email</span><input class="input" id="demo-email" placeholder="info@negocio.com"></div>
+    </div>
+    <div class="g2 mb12">
+      <div class="field-group"><span class="field-label">Dirección</span><input class="input" id="demo-address" placeholder="C/ Gran Vía 42, Madrid"></div>
+      <div class="field-group"><span class="field-label">Horario</span><input class="input" id="demo-hours" placeholder="Lun-Vie 9:00-20:00"></div>
+    </div>
+    <div class="field-group mb12">
+      <span class="field-label">Servicios (uno por línea)</span>
+      <textarea class="textarea" id="demo-services" placeholder="Servicio 1&#10;Servicio 2&#10;Servicio 3" style="min-height:80px"></textarea>
+    </div>
+    <div class="field-group mb12">
+      <span class="field-label">Descripción / eslogan</span>
+      <input class="input" id="demo-desc" placeholder="Tu partner de confianza en...">
+    </div>
+
+    <!-- Color + Style -->
+    <div class="g2 mb12">
+      <div class="field-group"><span class="field-label">Color principal</span>
+        <div class="flex gap8 aic"><input type="color" id="demo-color" value="#7c3aed" style="width:40px;height:32px;border:none;cursor:pointer;background:none"><input class="input mono" id="demo-color-text" value="#7c3aed" style="width:100px;font-size:.72rem" oninput="$('demo-color').value=this.value"></div>
+      </div>
+      <div class="field-group"><span class="field-label">Estilo</span>
+        <select class="select" id="demo-style">
+          <option value="modern">Moderno / Limpio</option>
+          <option value="elegant">Elegante / Premium</option>
+          <option value="friendly">Cercano / Amigable</option>
+          <option value="corporate">Corporativo</option>
+          <option value="medical">Médico / Salud</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="field-group mb12">
+      <span class="field-label">Fotos del negocio (subir imágenes)</span>
+      <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px">Las fotos se incrustarán en la landing demo. Sube logo, fachada, equipo o servicios.</div>
+      <input type="file" id="demo-photos" accept="image/*" multiple onchange="handleDemoPhotos(this)" style="display:none">
+      <div class="flex gap8 aic fwrap">
+        <button class="btn btn-ghost btn-sm" onclick="$('demo-photos').click()"><svg viewBox="0 0 24 24" style="width:12px;height:12px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Subir fotos</button>
+        <span style="font-size:.68rem;color:var(--muted)" id="demo-photo-count">0 fotos</span>
+      </div>
+      <div id="demo-photo-preview" class="flex gap8 fwrap" style="margin-top:8px"></div>
+    </div>
+
+    <!-- Chatbot config -->
+    <div class="sec-title mb8" style="margin-top:16px"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Chatbot IA integrado</div>
+    <div class="g2 mb12">
+      <div class="field-group"><span class="field-label">Nombre del asistente</span><input class="input" id="demo-bot-name" placeholder="Lucía" value="Lucía"></div>
+      <div class="field-group"><span class="field-label">Saludo inicial</span><input class="input" id="demo-bot-greeting" placeholder="¡Hola! ¿En qué puedo ayudarte?" value="¡Hola! 👋 ¿En qué puedo ayudarte?"></div>
+    </div>
+    <div class="field-group mb12">
+      <span class="field-label">Botones rápidos del chatbot</span>
+      <input class="input" id="demo-bot-buttons" placeholder="Ver servicios, Pedir cita, Contactar" value="Ver servicios, Pedir cita, Horarios, Contactar">
+    </div>
+
+    <!-- Generate -->
+    <button class="btn btn-p" onclick="generateDemo()" style="width:100%;padding:14px"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Generar Landing Demo + Chatbot</button>
+  </div>
+
+  <!-- Preview -->
+  <div id="demo-output"></div>
+</div>
 
 <script>
 // ═══════════════════════════════════════
@@ -1130,17 +1218,170 @@ function renderProsResults(){
     var tabs='<div class="tabs" style="margin-bottom:8px">';
     var panels='';
     var prompts=[{id:'v',label:'Agente Voz',content:buildVP(r)},{id:'c',label:'Chatbot',content:buildCP(r)},{id:'p',label:'Pitch',content:buildPP(r)},{id:'w',label:'WhatsApp',content:buildWP(r)}];
+    // Store prompts for send-to functionality
+    var promptKey='prosPrompt_'+i;
+    window[promptKey]=prompts;
     prompts.forEach(function(pm,pi){
       var on=pi===0;
       tabs+='<button class="tab'+(on?' on':'')+'" onclick="this.parentElement.querySelectorAll(\'.tab\').forEach(function(t){t.classList.remove(\'on\')});this.classList.add(\'on\');this.closest(\'[id^=pc]\').querySelectorAll(\'[data-pm]\').forEach(function(x){x.style.display=\'none\'});this.closest(\'[id^=pc]\').querySelector(\'[data-pm='+pm.id+']\').style.display=\'block\'">'+pm.label+'</button>';
       var safeContent=pm.content.replace(/\n/g,'<br>');
-      panels+='<div data-pm="'+pm.id+'"'+(on?'':' style="display:none"')+'><div class="prompt-display" style="max-height:200px">'+safeContent+'</div><div class="flex gap8" style="margin-top:5px"><button class="btn btn-p btn-xs" onclick="copyTxt(this.parentElement.previousElementSibling.textContent)">Copiar</button>'+(pm.id==='w'?'<button class="btn btn-green btn-xs" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(this.parentElement.previousElementSibling.textContent),\'_blank\')">Enviar WA</button>':'')+'</div></div>';
+      var sendBtns='';
+      if(pm.id==='v')sendBtns='<button class="btn btn-cyan btn-xs" onclick="sendToVoicePage(window.prosPrompt_'+i+'[0].content,'+i+')">Usar en Agente Voz →</button>';
+      if(pm.id==='c')sendBtns='<button class="btn btn-cyan btn-xs" onclick="sendToDemoPage(window.prosPrompt_'+i+'[1].content,'+i+')">Usar en Demo Web →</button>';
+      if(pm.id==='w')sendBtns='<button class="btn btn-green btn-xs" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(this.parentElement.previousElementSibling.textContent),\'_blank\')">Enviar WA</button>';
+      panels+='<div data-pm="'+pm.id+'"'+(on?'':' style="display:none"')+'><div class="prompt-display" style="max-height:200px">'+safeContent+'</div><div class="flex gap8 fwrap" style="margin-top:5px"><button class="btn btn-p btn-xs" onclick="copyTxt(this.parentElement.previousElementSibling.textContent)">Copiar</button>'+sendBtns+'</div></div>';
     });
     tabs+='</div>';
     html+=tabs+panels;
     html+='</div></div>';
   });
   c.innerHTML=html;
+}
+
+// ═══════════════════════════════════════
+// SEND PROMPT TO VOICE/DEMO PAGES
+// ═══════════════════════════════════════
+function sendToVoicePage(promptContent,idx){
+  var d=prosResults[idx];
+  // Fill voice page fields with analysis data
+  $('v-biz').value=d.bizName||d.domain;
+  $('v-sector').value='';
+  // Try to match sector to select options
+  var vSel=$('v-sector');
+  for(var i=0;i<vSel.options.length;i++){
+    if(d.sector&&d.sector.toLowerCase().includes(vSel.options[i].text.toLowerCase().split('/')[0].trim())){vSel.selectedIndex=i;break}
+  }
+  $('v-name').value='Lucía';
+  $('v-services').value=d.services?d.services.join('\n'):'';
+  $('v-hours').value=d.hours||'';
+  $('v-phone').value=d.phones&&d.phones.length?d.phones[0]:'';
+  // Navigate to voice page
+  goPage('p-voice',document.querySelectorAll('.nav-item')[2]);
+  setTimeout(function(){
+    updateVoice();
+    // Put the full generated prompt into the prompt output
+    $('prompt-out').innerHTML=promptContent.replace(/\n/g,'<br>');
+    // Switch to prompt tab
+    var vtabs=document.querySelectorAll('.vtab');
+    vtabs.forEach(function(t){t.classList.remove('active')});
+    if(vtabs[1])vtabs[1].classList.add('active');
+    $('vt-demo').style.display='none';
+    $('vt-prompt').style.display='block';
+    if($('vt-config'))$('vt-config').style.display='none';
+    showToast('Prompt de voz cargado — listo para usar en VAPI/Bland.ai');
+  },150);
+}
+
+function sendToDemoPage(promptContent,idx){
+  var d=prosResults[idx];
+  // Fill demo page fields
+  $('demo-biz').value=d.bizName||d.domain;
+  $('demo-sector').value=d.sector||'';
+  $('demo-phone').value=d.phones&&d.phones.length?d.phones[0]:'';
+  $('demo-email').value=d.emails&&d.emails.length?d.emails[0]:'';
+  $('demo-address').value=d.address||'';
+  $('demo-hours').value=d.hours||'';
+  $('demo-services').value=d.services?d.services.join('\n'):'';
+  $('demo-desc').value=d.description||'';
+  // Navigate to demo page
+  goPage('p-demo',document.querySelectorAll('.nav-item')[6]);
+  showToast('Datos cargados en Demo Web — configura y genera');
+}
+
+// ═══════════════════════════════════════
+// DEMO WEB + CHATBOT GENERATOR
+// ═══════════════════════════════════════
+var demoPhotos=[];
+
+function handleDemoPhotos(input){
+  Array.from(input.files).forEach(function(f){
+    var reader=new FileReader();
+    reader.onload=function(e){demoPhotos.push(e.target.result);renderDemoPhotoPreview()};
+    reader.readAsDataURL(f);
+  });
+}
+function renderDemoPhotoPreview(){
+  var c=$('demo-photo-preview');
+  c.innerHTML=demoPhotos.map(function(src,i){
+    return '<div style="position:relative;width:70px;height:70px;border-radius:8px;overflow:hidden;border:1px solid var(--border)"><img src="'+src+'" style="width:100%;height:100%;object-fit:cover"><button onclick="demoPhotos.splice('+i+',1);renderDemoPhotoPreview()" style="position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center">\u00d7</button></div>';
+  }).join('');
+  $('demo-photo-count').textContent=demoPhotos.length+' foto'+(demoPhotos.length!==1?'s':'');
+}
+function fillDemoFromAnalysis(){
+  if(!prosResults.length){showToast('Analiza un negocio primero');return}
+  var d=prosResults[prosResults.length-1];
+  $('demo-biz').value=d.bizName||d.domain;
+  $('demo-sector').value=d.sector||'';
+  $('demo-phone').value=d.phones&&d.phones.length?d.phones[0]:'';
+  $('demo-email').value=d.emails&&d.emails.length?d.emails[0]:'';
+  $('demo-address').value=d.address||'';
+  $('demo-hours').value=d.hours||'';
+  $('demo-services').value=d.services?d.services.join('\n'):'';
+  $('demo-desc').value=d.description||'';
+  showToast('Datos cargados de '+d.domain);
+}
+function generateDemo(){
+  var biz=$('demo-biz').value||'Mi Negocio';
+  var sector=$('demo-sector').value||'Negocio local';
+  var phone=$('demo-phone').value||'';
+  var email=$('demo-email').value||'';
+  var addr=$('demo-address').value||'';
+  var hours=$('demo-hours').value||'';
+  var svcs=$('demo-services').value.split('\n').filter(function(s){return s.trim()});
+  var desc=$('demo-desc').value||'Tu partner de confianza';
+  var color=$('demo-color').value||'#7c3aed';
+  var sty=$('demo-style').value;
+  var botName=$('demo-bot-name').value||'Asistente';
+  var botGreeting=$('demo-bot-greeting').value||'\u00a1Hola! \u00bfEn qu\u00e9 puedo ayudarte?';
+  var botBtns=$('demo-bot-buttons').value.split(',').map(function(b){return b.trim()}).filter(Boolean);
+  var rr=parseInt(color.slice(1,3),16),gg=parseInt(color.slice(3,5),16),bb=parseInt(color.slice(5,7),16);
+  var light='rgba('+rr+','+gg+','+bb+',.08)',mid='rgba('+rr+','+gg+','+bb+',.2)';
+  var font=sty==='elegant'?'"Playfair Display",serif':'"Sora",sans-serif';
+  var heroBg=sty==='medical'?'background:linear-gradient(135deg,#f0f9ff,#e0f2fe)':'background:linear-gradient(135deg,'+color+'11,'+color+'22)';
+  var heroTxt=sty==='medical'?'#1a1a2e':'#fff';
+  // Photos
+  var photosHtml='';
+  if(demoPhotos.length){photosHtml='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding:40px 5%;max-width:1100px;margin:0 auto">';demoPhotos.forEach(function(src){photosHtml+='<img src="'+src+'" style="width:100%;height:180px;object-fit:cover;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.1)">'});photosHtml+='</div>'}
+  // Services
+  var svcsHtml='';
+  if(svcs.length){svcsHtml='<div style="padding:50px 5%;max-width:1100px;margin:0 auto"><h2 style="text-align:center;font-size:1.6rem;margin-bottom:30px;color:#1a1a2e">Nuestros Servicios</h2><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px">';svcs.forEach(function(s,i){svcsHtml+='<div style="background:#fff;border:1px solid #eee;border-radius:12px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.05)"><div style="width:40px;height:40px;border-radius:10px;background:'+light+';display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:1.2rem;color:'+color+'">'+(i+1)+'</div><h3 style="font-size:.95rem;margin:0 0 6px;color:#1a1a2e">'+s+'</h3></div>'});svcsHtml+='</div></div>'}
+  // Chat widget
+  var chatW='<div style="position:fixed;bottom:20px;right:20px;z-index:9999;font-family:'+font+'">';
+  chatW+='<div onclick="var b=document.getElementById(\'dcb\');b.style.display=b.style.display===\'none\'?\'flex\':\'none\'" style="width:56px;height:56px;border-radius:50%;background:'+color+';cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.2);margin-left:auto"><svg viewBox="0 0 24 24" style="width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>';
+  chatW+='<div id="dcb" style="display:none;flex-direction:column;width:340px;height:440px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.15);overflow:hidden;margin-bottom:12px;position:absolute;bottom:66px;right:0">';
+  chatW+='<div style="background:'+color+';padding:16px;color:#fff"><div style="font-weight:700;font-size:.9rem">'+botName+' \u00b7 '+biz+'</div><div style="font-size:.72rem;opacity:.8">Asistente virtual</div></div>';
+  chatW+='<div style="flex:1;padding:14px;overflow-y:auto;background:#f8f9fa" id="dcm"><div style="background:'+light+';border:1px solid '+mid+';border-radius:12px 12px 12px 0;padding:10px 14px;font-size:.82rem;color:#333;max-width:85%;margin-bottom:10px;line-height:1.5">'+botGreeting+'</div>';
+  if(botBtns.length){chatW+='<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">';botBtns.forEach(function(btn){chatW+='<button style="background:'+color+'12;border:1px solid '+color+'44;color:'+color+';border-radius:20px;padding:6px 14px;font-size:.74rem;cursor:pointer;font-family:inherit">'+btn+'</button>'});chatW+='</div>'}
+  chatW+='</div>';
+  chatW+='<div style="padding:10px;border-top:1px solid #eee;display:flex;gap:8px"><input type="text" placeholder="Escribe..." style="flex:1;border:1px solid #ddd;border-radius:20px;padding:8px 14px;font-size:.8rem;outline:none" onkeydown="if(event.key===\'Enter\')dsm(this)"><button onclick="dsm(this.previousElementSibling)" style="width:36px;height:36px;border-radius:50%;background:'+color+';border:none;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 24 24" style="width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button></div>';
+  chatW+='</div></div>';
+  // Full page
+  var pg='<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+biz+'</title><link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:'+font+';color:#1a1a2e;background:#fff}.hero{'+heroBg+';padding:80px 5%;text-align:center;min-height:400px;display:flex;flex-direction:column;align-items:center;justify-content:center}.hero h1{font-size:2.2rem;font-weight:700;margin-bottom:14px;color:'+heroTxt+'}.hero p{font-size:1rem;max-width:600px;margin:0 auto 28px;color:'+heroTxt+'99}.btn-h{display:inline-flex;align-items:center;gap:8px;background:'+color+';color:#fff;padding:14px 32px;border-radius:30px;font-weight:600;font-size:.95rem;border:none;cursor:pointer;box-shadow:0 4px 16px '+color+'44}.ib{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;padding:24px 5%;background:#f8f9fa;font-size:.85rem;color:#555}footer{background:#1a1a2e;color:#aab;padding:40px 5%;text-align:center;font-size:.82rem}</style></head><body>';
+  pg+='<nav style="display:flex;justify-content:space-between;align-items:center;padding:14px 5%;background:#fff;border-bottom:1px solid #eee;position:sticky;top:0;z-index:100"><div style="font-weight:700;font-size:1.1rem;color:'+color+'">'+biz+'</div><div style="display:flex;gap:18px;font-size:.85rem"><a href="#sv" style="color:'+color+'">Servicios</a><a href="#ct" style="color:'+color+'">Contacto</a></div></nav>';
+  pg+='<section class="hero"><h1>'+biz+'</h1><p>'+desc+'</p><button class="btn-h" onclick="document.getElementById(\'dcb\').style.display=\'flex\'">\ud83d\udcac Chatea con '+botName+'</button></section>';
+  if(phone||addr||hours){pg+='<div class="ib">';if(phone)pg+='<span>\ud83d\udcde <b>'+phone+'</b></span>';if(addr)pg+='<span>\ud83d\udccd <b>'+addr+'</b></span>';if(hours)pg+='<span>\ud83d\udd50 <b>'+hours+'</b></span>';pg+='</div>'}
+  if(svcs.length)pg+='<section id="sv">'+svcsHtml+'</section>';
+  if(demoPhotos.length)pg+=photosHtml;
+  pg+='<section id="ct" style="padding:50px 5%;text-align:center;background:'+light+'"><h2 style="font-size:1.5rem;margin-bottom:12px">\u00bfNecesitas m\u00e1s informaci\u00f3n?</h2><p style="font-size:.92rem;color:#555;margin-bottom:24px">Nuestro asistente IA est\u00e1 disponible 24/7</p><button class="btn-h" onclick="document.getElementById(\'dcb\').style.display=\'flex\'">\ud83d\udcac Hablar con '+botName+'</button></section>';
+  pg+='<footer><p><b>'+biz+'</b> \u2014 '+sector+'</p><p style="margin-top:12px;font-size:.72rem;color:#667">Chatbot IA por <a href="https://whitemoon.es" target="_blank" style="color:'+color+'">WhiteMoon</a></p></footer>';
+  pg+=chatW;
+  pg+='<scr'+'ipt>function dsm(i){var m=i.value.trim();if(!m)return;var c=document.getElementById("dcm");c.innerHTML+=\'<div style="background:'+color+';color:#fff;border-radius:12px 12px 0 12px;padding:10px 14px;font-size:.82rem;max-width:85%;margin-left:auto;margin-bottom:10px">\'+m+\'</div>\';i.value="";setTimeout(function(){c.innerHTML+=\'<div style="background:'+light+';border:1px solid '+mid+';border-radius:12px 12px 12px 0;padding:10px 14px;font-size:.82rem;color:#333;max-width:85%;margin-bottom:10px">Gracias por tu mensaje. Para atenderte mejor, \u00bfme puedes dar tu nombre y tel\u00e9fono? \ud83d\ude0a</div>\';c.scrollTop=c.scrollHeight},1200)}</scr'+'ipt>';
+  pg+='</body></html>';
+  // Preview
+  $('demo-output').innerHTML='<div class="card mb12"><div class="flex jcb aic mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>Vista previa</div><div class="flex gap8"><button class="btn btn-p btn-sm" onclick="downloadDemo()">Descargar HTML</button><button class="btn btn-ghost btn-sm" onclick="openDemoTab()">Abrir en pestaña</button></div></div><div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;height:500px"><iframe id="demo-iframe" style="width:100%;height:100%;border:none"></iframe></div></div>';
+  var ifr=$('demo-iframe');var iDoc=ifr.contentDocument||ifr.contentWindow.document;iDoc.open();iDoc.write(pg);iDoc.close();
+  window._demoHTML=pg;
+  showToast('Landing demo generada con chatbot');
+}
+function downloadDemo(){
+  if(!window._demoHTML)return;
+  var blob=new Blob([window._demoHTML],{type:'text/html'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=($('demo-biz').value||'demo')+'-whitemoon.html';a.click();
+}
+function openDemoTab(){
+  if(!window._demoHTML)return;
+  var w=window.open();w.document.write(window._demoHTML);w.document.close();
 }
 
 // NICHOS
