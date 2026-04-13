@@ -113,6 +113,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 .tag-p{background:var(--purple-s);border-color:rgba(124,92,252,.2);color:var(--purple2)}
 .tag-gold{background:var(--gold-s);border-color:rgba(234,179,8,.2);color:var(--gold2)}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.g2{grid-template-columns:1fr}}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:11px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
 .flex{display:flex}.aic{align-items:center}.jcb{justify-content:space-between}.gap8{gap:8px}.gap12{gap:12px}.fwrap{flex-wrap:wrap}
@@ -495,9 +496,32 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 <div class="page" id="p-proposals">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Propuestas Comerciales</div>
-    <div class="page-sub">Propuestas generadas desde el analizador. Cópialas o envíalas por WhatsApp.</div>
+    <div class="page-sub">Propuestas generadas desde el analizador y creadas manualmente. Cópialas o envíalas por WhatsApp.</div>
   </div>
-  <div id="proposals-list"><div class="empty-state"><div class="es-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:5px">Sin propuestas aún</div><div style="font-size:.74rem;color:var(--text2)">Analiza un prospecto para generar propuestas.</div></div></div>
+  <div class="card mb16">
+    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>Crear propuesta manual</div>
+    <div class="g2 mb12">
+      <div class="field-group"><span class="field-label">Nombre del negocio</span><input class="input" id="prop-biz" placeholder="Ej: Clínica Dental Sonríe"></div>
+      <div class="field-group"><span class="field-label">Sector</span><input class="input" id="prop-sector" placeholder="Clínica Dental"></div>
+    </div>
+    <div class="g2 mb12">
+      <div class="field-group"><span class="field-label">Contacto (nombre)</span><input class="input" id="prop-contact" placeholder="María García"></div>
+      <div class="field-group"><span class="field-label">Teléfono / Email</span><input class="input" id="prop-contactinfo" placeholder="+34 600 000 000"></div>
+    </div>
+    <div class="field-group mb12"><span class="field-label">Servicios a ofrecer</span>
+      <div class="flex gap8 fwrap" style="margin-top:4px">
+        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-chatbot" checked> Chatbot IA</label>
+        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-voice" checked> Agente Voz IA</label>
+        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-wa"> WhatsApp Bot</label>
+        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-rrss"> Gestión RRSS</label>
+        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-web"> Web SEO</label>
+        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-booking"> Reservas Online</label>
+      </div>
+    </div>
+    <div class="field-group mb12"><span class="field-label">Notas adicionales (opcional)</span><textarea class="textarea" id="prop-notes" placeholder="Detalles extra para la propuesta..." style="min-height:60px"></textarea></div>
+    <button class="btn btn-p" onclick="createManualProposal()" style="width:100%"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Generar propuesta</button>
+  </div>
+  <div id="proposals-list"><div class="empty-state"><div class="es-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:5px">Sin propuestas aún</div><div style="font-size:.74rem;color:var(--text2)">Analiza un prospecto o crea una propuesta manual.</div></div></div>
 </div>
 
 <!-- ════ PRICING ════ -->
@@ -598,53 +622,40 @@ Todos los planes: Sin permanencia · Activación 48h · IVA no incluido
   </div>
 </div>
 
-</main>
-</div>
 
-<div class="toast" id="toast"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span id="toast-msg">Copiado</span></div>
-
-<!-- ════ DEMO WEB + CHATBOT ════ -->
 <div class="page" id="p-demo">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>Demo Web + Chatbot IA</div>
-    <div class="page-sub">Genera una landing page demo con chatbot IA integrado para enseñar al cliente. Usa los datos del negocio analizado o configúralo manualmente.</div>
+    <div class="page-sub">Genera una landing page demo con chatbot IA integrado para enseñar al cliente.</div>
   </div>
 
   <div class="card mb16">
-    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Datos del negocio</div>
-
-    <!-- Auto-fill from last analysis -->
-    <div style="margin-bottom:12px">
-      <button class="btn btn-ghost btn-xs" onclick="fillDemoFromAnalysis()" id="demo-autofill-btn">Cargar datos del último análisis</button>
+    <div class="flex jcb aic mb12">
+      <div class="sec-title" style="margin:0"><svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Datos del negocio</div>
+      <button class="btn btn-ghost btn-xs" onclick="fillDemoFromAnalysis()">Cargar del análisis</button>
     </div>
 
+    <div class="field-group mb12"><span class="field-label">Nombre del negocio</span><input class="input" id="demo-biz" placeholder="Ej: Clínica Dental Sonríe"></div>
     <div class="g2 mb12">
-      <div class="field-group"><span class="field-label">Nombre del negocio</span><input class="input" id="demo-biz" placeholder="Clínica Dental Sonríe"></div>
       <div class="field-group"><span class="field-label">Sector</span><input class="input" id="demo-sector" placeholder="Clínica Dental"></div>
-    </div>
-    <div class="g2 mb12">
       <div class="field-group"><span class="field-label">Teléfono</span><input class="input" id="demo-phone" placeholder="+34 912 345 678"></div>
-      <div class="field-group"><span class="field-label">Email</span><input class="input" id="demo-email" placeholder="info@negocio.com"></div>
     </div>
     <div class="g2 mb12">
-      <div class="field-group"><span class="field-label">Dirección</span><input class="input" id="demo-address" placeholder="C/ Gran Vía 42, Madrid"></div>
+      <div class="field-group"><span class="field-label">Email</span><input class="input" id="demo-email" placeholder="info@negocio.com"></div>
       <div class="field-group"><span class="field-label">Horario</span><input class="input" id="demo-hours" placeholder="Lun-Vie 9:00-20:00"></div>
     </div>
-    <div class="field-group mb12">
-      <span class="field-label">Servicios (uno por línea)</span>
-      <textarea class="textarea" id="demo-services" placeholder="Servicio 1&#10;Servicio 2&#10;Servicio 3" style="min-height:80px"></textarea>
-    </div>
-    <div class="field-group mb12">
-      <span class="field-label">Descripción / eslogan</span>
-      <input class="input" id="demo-desc" placeholder="Tu partner de confianza en...">
-    </div>
+    <div class="field-group mb12"><span class="field-label">Dirección</span><input class="input" id="demo-address" placeholder="C/ Gran Vía 42, Madrid"></div>
+    <div class="field-group mb12"><span class="field-label">Descripción / eslogan</span><input class="input" id="demo-desc" placeholder="Tu partner de confianza en..."></div>
+    <div class="field-group mb12"><span class="field-label">Servicios (uno por línea)</span><textarea class="textarea" id="demo-services" placeholder="Servicio 1&#10;Servicio 2&#10;Servicio 3" style="min-height:80px"></textarea></div>
+  </div>
 
-    <!-- Color + Style -->
+  <div class="card mb16">
+    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Diseño y fotos</div>
     <div class="g2 mb12">
       <div class="field-group"><span class="field-label">Color principal</span>
-        <div class="flex gap8 aic"><input type="color" id="demo-color" value="#7c3aed" style="width:40px;height:32px;border:none;cursor:pointer;background:none"><input class="input mono" id="demo-color-text" value="#7c3aed" style="width:100px;font-size:.72rem" oninput="$('demo-color').value=this.value"></div>
+        <div class="flex gap8 aic"><input type="color" id="demo-color" value="#7c3aed" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" id="demo-color-text" value="#7c3aed" style="width:100px;font-size:.74rem" oninput="$('demo-color').value=this.value"></div>
       </div>
-      <div class="field-group"><span class="field-label">Estilo</span>
+      <div class="field-group"><span class="field-label">Estilo visual</span>
         <select class="select" id="demo-style">
           <option value="modern">Moderno / Limpio</option>
           <option value="elegant">Elegante / Premium</option>
@@ -654,11 +665,9 @@ Todos los planes: Sin permanencia · Activación 48h · IVA no incluido
         </select>
       </div>
     </div>
-
-    <!-- Photos -->
     <div class="field-group mb12">
-      <span class="field-label">Fotos del negocio (subir imágenes)</span>
-      <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px">Las fotos se incrustarán en la landing demo. Sube logo, fachada, equipo o servicios.</div>
+      <span class="field-label">Fotos del negocio</span>
+      <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px">Logo, fachada, equipo o servicios. Se incrustan en la landing.</div>
       <input type="file" id="demo-photos" accept="image/*" multiple onchange="handleDemoPhotos(this)" style="display:none">
       <div class="flex gap8 aic fwrap">
         <button class="btn btn-ghost btn-sm" onclick="$('demo-photos').click()"><svg viewBox="0 0 24 24" style="width:12px;height:12px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Subir fotos</button>
@@ -666,25 +675,27 @@ Todos los planes: Sin permanencia · Activación 48h · IVA no incluido
       </div>
       <div id="demo-photo-preview" class="flex gap8 fwrap" style="margin-top:8px"></div>
     </div>
+  </div>
 
-    <!-- Chatbot config -->
-    <div class="sec-title mb8" style="margin-top:16px"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Chatbot IA integrado</div>
+  <div class="card mb16">
+    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Chatbot IA integrado</div>
     <div class="g2 mb12">
       <div class="field-group"><span class="field-label">Nombre del asistente</span><input class="input" id="demo-bot-name" placeholder="Lucía" value="Lucía"></div>
       <div class="field-group"><span class="field-label">Saludo inicial</span><input class="input" id="demo-bot-greeting" placeholder="¡Hola! ¿En qué puedo ayudarte?" value="¡Hola! 👋 ¿En qué puedo ayudarte?"></div>
     </div>
-    <div class="field-group mb12">
-      <span class="field-label">Botones rápidos del chatbot</span>
-      <input class="input" id="demo-bot-buttons" placeholder="Ver servicios, Pedir cita, Contactar" value="Ver servicios, Pedir cita, Horarios, Contactar">
-    </div>
+    <div class="field-group mb12"><span class="field-label">Botones rápidos del chatbot (separados por coma)</span><input class="input" id="demo-bot-buttons" placeholder="Ver servicios, Pedir cita, Contactar" value="Ver servicios, Pedir cita, Horarios, Contactar"></div>
 
-    <!-- Generate -->
-    <button class="btn btn-p" onclick="generateDemo()" style="width:100%;padding:14px"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Generar Landing Demo + Chatbot</button>
+    <button class="btn btn-p" onclick="generateDemo()" style="width:100%;padding:14px;margin-top:8px"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Generar Landing Demo + Chatbot</button>
   </div>
 
-  <!-- Preview -->
   <div id="demo-output"></div>
 </div>
+
+</main>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span id="toast-msg">Copiado</span></div>
+
 
 <script>
 // ═══════════════════════════════════════
@@ -1203,7 +1214,33 @@ function buildWP(d){
 // RECENTS + PROPOSALS
 // ═══════════════════════════════════════
 function addRecent(d){var list=$('recent-list');var empty=$('recent-empty');if(empty)empty.remove();var col=d.score>=65?'#22c55e':d.score>=45?'var(--orange)':'var(--accent)';var el=document.createElement('div');el.className='recent-item';el.innerHTML='<div class="r-dot" style="background:'+col+'"></div><div style="min-width:0"><div class="r-name">'+d.sector+'</div><div class="r-url">'+d.domain+'</div></div>';el.onclick=function(){goPage('p-prospector',document.querySelectorAll('.nav-item')[0])};list.insertBefore(el,list.firstChild)}
-function addProposal(d){S.proposals++;var propText=buildPP(d);var c=$('proposals-list');var es=c.querySelector('.empty-state');if(es)es.remove();var el=document.createElement('div');el.className='proposal-card';el.innerHTML='<div class="flex jcb aic mb12"><div><div style="font-size:.86rem;font-weight:700;color:var(--text)">'+d.sector+' — '+d.domain+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px">Potencial: '+d.score+'/100 · '+d.probs.length+' oportunidades</div></div><div class="flex gap8"><button class="btn btn-ghost btn-sm" onclick="copyTxt(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent)">Copiar</button><button class="btn btn-green btn-sm" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent),\'_blank\')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp</button></div></div><div class="prompt-display">'+propText.replace(/\n/g,'<br>')+'</div>';c.insertBefore(el,c.firstChild);updateCounters()}
+function addProposal(d){S.proposals++;var propText=buildPP(d);var c=$('proposals-list');var es=c.querySelector('.empty-state');if(es)es.remove();var el=document.createElement('div');el.className='proposal-card';el.innerHTML='<div class="flex jcb aic mb12"><div><div style="font-size:.86rem;font-weight:700;color:var(--text)">'+d.sector+' — '+(d.bizName||d.domain)+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px">Potencial: '+d.score+'% · '+d.probs.length+' oportunidades</div></div><div class="flex gap8"><button class="btn btn-ghost btn-sm" onclick="copyTxt(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent)">Copiar</button><button class="btn btn-green btn-sm" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent),\'_blank\')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="this.closest(\'.proposal-card\').remove();S.proposals--;updateCounters()">Eliminar</button></div></div><div class="prompt-display">'+propText.replace(/\n/g,'<br>')+'</div>';c.insertBefore(el,c.firstChild);updateCounters()}
+
+function createManualProposal(){
+  var biz=$('prop-biz').value||'Negocio';
+  var sector=$('prop-sector').value||'Negocio local';
+  var contact=$('prop-contact').value||'';
+  var contactInfo=$('prop-contactinfo').value||'';
+  var notes=$('prop-notes').value||'';
+  var svcs=[];
+  if($('pc-chatbot').checked)svcs.push('🤖 Chatbot IA Web — Pack Basic: 49€/mes + 120€ setup');
+  if($('pc-voice').checked)svcs.push('🎙️ Agente de Voz IA 24h — Pack Advance: 99€/mes + 299€ setup');
+  if($('pc-wa').checked)svcs.push('📱 WhatsApp Business + Bot IA — Incluido en Pack Advance');
+  if($('pc-rrss').checked)svcs.push('📊 Gestión RRSS con IA — LaunchPack: 99€/mes');
+  if($('pc-web').checked)svcs.push('🌐 Web SEO Optimizada — Pack Pyme: 1.800€ setup');
+  if($('pc-booking').checked)svcs.push('📅 Sistema de Reservas Online — Incluido en Pack Pyme');
+  if(!svcs.length){showToast('Selecciona al menos un servicio');return}
+
+  var propText='PROPUESTA DE SERVICIOS IA — WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n'+(contact?'Hola '+contact+',\n\n':'Hola,\n\n')+'Tras analizar las necesidades de '+biz+' ('+sector+'), os proponemos los siguientes servicios de IA:\n\n'+svcs.join('\n')+'\n\n━━━ PACKS COMPLETOS ━━━\n\n🤖 Pack Basic → 49€/mes + 120€ setup\n🤖 Pack Advance → 99€/mes + 299€ setup ⭐\n🏪 Pack Pyme → 1.800€ setup\n'+(notes?'\n━━━ NOTAS ━━━\n'+notes+'\n':'')+'\n¿Hablamos esta semana? Demo sin compromiso.\n\n— WhiteMoon · whitemoon.es\n📍 Majadahonda, Madrid';
+
+  S.proposals++;
+  var c=$('proposals-list');var es=c.querySelector('.empty-state');if(es)es.remove();
+  var el=document.createElement('div');el.className='proposal-card';
+  el.innerHTML='<div class="flex jcb aic mb12"><div><div style="font-size:.86rem;font-weight:700;color:var(--text)">'+sector+' — '+biz+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px">'+(contact?contact+' · ':'')+svcs.length+' servicios'+(contactInfo?' · '+contactInfo:'')+'</div></div><div class="flex gap8"><button class="btn btn-ghost btn-sm" onclick="copyTxt(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent)">Copiar</button><button class="btn btn-green btn-sm" onclick="window.open(\'https://wa.me/'+(contactInfo.replace(/[^0-9+]/g,''))+'?text=\'+encodeURIComponent(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent),\'_blank\')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="this.closest(\'.proposal-card\').remove();S.proposals--;updateCounters()">Eliminar</button></div></div><div class="prompt-display">'+propText.replace(/\n/g,'<br>')+'</div>';
+  c.insertBefore(el,c.firstChild);updateCounters();
+  $('prop-biz').value='';$('prop-sector').value='';$('prop-contact').value='';$('prop-contactinfo').value='';$('prop-notes').value='';
+  showToast('Propuesta para '+biz+' creada');
+}
 
 
 // ═══════════════════════════════════════
