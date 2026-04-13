@@ -703,6 +703,10 @@ function analyzeHTML(url,html){
   var domain=url.replace(/https?:\/\//,'').split('/')[0].toLowerCase();
   var h=html.toLowerCase();
 
+  // Parse HTML into DOM for extraction
+  var parser=new DOMParser();
+  var doc=parser.parseFromString(html,'text/html');
+
   // Sector detection: manual > HTML content (more reliable) > URL
   var manualSector=$('scan-sector').value;
   var sec;
@@ -774,8 +778,6 @@ function analyzeHTML(url,html){
 
 
   // ═══ EXTRACT REAL BUSINESS DATA FROM HTML ═══
-  var parser=new DOMParser();
-  var doc=parser.parseFromString(html,'text/html');
 
   // Business name: try title, og:title, h1
   var bizName='';
