@@ -743,8 +743,12 @@ function analyzeHTML(url,html){
   else if(h.includes('jimdo'))cms='Jimdo';
   else if(h.includes('weebly'))cms='Weebly';
 
-  // Chatbot detection
-  var chat=h.includes('tidio')||h.includes('intercom')||h.includes('drift')||h.includes('hubspot')||h.includes('zendesk')||h.includes('crisp')||h.includes('livechat')||h.includes('tawk')||h.includes('chatbot')||h.includes('chat-widget')||h.includes('chatwidget')||h.includes('messenger-widget')||h.includes('botpress')||h.includes('dialogflow')||h.includes('manychat')||h.includes('landbot')||h.includes('collect.chat')||h.includes('chatra')||h.includes('olark')||h.includes('freshchat')||h.includes('smartsupp')||h.includes('jivochat')||h.includes('userlike');
+  // Chatbot detection — only check scripts, iframes and widget-specific patterns (not general text)
+  var scripts='';
+  doc.querySelectorAll('script,iframe,link[href],div[id],div[class]').forEach(function(el){
+    scripts+=' '+(el.outerHTML||'').toLowerCase();
+  });
+  var chat=scripts.includes('tidio')||scripts.includes('intercom')||scripts.includes('drift.com')||scripts.includes('hubspot.com/conversations')||scripts.includes('zendesk')||scripts.includes('crisp.chat')||scripts.includes('livechat')||scripts.includes('tawk.to')||scripts.includes('chat-widget')||scripts.includes('chatwidget')||scripts.includes('botpress')||scripts.includes('dialogflow')||scripts.includes('manychat')||scripts.includes('landbot')||scripts.includes('collect.chat')||scripts.includes('chatra')||scripts.includes('olark')||scripts.includes('freshchat')||scripts.includes('smartsupp')||scripts.includes('jivochat')||scripts.includes('userlike')||scripts.includes('kommunicate')||scripts.includes('chatfuel')||scripts.includes('voiceflow');
 
   // WhatsApp detection
   var wa=h.includes('wa.me')||h.includes('whatsapp')||h.includes('api.whatsapp')||h.includes('wa.link')||h.includes('wasap');
@@ -861,10 +865,18 @@ function analyzeHTML(url,html){
   if(h.includes('sitemap'))seo+=5;
   seo=Math.min(95,Math.max(10,seo+rnd(-5,5)));
 
-  // Score
-  var score=0;
-  if(!chat)score+=22;if(!wa)score+=12;if(!gmb)score+=15;if(!rrss.facebook.ok)score+=8;if(!rrss.instagram.ok)score+=8;if(!booking)score+=10;if(!cta)score+=8;if(!mobile)score+=10;if(!analytics)score+=6;
-  score=Math.min(98,Math.max(10,score));
+  // Score — every business has SOME opportunity (min 25 for voice agent alone)
+  var score=25; // Base: any business can benefit from a voice agent
+  if(!chat)score+=25;  // No chatbot = biggest opportunity
+  if(!wa)score+=12;    // No WhatsApp
+  if(!gmb)score+=8;    // No Google Maps
+  if(!rrss.facebook.ok)score+=5; // No Facebook
+  if(!rrss.instagram.ok)score+=5; // No Instagram
+  if(!booking)score+=8; // No booking system
+  if(!cta)score+=4;    // No clear CTA
+  if(!mobile)score+=5; // Not responsive
+  if(!analytics)score+=3; // No tracking
+  score=Math.min(98,score);
 
   // Problems
   var probs=[];
