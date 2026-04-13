@@ -336,7 +336,12 @@ header {
   <div class="panel-left">
     <div class="panel-title">Configuración del agente</div>
 
-    <!-- URL -->
+    <!-- API KEY -->
+    <div class="url-box">
+      <div class="url-label">Anthropic API Key</div>
+      <input class="url-input" id="apiKeyInput" type="password" placeholder="sk-ant-api03-..." autocomplete="off">
+      <div style="font-size:.65rem;color:#3a3a5c;margin-top:4px;">Obtén tu key en console.anthropic.com · No se guarda en ningún servidor</div>
+    </div>
     <div class="url-box">
       <div class="url-label">URL del cliente</div>
       <div class="url-input-row">
@@ -637,6 +642,8 @@ function setStep(n, state) {
 
 async function generateAgent() {
   const url = document.getElementById('urlInput').value.trim();
+  const apiKey = document.getElementById('apiKeyInput').value.trim();
+  if (!apiKey) { showToast('Introduce tu Anthropic API Key', 'error'); return; }
   if (!url) { showToast('Introduce la URL del cliente', 'error'); return; }
   if (!selectedSector) { showToast('Selecciona el sector del negocio', 'error'); return; }
 
@@ -795,7 +802,7 @@ async function callClaude(prompt, fetchUrl = false, url = '') {
 
   const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-api-key': document.getElementById('apiKeyInput').value.trim(), 'anthropic-version': '2023-06-01' },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1000,
