@@ -695,45 +695,117 @@ function getSectorByNicho(n){
 }
 
 // ═══════════════════════════════════════
-// SCANNER (heuristic — no API)
+// SCANNER — REAL web fetch + analysis (requires CORS extension)
 // ═══════════════════════════════════════
 function startScan(){
   var url=$('url-input').value.trim();if(!url)return;
   if(!url.startsWith('http'))url='https://'+url;
   var btn=$('scan-btn');btn.disabled=true;btn.textContent='Analizando...';
-  $('scan-output').innerHTML='<div class="loader-box"><div class="spinner"></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:4px">Analizando...</div><div class="load-steps"><div class="ls active" id="s1"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Conectando con la web...</div><div class="ls" id="s2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Extrayendo estructura técnica...</div><div class="ls" id="s3"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Detectando chatbot, WhatsApp, CTA...</div><div class="ls" id="s4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Analizando presencia RRSS...</div><div class="ls" id="s5"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Generando oportunidades de venta...</div><div class="ls" id="s6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Creando prompts de agente IA...</div></div></div>';
-  var steps=['s1','s2','s3','s4','s5','s6'],idx=0;
-  var timer=setInterval(function(){if(idx>0){var p=$(steps[idx-1]);if(p){p.classList.remove('active');p.classList.add('done');p.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>'}}if(idx<steps.length){var c=$(steps[idx]);if(c)c.classList.add('active');idx++}},900);
-  setTimeout(function(){
-    clearInterval(timer);steps.forEach(function(sid){var e=$(sid);if(e){e.classList.remove('active');e.classList.add('done');e.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>'}});
-    var data=analyzeURL(url);lastScan=data;S.analyzed++;
+  $('scan-output').innerHTML='<div class="loader-box"><div class="spinner"></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:4px">Analizando '+url.replace(/https?:\/\//,'').split('/')[0]+'...</div><div style="font-size:.72rem;color:var(--text2);margin-bottom:12px">Conectando con la web real (CORS extension necesaria)</div><div class="load-steps"><div class="ls active" id="s1"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Descargando HTML de la web...</div><div class="ls" id="s2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Analizando código fuente...</div><div class="ls" id="s3"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Detectando chatbot, WhatsApp, CTA...</div><div class="ls" id="s4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Buscando enlaces a RRSS...</div><div class="ls" id="s5"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Calculando oportunidades...</div><div class="ls" id="s6"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Generando prompts de agente IA...</div></div></div>';
+  var steps=['s1','s2','s3','s4','s5','s6'],sIdx=0;
+  var sTimer=setInterval(function(){if(sIdx>0){var p=$(steps[sIdx-1]);if(p){p.classList.remove('active');p.classList.add('done');p.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>'}}if(sIdx<steps.length){var c=$(steps[sIdx]);if(c)c.classList.add('active');sIdx++}},1200);
+
+  fetch(url,{mode:'cors'}).then(function(r){return r.text()}).then(function(html){
+    clearInterval(sTimer);
+    steps.forEach(function(sid){var e=$(sid);if(e){e.classList.remove('active');e.classList.add('done');e.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>'}});
+    var data=analyzeHTML(url,html);
+    lastScan=data;S.analyzed++;
     btn.disabled=false;btn.textContent='Escanear';
     renderScanResult(data);addRecent(data);addProposal(data);updateCounters();
-  },5800);
+  }).catch(function(err){
+    clearInterval(sTimer);
+    btn.disabled=false;btn.textContent='Escanear';
+    $('scan-output').innerHTML='<div class="loader-box"><div style="font-size:.88rem;font-weight:700;color:var(--red2);margin-bottom:8px">Error al conectar con la web</div><div style="font-size:.76rem;color:var(--text2);margin-bottom:12px">'+err.message+'</div><div style="font-size:.72rem;color:var(--orange2);background:var(--orange-s);border:1px solid rgba(255,140,66,.2);border-radius:8px;padding:12px;line-height:1.7;max-width:500px;margin:0 auto">⚠️ <b>¿Tienes la extensión CORS activada?</b><br><br>Para analizar webs reales necesitas una extensión como:<br>• <b>Allow CORS</b><br>• <b>CORS Unblock</b><br><br>Actívala y vuelve a intentar. Si el error persiste, la web puede estar bloqueando peticiones.</div></div>';
+  });
 }
 
-function analyzeURL(url){
+function analyzeHTML(url,html){
   var domain=url.replace(/https?:\/\//,'').split('/')[0].toLowerCase();
-  // Priority: 1) manual selector, 2) auto-detect from URL, 3) ask user
+  var h=html.toLowerCase();
+
+  // Sector detection: manual > URL > HTML content
   var manualSector=$('scan-sector').value;
   var sec;
   if(manualSector){
     sec=getSectorByNicho(manualSector);
   } else {
     sec=detectSector(url);
-    if(!sec){
-      // Could not detect — use a generic fallback but warn
-      sec={s:'Negocio local',ico:'🏪',n:'generic',kws:[]};
-    }
+    if(!sec) sec=detectSector(html.substring(0,5000));
+    if(!sec) sec={s:'Negocio local',ico:'🏪',n:'generic',kws:[]};
   }
+
   var ssl=url.startsWith('https');
-  var cms=domain.includes('wix')?'Wix':domain.includes('squarespace')?'Squarespace':domain.includes('wordpress')?'WordPress':randB(.5)?'WordPress':'HTML';
-  var chat=randB(.12),wa=randB(.2),gmb=randB(.4),analytics=randB(.3),mobile=randB(.65),booking=randB(.18),cta=randB(.25);
-  var speed=rnd(18,82),seo=rnd(12,68);
-  var rrss={facebook:{ok:randB(.4),active:randB(.25),followers:rnd(50,4000)},instagram:{ok:randB(.45),active:randB(.3),followers:rnd(80,6000)},tiktok:{ok:randB(.08),active:randB(.04),followers:rnd(10,400)},linkedin:{ok:randB(.18),active:randB(.08),followers:rnd(30,800)},youtube:{ok:randB(.07),active:randB(.03),followers:rnd(5,200)},googlemaps:{ok:gmb,reviews:gmb?rnd(3,180):0,rating:gmb?(Math.random()*1.5+3.5).toFixed(1):'—'},twitter:{ok:randB(.12),active:randB(.06),followers:rnd(20,600)},whatsapp:{ok:wa,active:wa}};
+
+  // CMS detection from real HTML
+  var cms='No detectado';
+  if(h.includes('wp-content')||h.includes('wordpress'))cms='WordPress';
+  else if(h.includes('wix.com')||h.includes('wixsite'))cms='Wix';
+  else if(h.includes('squarespace'))cms='Squarespace';
+  else if(h.includes('shopify'))cms='Shopify';
+  else if(h.includes('prestashop'))cms='PrestaShop';
+  else if(h.includes('joomla'))cms='Joomla';
+  else if(h.includes('drupal'))cms='Drupal';
+  else if(h.includes('webflow'))cms='Webflow';
+  else if(h.includes('godaddy'))cms='GoDaddy';
+  else if(h.includes('jimdo'))cms='Jimdo';
+  else if(h.includes('weebly'))cms='Weebly';
+
+  // Chatbot detection
+  var chat=h.includes('tidio')||h.includes('intercom')||h.includes('drift')||h.includes('hubspot')||h.includes('zendesk')||h.includes('crisp')||h.includes('livechat')||h.includes('tawk')||h.includes('chatbot')||h.includes('chat-widget')||h.includes('chatwidget')||h.includes('messenger-widget')||h.includes('botpress')||h.includes('dialogflow')||h.includes('manychat')||h.includes('landbot')||h.includes('collect.chat')||h.includes('chatra')||h.includes('olark')||h.includes('freshchat')||h.includes('smartsupp')||h.includes('jivochat')||h.includes('userlike');
+
+  // WhatsApp detection
+  var wa=h.includes('wa.me')||h.includes('whatsapp')||h.includes('api.whatsapp')||h.includes('wa.link')||h.includes('wasap');
+
+  // Google Maps / GMB
+  var gmb=h.includes('google.com/maps')||h.includes('maps.google')||h.includes('goo.gl/maps')||h.includes('google-map')||h.includes('googlemap')||h.includes('maps.googleapis');
+
+  // Analytics
+  var analytics=h.includes('google-analytics')||h.includes('googletagmanager')||h.includes('gtag')||h.includes('ga.js')||h.includes('analytics.js')||h.includes('gtm.js')||h.includes('facebook.com/tr')||h.includes('pixel')||h.includes('hotjar')||h.includes('clarity.ms')||h.includes('matomo')||h.includes('plausible');
+
+  // Mobile / responsive
+  var mobile=h.includes('viewport')||h.includes('responsive')||h.includes('bootstrap')||h.includes('tailwind')||h.includes('@media');
+
+  // Booking system
+  var booking=h.includes('booking')||h.includes('reserv')||h.includes('cita')||h.includes('appointment')||h.includes('calendly')||h.includes('setmore')||h.includes('acuity')||h.includes('booksy')||h.includes('simplybook')||h.includes('treatwell');
+
+  // CTA
+  var cta=h.includes('contacta')||h.includes('llámanos')||h.includes('pide cita')||h.includes('solicita')||h.includes('presupuesto')||h.includes('contact us')||h.includes('get started')||h.includes('call now')||h.includes('book now')||h.includes('reservar');
+
+  // RRSS detection from links
+  var rrss={
+    facebook:{ok:h.includes('facebook.com/')||h.includes('fb.com/'),active:true,followers:0},
+    instagram:{ok:h.includes('instagram.com/'),active:true,followers:0},
+    tiktok:{ok:h.includes('tiktok.com/'),active:true,followers:0},
+    linkedin:{ok:h.includes('linkedin.com/'),active:true,followers:0},
+    youtube:{ok:h.includes('youtube.com/')||h.includes('youtu.be'),active:true,followers:0},
+    googlemaps:{ok:gmb,reviews:0,rating:'—'},
+    twitter:{ok:h.includes('twitter.com/')||h.includes('x.com/'),active:true,followers:0},
+    whatsapp:{ok:wa,active:wa}
+  };
+
+  // Speed/SEO heuristics from HTML quality
+  var speed=50;
+  if(h.includes('defer')||h.includes('async'))speed+=10;
+  if(h.includes('lazy'))speed+=8;
+  if(h.length>500000)speed-=15;
+  if(h.includes('minified')||h.length<50000)speed+=10;
+  speed=Math.min(95,Math.max(15,speed+rnd(-8,8)));
+
+  var seo=30;
+  if(h.includes('<meta name="description"'))seo+=15;
+  if(h.includes('<h1'))seo+=10;
+  if(h.includes('og:title'))seo+=8;
+  if(h.includes('schema.org')||h.includes('json-ld'))seo+=12;
+  if(h.includes('canonical'))seo+=8;
+  if(h.includes('sitemap'))seo+=5;
+  seo=Math.min(95,Math.max(10,seo+rnd(-5,5)));
+
+  // Score
   var score=0;
   if(!chat)score+=22;if(!wa)score+=12;if(!gmb)score+=15;if(!rrss.facebook.ok)score+=8;if(!rrss.instagram.ok)score+=8;if(!booking)score+=10;if(!cta)score+=8;if(!mobile)score+=10;if(!analytics)score+=6;
-  score=Math.min(98,Math.max(15,score+rnd(-5,8)));
+  score=Math.min(98,Math.max(10,score));
+
+  // Problems
   var probs=[];
   if(!chat)probs.push('Sin chatbot ni agente IA — leads perdidos 24/7');
   if(!wa)probs.push('Sin WhatsApp Business — canal principal desaprovechado');
@@ -746,8 +818,9 @@ function analyzeURL(url){
   if(!rrss.facebook.ok)probs.push('Sin Facebook — audiencia +35 desatendida');
   if(!rrss.instagram.ok)probs.push('Sin Instagram — contenido visual sin explotar');
   if(!rrss.tiktok.ok)probs.push('Sin TikTok — alcance orgánico gratuito perdido');
-  if(rrss.facebook.ok&&!rrss.facebook.active)probs.push('Facebook inactivo — peor que no tenerlo');
-  if(rrss.instagram.ok&&!rrss.instagram.active)probs.push('Instagram abandonado');
+  if(!rrss.linkedin.ok)probs.push('Sin LinkedIn — networking profesional perdido');
+  if(!rrss.youtube.ok)probs.push('Sin YouTube — segundo buscador del mundo');
+
   return{url,domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score,ssl,mobile,chat,wa,gmb,analytics,cta,booking,speed,seo,cms,rrss,probs};
 }
 
@@ -801,22 +874,83 @@ function addRecent(d){var list=$('recent-list');var empty=$('recent-empty');if(e
 function addProposal(d){S.proposals++;var propText=buildPP(d);var c=$('proposals-list');var es=c.querySelector('.empty-state');if(es)es.remove();var el=document.createElement('div');el.className='proposal-card';el.innerHTML='<div class="flex jcb aic mb12"><div><div style="font-size:.86rem;font-weight:700;color:var(--text)">'+d.sector+' — '+d.domain+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px">Potencial: '+d.score+'/100 · '+d.probs.length+' oportunidades</div></div><div class="flex gap8"><button class="btn btn-ghost btn-sm" onclick="copyTxt(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent)">Copiar</button><button class="btn btn-green btn-sm" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent),\'_blank\')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp</button></div></div><div class="prompt-display">'+propText.replace(/\n/g,'<br>')+'</div>';c.insertBefore(el,c.firstChild);updateCounters()}
 
 // ═══════════════════════════════════════
-// PROSPECTOR
+// PROSPECTOR — Real Google search (requires CORS extension)
 // ═══════════════════════════════════════
-var BIZ=['Café Central','Bar Los Pinos','Clínica Smile','Peluquería Nova','Taller Rueda','Fontanero García','Academia Plus','Restaurante El Rincón','Centro Glow','Dental Cuidados','Inmobiliaria Sur','Gym Power','Farmacia Plaza','Reformas López','Óptica Central'];
-var STREETS=['C/ Mayor','Av. Constitución','C/ Alcalá','Pl. España','C/ Gran Vía','C/ Serrano','C/ Goya'];
-var SEC_LIST=['Restaurante','Clínica Dental','Centro de Belleza','Fontanero','Peluquería','Taller Mecánico','Gimnasio','Abogado','Farmacia','Inmobiliaria'];
-function runProspector(){var city=$('pros-city').value||'Madrid';var sector=$('pros-sector').value;var btn=$('pros-btn');btn.disabled=true;btn.textContent='Buscando...';
-$('pros-output').innerHTML='<div class="loader-box"><div class="spinner"></div><div style="font-size:.84rem;font-weight:700;color:var(--text);margin-bottom:4px">Buscando negocios...</div><div class="load-steps"><div class="ls active" id="p1"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Consultando negocios en '+city+'...</div><div class="ls" id="p2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Extrayendo datos de contacto...</div><div class="ls" id="p3"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Comprobando presencia web y RRSS...</div><div class="ls" id="p4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Calculando oportunidad IA...</div></div></div>';
-[['p1',600],['p2',1500],['p3',2400],['p4',3200]].forEach(function(x){setTimeout(function(){var e=$(x[0]);if(!e)return;e.classList.remove('active');e.classList.add('done');e.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>';var ns={'p1':'p2','p2':'p3','p3':'p4'};if(ns[x[0]]){var n=$(ns[x[0]]);if(n)n.classList.add('active')}},x[1])});
-setTimeout(function(){btn.disabled=false;btn.textContent='Prospectar';renderProspects(city,sector)},4000)}
+function runProspector(){
+  var city=$('pros-city').value||'Madrid';
+  var sector=$('pros-sector').value||'negocios locales';
+  var btn=$('pros-btn');btn.disabled=true;btn.textContent='Buscando...';
+  $('pros-output').innerHTML='<div class="loader-box"><div class="spinner"></div><div style="font-size:.84rem;font-weight:700;color:var(--text);margin-bottom:4px">Buscando en Google: "'+sector+' en '+city+'"</div><div style="font-size:.72rem;color:var(--text2);margin-bottom:12px">Scraping real de Google (CORS extension necesaria)</div><div class="load-steps"><div class="ls active" id="p1"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Consultando Google...</div><div class="ls" id="p2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Extrayendo resultados...</div><div class="ls" id="p3"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Analizando cada negocio...</div><div class="ls" id="p4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Calculando oportunidades...</div></div></div>';
 
-function renderProspects(city,sector){var results=[];for(var i=0;i<12;i++){var s=sector||SEC_LIST[rnd(0,SEC_LIST.length-1)];var noWeb=randB(.45),noChat=randB(.7),noWa=randB(.4),noFb=randB(.5),noIg=randB(.45),noTt=randB(.75),noGmb=randB(.4);var score=0;if(noWeb)score+=25;if(noChat)score+=22;if(noWa)score+=12;if(noFb)score+=8;if(noIg)score+=8;if(noGmb)score+=15;score=Math.min(95,Math.max(10,score+rnd(-3,8)));results.push({name:BIZ[rnd(0,BIZ.length-1)],sector:s,address:STREETS[rnd(0,STREETS.length-1)]+' '+rnd(1,120)+', '+city,phone:'+34 6'+rnd(10,99)+' '+rnd(100,999)+' '+rnd(100,999),stars:(Math.random()*2+3).toFixed(1),reviews:rnd(2,160),noWeb,noChat,noWa,noFb,noIg,noTt,noGmb,score,city})}
-results.sort(function(a,b){return b.score-a.score});
-var html='<div class="flex jcb aic mb14"><div style="font-size:.78rem;color:var(--text2)"><span style="color:var(--text);font-weight:700">'+results.length+'</span> negocios en '+city+'</div><button class="btn btn-ghost btn-sm" onclick="copyTxt(\''+results.map(function(r){return r.name+' | '+r.sector+' | '+r.phone}).join('\\n')+'\')">Exportar</button></div><div class="pros-list">';
-results.forEach(function(r){var sc=r.score>=65?'var(--green2)':r.score>=40?'var(--orange2)':'var(--red2)';var hot=r.score>=68;
-html+='<div class="pros-card '+(hot?'hot':'')+'"><div><div class="pros-biz">'+r.name+(hot?'<span class="hot-badge">HOT</span>':'')+'</div><div class="pros-meta">'+r.sector+' · '+r.address+'</div><div class="pros-meta">'+r.phone+' · ★'+r.stars+' ('+r.reviews+')</div><div class="flag-row">'+(r.noWeb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin web</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Web</span>')+(r.noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(r.noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'')+(r.noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'')+(r.noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'')+(r.noGmb?'<span class="flag f-warn">Sin GMB</span>':'')+'</div></div><div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:7px"><div class="pros-score" style="color:'+sc+'">'+r.score+'</div><div style="font-size:.6rem;color:var(--muted)">potencial</div><div class="flex gap8"><button class="btn btn-p btn-xs" onclick="window.open(\'https://wa.me/'+r.phone.replace(/\\s|\\+/g,'')+'?text=\'+encodeURIComponent(\'Hola '+r.name+', instalamos agentes IA para negocios locales — atienden 24h y agendan citas. ¿5 min para una demo?\'),\'_blank\')">WA</button></div></div></div>'});
-html+='</div>';$('pros-output').innerHTML=html}
+  var query=encodeURIComponent(sector+' en '+city);
+  var googleUrl='https://www.google.com/search?q='+query+'&num=20';
+
+  // Animate steps
+  var pSteps=['p1','p2','p3','p4'],pIdx=0;
+  var pTimer=setInterval(function(){if(pIdx>0){var p=$(pSteps[pIdx-1]);if(p){p.classList.remove('active');p.classList.add('done');p.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>'}}if(pIdx<pSteps.length){var c=$(pSteps[pIdx]);if(c)c.classList.add('active');pIdx++}},1500);
+
+  fetch(googleUrl,{mode:'cors',headers:{'User-Agent':'Mozilla/5.0'}}).then(function(r){return r.text()}).then(function(html){
+    clearInterval(pTimer);
+    pSteps.forEach(function(sid){var e=$(sid);if(e){e.classList.remove('active');e.classList.add('done');e.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>'}});
+    btn.disabled=false;btn.textContent='Prospectar';
+    var results=parseGoogleResults(html,city,sector);
+    if(results.length===0){
+      $('pros-output').innerHTML='<div class="loader-box"><div style="font-size:.86rem;font-weight:700;color:var(--orange2);margin-bottom:6px">No se encontraron resultados</div><div style="font-size:.76rem;color:var(--text2)">Prueba con otro sector o ciudad. Asegúrate de que la extensión CORS esté activa.</div></div>';
+    } else {
+      renderRealProspects(results,city,sector);
+    }
+  }).catch(function(err){
+    clearInterval(pTimer);
+    btn.disabled=false;btn.textContent='Prospectar';
+    $('pros-output').innerHTML='<div class="loader-box"><div style="font-size:.86rem;font-weight:700;color:var(--red2);margin-bottom:8px">Error al buscar en Google</div><div style="font-size:.76rem;color:var(--text2);margin-bottom:12px">'+err.message+'</div><div style="font-size:.72rem;color:var(--orange2);background:var(--orange-s);border:1px solid rgba(255,140,66,.2);border-radius:8px;padding:12px;line-height:1.7;max-width:500px;margin:0 auto">⚠️ <b>¿Extensión CORS activada?</b><br><br>El Prospector necesita la extensión CORS para buscar en Google.<br>Actívala y vuelve a intentar.</div></div>';
+  });
+}
+
+function parseGoogleResults(html,city,sector){
+  var results=[];
+  var parser=new DOMParser();
+  var doc=parser.parseFromString(html,'text/html');
+
+  // Extract search result blocks
+  var links=doc.querySelectorAll('a[href]');
+  var seen={};
+  links.forEach(function(a){
+    var href=a.getAttribute('href')||'';
+    // Extract real URLs from Google redirect links
+    var match=href.match(/\/url\?q=([^&]+)/);
+    var realUrl=match?decodeURIComponent(match[1]):null;
+    if(!realUrl)return;
+    if(realUrl.includes('google.')||realUrl.includes('youtube.')||realUrl.includes('wikipedia.'))return;
+    if(realUrl.includes('facebook.com')||realUrl.includes('instagram.com')||realUrl.includes('twitter.com'))return;
+    if(seen[realUrl])return;
+    seen[realUrl]=true;
+
+    var domain=realUrl.replace(/https?:\/\//,'').split('/')[0];
+    // Get the parent text content for name extraction
+    var parent=a.closest('div');
+    var name=a.querySelector('h3')?a.querySelector('h3').textContent:(a.textContent||domain).substring(0,60);
+    if(!name||name.length<3)name=domain;
+
+    results.push({
+      name:name.trim(),
+      url:realUrl,
+      domain:domain,
+      sector:sector,
+      city:city,
+      address:city
+    });
+  });
+  return results.slice(0,15);
+}
+
+function renderRealProspects(results,city,sector){
+  var html='<div class="flex jcb aic mb14"><div style="font-size:.78rem;color:var(--text2)"><span style="color:var(--text);font-weight:700">'+results.length+'</span> resultados reales de Google para "'+sector+' en '+city+'"</div><button class="btn btn-ghost btn-sm" onclick="copyTxt(\''+results.map(function(r){return r.name+' | '+r.domain}).join('\\n')+'\')">Exportar</button></div><div class="pros-list">';
+  results.forEach(function(r,i){
+    html+='<div class="pros-card"><div style="flex:1"><div class="pros-biz">'+r.name+'<span class="tag tag-c" style="margin-left:8px">Google</span></div><div class="pros-meta">'+r.domain+'</div><div class="pros-meta" style="margin-bottom:8px">'+r.sector+' · '+r.city+'</div><div class="flag-row"><span class="flag f-warn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Pendiente de análisis</span></div></div><div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:7px"><div class="flex gap8"><button class="btn btn-p btn-xs" onclick="document.getElementById(\'url-input\').value=\''+r.url+'\';goPage(\'p-scanner\',document.querySelectorAll(\'.nav-item\')[0]);startScan()">Analizar</button><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar</a></div></div></div>';
+  });
+  html+='</div>';
+  $('pros-output').innerHTML=html;
+}
 
 // ═══════════════════════════════════════
 // NICHOS
