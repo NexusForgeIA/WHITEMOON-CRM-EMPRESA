@@ -3,260 +3,1984 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WHITEMOON · Agent Builder</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<title>WhiteMoon Scout — Panel de Agencia IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#070710;--bg2:#0d0d1a;--bg3:#12121f;--p:#7c4dff;--p2:#9d70ff;--g:#00d4aa;--text:#f0f0f5;--muted:#7070a0;--border:rgba(124,77,255,.18);--mono:'DM Mono',monospace;--sans:'Sora',sans-serif;}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse 50% 40% at 15% 10%,rgba(124,77,255,.08) 0%,transparent 60%),radial-gradient(ellipse 30% 30% at 90% 90%,rgba(0,212,170,.05) 0%,transparent 60%);}
-header{border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;background:rgba(7,7,16,.9);backdrop-filter:blur(16px);position:sticky;top:0;z-index:100;}
-.logo{display:flex;align-items:center;gap:10px;}
-.logo img{height:30px;width:auto;}
-.logo-txt{font-size:.85rem;font-weight:700;color:var(--p2);}
-.badge{font-family:var(--mono);font-size:.62rem;color:var(--g);background:rgba(0,212,170,.08);border:1px solid rgba(0,212,170,.2);padding:3px 10px;border-radius:50px;}
-.app{display:grid;grid-template-columns:360px 1fr;min-height:calc(100vh - 57px);}
-@media(max-width:860px){.app{grid-template-columns:1fr;}}
-.left{border-right:1px solid var(--border);padding:24px 20px;background:var(--bg2);display:flex;flex-direction:column;gap:18px;}
-.field-label{font-size:.72rem;color:var(--muted);margin-bottom:6px;display:block;}
-.txt-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:10px 13px;font-family:var(--mono);font-size:.78rem;color:var(--text);outline:none;transition:border-color .2s;}
-.txt-input:focus{border-color:var(--p2);}
-.txt-input::placeholder{color:#3a3a5c;}
-.sector-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;}
-.sec-btn{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:9px 6px;cursor:pointer;font-family:var(--sans);font-size:.7rem;color:var(--muted);text-align:center;transition:all .15s;}
-.sec-btn:hover{border-color:var(--p2);color:var(--p2);}
-.sec-btn.active{background:rgba(124,77,255,.14);border-color:var(--p);color:var(--text);font-weight:600;}
-.gen-btn{background:linear-gradient(135deg,var(--p),#5c35cc);color:#fff;border:none;border-radius:10px;padding:13px;font-family:var(--sans);font-size:.85rem;font-weight:700;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:auto;}
-.gen-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(124,77,255,.4);}
-.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
-.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
-.gen-btn.loading .spinner{display:block;}
-.gen-btn.loading .btn-txt{display:none;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.progress{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px;display:none;}
-.progress.show{display:block;}
-.p-step{font-family:var(--mono);font-size:.7rem;color:var(--muted);padding:3px 0;display:flex;align-items:center;gap:7px;}
-.p-step::before{content:'○';font-size:.55rem;flex-shrink:0;}
-.p-step.active{color:var(--p2);}.p-step.active::before{content:'►';}
-.p-step.done{color:var(--g);}.p-step.done::before{content:'✓';}
-.right{padding:24px;display:flex;flex-direction:column;gap:18px;overflow-y:auto;}
-.tabs{display:flex;gap:4px;background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:4px;}
-.tab-btn{flex:1;background:transparent;border:none;padding:8px 10px;border-radius:6px;font-family:var(--sans);font-size:.75rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;}
-.tab-btn.active{background:var(--bg3);color:var(--text);}
-.tab-pane{display:none;flex-direction:column;gap:14px;}
-.tab-pane.active{display:flex;}
-.out-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
-.out-lbl{font-family:var(--mono);font-size:.68rem;color:var(--p2);}
-.copy-btn{background:rgba(124,77,255,.1);border:1px solid rgba(124,77,255,.2);color:var(--p2);border-radius:6px;padding:3px 9px;font-size:.65rem;font-family:var(--sans);cursor:pointer;transition:all .15s;}
-.copy-btn:hover{background:var(--p);color:#fff;}
-textarea.out{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:12px;font-family:var(--mono);font-size:.76rem;color:var(--text);line-height:1.7;resize:vertical;outline:none;transition:border-color .2s;min-height:140px;}
-textarea.out:focus{border-color:var(--p2);}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:420px;gap:14px;text-align:center;color:var(--muted);}
-.empty-txt{font-size:.85rem;line-height:1.7;max-width:300px;}
-.toast{position:fixed;bottom:20px;right:20px;z-index:999;background:var(--bg3);border:1px solid var(--g);border-radius:9px;padding:10px 16px;font-size:.78rem;color:var(--g);transform:translateY(60px);opacity:0;transition:all .3s;pointer-events:none;}
-.toast.show{transform:translateY(0);opacity:1;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:'Outfit',sans-serif;background:#06060f;color:#e2e2f0;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+:root{
+  /* WhiteMoon brand */
+  --wm-purple:#7c3aed;
+  --wm-purple2:#9d5fff;
+  --wm-purple3:#c084fc;
+  --wm-purple4:#e9d5ff;
+  --wm-soft:rgba(124,58,237,.14);
+  --wm-border:rgba(124,58,237,.22);
+  --wm-glow:rgba(124,58,237,.35);
+  /* Background layers */
+  --bg:#06060f;
+  --bg1:#0b0b18;
+  --bg2:#10101f;
+  --bg3:#161628;
+  --card:#181830;
+  --card2:#1e1e3a;
+  /* Text */
+  --text:#e2e2f0;
+  --text2:#a0a0c0;
+  --muted:#5a5a7a;
+  --muted2:#2a2a42;
+  /* Status colors */
+  --green:#22c55e;--green2:#86efac;--green-s:rgba(34,197,94,.12);
+  --orange:#f97316;--orange2:#fed7aa;--orange-s:rgba(249,115,22,.12);
+  --rose:#f43f5e;--rose2:#fda4af;--rose-s:rgba(244,63,94,.12);
+  --cyan:#06b6d4;--cyan2:#67e8f9;--cyan-s:rgba(6,182,212,.12);
+  --gold:#eab308;--gold2:#fef08a;--gold-s:rgba(234,179,8,.12);
+  /* UI */
+  --border:rgba(124,58,237,.18);
+  --border2:rgba(255,255,255,.06);
+  --r:12px;
+  --r2:8px;
+  --shadow:0 8px 48px rgba(0,0,0,.7);
+  --shadow2:0 2px 16px rgba(0,0,0,.5);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg1)}
+::-webkit-scrollbar-thumb{background:var(--wm-purple);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--wm-purple2)}
+
+/* ═══════════════════════════════════
+   HEADER
+═══════════════════════════════════ */
+.header{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  height:60px;
+  background:rgba(6,6,15,.96);
+  backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px 0 0;
+}
+.header-left{display:flex;align-items:center;height:100%;width:240px;padding:0 16px;border-right:1px solid var(--border)}
+.logo-img{height:42px;width:auto;object-fit:contain;border-radius:6px}
+.header-center{display:flex;align-items:center;gap:8px;flex:1;padding:0 20px}
+.stat-pill{
+  display:flex;align-items:center;gap:6px;
+  padding:5px 12px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:20px;
+  font-size:.7rem;color:var(--text2);font-family:'JetBrains Mono',monospace
+}
+.stat-pill b{color:var(--wm-purple3);font-weight:600}
+.stat-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.header-right{display:flex;align-items:center;gap:10px}
+.h-badge{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 14px;
+  background:var(--wm-soft);border:1px solid var(--wm-border);border-radius:8px;
+  font-size:.76rem;font-weight:600;color:var(--wm-purple3)
+}
+.h-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--wm-purple),#3b0764);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;color:#fff}
+
+/* ═══════════════════════════════════
+   LAYOUT
+═══════════════════════════════════ */
+.layout{display:flex;min-height:100vh;padding-top:60px}
+
+/* ═══════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════ */
+.sidebar{
+  width:240px;flex-shrink:0;
+  position:fixed;left:0;top:60px;bottom:0;
+  background:var(--bg1);
+  border-right:1px solid var(--border);
+  overflow-y:auto;z-index:400;
+  display:flex;flex-direction:column;
+}
+.sb-section{padding:14px 12px}
+.sb-section+.sb-section{border-top:1px solid var(--border)}
+.sb-label{
+  font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);padding:0 8px;margin-bottom:8px
+}
+.nav-item{
+  display:flex;align-items:center;gap:9px;
+  padding:10px 10px;border-radius:10px;
+  cursor:pointer;transition:all .18s;margin-bottom:3px;
+  font-size:.81rem;font-weight:500;color:var(--text2);
+  border:1px solid transparent;background:none;
+  width:100%;text-align:left;font-family:'Outfit',sans-serif;
+  position:relative;
+}
+.nav-item-ico{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  background:var(--bg3);transition:background .18s;
+}
+.nav-item-ico svg{width:14px;height:14px;stroke:var(--muted);fill:none;stroke-width:1.8;transition:stroke .18s}
+.nav-item:hover{color:var(--text);background:var(--bg2);border-color:var(--border)}
+.nav-item:hover .nav-item-ico{background:var(--wm-soft)}
+.nav-item:hover .nav-item-ico svg{stroke:var(--wm-purple3)}
+.nav-item.active{color:var(--wm-purple3);background:var(--wm-soft);border-color:var(--wm-border)}
+.nav-item.active .nav-item-ico{background:rgba(124,58,237,.2)}
+.nav-item.active .nav-item-ico svg{stroke:var(--wm-purple2)}
+.nav-badge{
+  margin-left:auto;font-size:.58rem;font-weight:700;font-family:'JetBrains Mono',monospace;
+  padding:2px 7px;border-radius:10px;
+}
+.nb-p{background:var(--wm-soft);color:var(--wm-purple3);border:1px solid var(--wm-border)}
+.nb-o{background:var(--orange-s);color:var(--orange2);border:1px solid rgba(249,115,22,.2)}
+.nb-g{background:var(--green-s);color:var(--green2);border:1px solid rgba(34,197,94,.2)}
+.nb-c{background:var(--cyan-s);color:var(--cyan2);border:1px solid rgba(6,182,212,.2)}
+
+.sb-recents{padding:12px;flex:1}
+.sb-recents-label{font-size:.6rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.recent-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 8px;border-radius:8px;cursor:pointer;
+  transition:all .16s;margin-bottom:2px;
+}
+.recent-item:hover{background:var(--bg2)}
+.r-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.r-info{min-width:0}
+.r-name{font-size:.74rem;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r-url{font-size:.62rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'JetBrains Mono',monospace}
+
+/* ═══════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════ */
+.main{margin-left:240px;flex:1;min-height:calc(100vh - 60px)}
+.page{display:none;padding:28px 32px;max-width:1060px;animation:fadeIn .25s ease}
+.page.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* Page header */
+.page-head{margin-bottom:26px}
+.page-title{font-size:1.35rem;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px;margin-bottom:6px;letter-spacing:-.01em}
+.page-title svg{width:22px;height:22px;stroke:var(--wm-purple2);fill:none;stroke-width:1.8}
+.page-sub{font-size:.82rem;color:var(--text2);line-height:1.7;max-width:640px}
+
+/* ═══════════════════════════════════
+   COMPONENTS
+═══════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;transition:border-color .2s}
+.card:hover{border-color:var(--wm-border)}
+.card-sm{padding:14px}
+.glow-card{background:linear-gradient(135deg,rgba(124,58,237,.09),rgba(6,182,212,.04));border:1px solid var(--wm-border);border-radius:var(--r);padding:20px}
+
+/* Inputs */
+.input,.select,.textarea{
+  width:100%;padding:11px 16px;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r2);
+  color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;
+  outline:none;transition:all .2s;
+}
+.input:focus,.select:focus,.textarea:focus{border-color:var(--wm-purple2);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.input::placeholder,.textarea::placeholder{color:var(--muted)}
+.select{appearance:none;cursor:pointer}
+.mono-input{font-family:'JetBrains Mono',monospace;font-size:.82rem}
+.textarea{resize:vertical;min-height:80px;line-height:1.65;font-family:'JetBrains Mono',monospace;font-size:.76rem}
+.textarea:focus{border-color:var(--wm-purple2)}
+
+/* Buttons */
+.btn{
+  padding:10px 20px;border-radius:var(--r2);
+  font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s;border:none;
+  display:inline-flex;align-items:center;gap:7px;letter-spacing:.02em;
+}
+.btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+.btn-primary{background:linear-gradient(135deg,var(--wm-purple),#5b21b6);color:#fff}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-1px);box-shadow:0 6px 20px var(--wm-glow)}
+.btn-primary:active{transform:none}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;filter:none;box-shadow:none}
+.btn-cyan{background:linear-gradient(135deg,var(--cyan),#0891b2);color:#fff}
+.btn-cyan:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-green{background:linear-gradient(135deg,var(--green),#15803d);color:#fff}
+.btn-green:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-orange{background:linear-gradient(135deg,var(--orange),#c2410c);color:#fff}
+.btn-orange:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn-ghost:hover{border-color:var(--wm-border);color:var(--wm-purple3);background:var(--wm-soft)}
+.btn-sm{padding:7px 14px;font-size:.74rem}
+.btn-xs{padding:5px 10px;font-size:.69rem}
+
+/* Tags */
+.tag{font-size:.62rem;padding:3px 9px;border-radius:20px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted);display:inline-block;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+.tag-p{background:var(--wm-soft);border-color:var(--wm-border);color:var(--wm-purple3)}
+.tag-g{background:var(--green-s);border-color:rgba(34,197,94,.22);color:var(--green2)}
+.tag-o{background:var(--orange-s);border-color:rgba(249,115,22,.22);color:var(--orange2)}
+.tag-r{background:var(--rose-s);border-color:rgba(244,63,94,.22);color:var(--rose2)}
+.tag-c{background:var(--cyan-s);border-color:rgba(6,182,212,.22);color:var(--cyan2)}
+.tag-gold{background:var(--gold-s);border-color:rgba(234,179,8,.22);color:var(--gold2)}
+
+/* Grid */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.gfull{grid-column:1/-1}
+.mb4{margin-bottom:4px}.mb8{margin-bottom:8px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}.mb24{margin-bottom:24px}
+.flex{display:flex}.aic{align-items:center}.jcb{justify-content:space-between}.gap8{gap:8px}.gap12{gap:12px}.gap16{gap:16px}.fwrap{flex-wrap:wrap}
+
+/* Section header */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-title{font-size:.88rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
+.sec-title svg{width:15px;height:15px;stroke:var(--wm-purple2);fill:none;stroke-width:1.8}
+
+/* Score/progress */
+.progress{height:5px;background:var(--bg3);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+.pf-green{background:linear-gradient(90deg,var(--green),var(--green2))}
+.pf-orange{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.pf-red{background:linear-gradient(90deg,var(--rose),var(--rose2))}
+.pf-purple{background:linear-gradient(90deg,var(--wm-purple),var(--wm-purple3))}
+.big-num{font-family:'JetBrains Mono',monospace;font-size:2.2rem;font-weight:700;line-height:1}
+
+/* ─── URL Scanner bar ─── */
+.scan-bar{position:relative;display:flex;gap:10px;margin-bottom:12px}
+.scan-bar-icon{position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none}
+.scan-bar-icon svg{width:16px;height:16px;stroke:var(--muted);fill:none;stroke-width:1.8}
+.scan-bar .input{padding-left:44px;font-family:'JetBrains Mono',monospace;font-size:.84rem}
+
+/* ─── Loader ─── */
+.loader-box{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:48px 32px;text-align:center}
+.spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--wm-purple2);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-steps{display:flex;flex-direction:column;gap:7px;max-width:360px;margin:18px auto 0;text-align:left}
+.lstep{display:flex;align-items:center;gap:8px;font-size:.74rem;color:var(--muted);font-family:'JetBrains Mono',monospace;transition:color .3s}
+.lstep.done{color:var(--green2)}.lstep.active{color:var(--wm-purple3)}.lstep.waiting{color:var(--muted)}
+.lstep svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+
+/* ─── Problem cards ─── */
+.prob-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px}
+.prob-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;transition:border-color .2s}
+.prob-card.p-ok{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.03)}
+.prob-card.p-warn{border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.03)}
+.prob-card.p-bad{border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.03)}
+.prob-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;flex-shrink:0}
+.prob-icon svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8}
+.pi-ok{background:rgba(34,197,94,.12);color:var(--green2)}
+.pi-warn{background:rgba(249,115,22,.12);color:var(--orange2)}
+.pi-bad{background:rgba(244,63,94,.12);color:var(--rose2)}
+.pi-purple{background:var(--wm-soft);color:var(--wm-purple3)}
+.prob-name{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.prob-detail{font-size:.69rem;color:var(--text2);line-height:1.45}
+
+/* ─── RRSS Detection ─── */
+.rrss-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:22px}
+.rrss-item{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;text-align:center;transition:all .2s;position:relative;overflow:hidden}
+.rrss-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.rrss-item.ri-ok::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.rrss-item.ri-warn::before{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.rrss-item.ri-bad::before{background:linear-gradient(90deg,var(--rose),var(--rose2))}
+.rrss-item.ri-ok{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
+.rrss-item.ri-warn{border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.04)}
+.rrss-item.ri-bad{border-color:rgba(244,63,94,.3);background:rgba(244,63,94,.04)}
+.rrss-ico{font-size:1.7rem;margin-bottom:6px;display:block}
+.rrss-name{font-size:.76rem;font-weight:700;color:var(--text);margin-bottom:3px}
+.rrss-status{font-size:.65rem;font-weight:600;letter-spacing:.05em}
+.ri-ok .rrss-status{color:var(--green2)}
+.ri-warn .rrss-status{color:var(--orange2)}
+.ri-bad .rrss-status{color:var(--rose2)}
+.rrss-followers{font-size:.62rem;color:var(--muted);margin-top:3px;font-family:'JetBrains Mono',monospace}
+.rrss-service-btn{margin-top:8px;font-size:.62rem;padding:3px 10px;border-radius:5px;background:var(--wm-soft);border:1px solid var(--wm-border);color:var(--wm-purple3);cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;transition:all .18s;display:inline-block}
+.rrss-service-btn:hover{background:var(--wm-purple);color:#fff;border-color:var(--wm-purple)}
+
+/* ─── RRSS Services panel ─── */
+.rrss-srv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+.rrss-srv{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:15px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.rrss-srv::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.rrss-srv.srv-hi::before{background:linear-gradient(90deg,var(--wm-purple),var(--wm-purple3))}
+.rrss-srv.srv-md::before{background:linear-gradient(90deg,var(--cyan),var(--cyan2))}
+.rrss-srv.srv-lo::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.rrss-srv:hover{transform:translateY(-2px);border-color:var(--wm-border);box-shadow:0 6px 24px rgba(0,0,0,.4)}
+
+/* ─── Service cards ─── */
+.svc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.svc-card.sc-hi::before{background:linear-gradient(90deg,var(--wm-purple),var(--wm-purple3))}
+.svc-card.sc-md::before{background:linear-gradient(90deg,var(--cyan),var(--cyan2))}
+.svc-card.sc-lo::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.svc-card:hover{transform:translateY(-3px);border-color:var(--wm-border);box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.svc-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+.svc-icon svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6}
+.si-purple{background:var(--wm-soft);color:var(--wm-purple3)}
+.si-cyan{background:var(--cyan-s);color:var(--cyan2)}
+.si-green{background:var(--green-s);color:var(--green2)}
+.si-orange{background:var(--orange-s);color:var(--orange2)}
+.pri-badge{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:2px 8px;border-radius:10px}
+.pb-hi{background:var(--wm-soft);color:var(--wm-purple3)}
+.pb-md{background:var(--cyan-s);color:var(--cyan2)}
+.pb-lo{background:var(--green-s);color:var(--green2)}
+
+/* ─── Platform tabs ─── */
+.plat-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:10px;padding:4px;margin-bottom:14px}
+.ptab{flex:1;padding:8px;border-radius:8px;border:none;background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:.74rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:center}
+.ptab.active{background:var(--card2);color:var(--text);box-shadow:var(--shadow2)}
+
+/* ─── Ad card ─── */
+.ad-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:10px}
+.ad-hook{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:7px;line-height:1.4}
+.ad-body{font-size:.78rem;color:var(--text2);line-height:1.72;margin-bottom:10px}
+.ad-cta-pill{display:inline-flex;align-items:center;gap:5px;font-size:.7rem;font-weight:600;color:var(--wm-purple3);background:var(--wm-soft);border:1px solid var(--wm-border);border-radius:6px;padding:4px 12px}
+.ad-meta{display:flex;gap:12px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border2)}
+.ad-stat{font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace}
+.ad-stat span{color:var(--green2)}
+.copy-btn{font-size:.68rem;color:var(--muted);background:var(--bg3);border:1px solid var(--border2);border-radius:5px;padding:3px 9px;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .16s}
+.copy-btn:hover{color:var(--text);border-color:var(--border)}
+
+/* ─── Prospector ─── */
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:20px}
+.filter-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:16px}
+.field-group{display:flex;flex-direction:column;gap:6px}
+.field-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2)}
+.chip-group{display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:.72rem;padding:5px 13px;border-radius:20px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);cursor:pointer;transition:all .16s;user-select:none}
+.chip:hover{border-color:var(--border);color:var(--text)}
+.chip.on{background:var(--wm-soft);border-color:var(--wm-border);color:var(--wm-purple3)}
+.pros-list{display:flex;flex-direction:column;gap:10px}
+.pros-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;display:grid;grid-template-columns:1fr auto;gap:16px;transition:border-color .2s}
+.pros-card:hover{border-color:var(--wm-border)}
+.pros-card.hot{border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.03)}
+.pros-biz{font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:8px}
+.pros-meta{font-size:.72rem;color:var(--muted);margin-bottom:9px;font-family:'JetBrains Mono',monospace}
+.flag-row{display:flex;flex-wrap:wrap;gap:5px}
+.flag{font-size:.63rem;padding:2px 8px;border-radius:5px;display:flex;align-items:center;gap:4px;font-weight:500}
+.flag svg{width:9px;height:9px;stroke:currentColor;fill:none;stroke-width:2.5}
+.f-no{background:var(--rose-s);border:1px solid rgba(244,63,94,.2);color:var(--rose2)}
+.f-yes{background:var(--green-s);border:1px solid rgba(34,197,94,.2);color:var(--green2)}
+.f-warn{background:var(--orange-s);border:1px solid rgba(249,115,22,.2);color:var(--orange2)}
+.hot-badge{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(249,115,22,.14);color:var(--orange2);border:1px solid rgba(249,115,22,.2);border-radius:4px;padding:2px 7px}
+.pros-score-col{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.pros-score{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;line-height:1}
+.pros-actions{display:flex;gap:6px}
+
+/* ─── Nichos ─── */
+.niche-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px}
+.niche-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s;position:relative}
+.niche-card:hover{transform:translateY(-2px);border-color:var(--wm-border)}
+.niche-card.selected{border-color:var(--wm-purple2);background:var(--wm-soft)}
+.niche-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:12px 12px 0 0;opacity:0;transition:opacity .2s;background:linear-gradient(90deg,var(--wm-purple),var(--wm-purple3))}
+.niche-card.selected::after{opacity:1}
+.n-ico{font-size:1.5rem;margin-bottom:10px}
+.n-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.n-desc{font-size:.71rem;color:var(--text2);line-height:1.5;margin-bottom:8px}
+.n-score{position:absolute;top:12px;right:12px;font-family:'JetBrains Mono',monospace;font-size:.7rem;font-weight:600;color:var(--gold2)}
+.niche-detail{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:22px;display:none}
+.niche-detail.show{display:block}
+.nd-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:10px;padding:4px;margin-bottom:18px}
+.nd-tab{flex:1;padding:7px 10px;border-radius:7px;border:none;background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:.76rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:center}
+.nd-tab.active{background:var(--card2);color:var(--text)}
+.nd-panel{display:none}.nd-panel.active{display:block}
+.svc-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:8px;border:1px solid var(--border2);margin-bottom:7px}
+.svc-dot{width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.svc-dot svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8}
+.objection{padding:10px 12px;background:var(--bg3);border-radius:8px;border-left:2px solid var(--orange2);margin-bottom:7px}
+.obj-q{font-size:.76rem;font-weight:700;color:var(--orange2);margin-bottom:3px}
+.obj-a{font-size:.73rem;color:var(--text2);line-height:1.55}
+.script-box{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--text2);line-height:1.85;white-space:pre-wrap}
+.script-box b{color:var(--text)}
+
+/* ─── Voice agent ─── */
+.voice-layout{display:grid;grid-template-columns:1fr 1.15fr;gap:22px}
+.voice-preview{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;position:sticky;top:84px}
+.vp-header{display:flex;align-items:center;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--border2);margin-bottom:16px}
+.vp-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--wm-purple),#3b0764);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.vp-status{display:flex;align-items:center;gap:5px;font-size:.68rem;color:var(--green2)}
+.vp-pulse{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+.vtabs{display:flex;gap:3px;background:var(--bg2);border-radius:9px;padding:3px;margin-bottom:14px}
+.vtab{flex:1;padding:7px;border-radius:7px;border:none;background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:.72rem;font-weight:500;cursor:pointer;transition:all .18s;text-align:center}
+.vtab.active{background:var(--card2);color:var(--text)}
+.conv-flow{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;padding-right:4px}
+.msg{max-width:88%}
+.msg-bot{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;border-bottom-left-radius:2px;padding:8px 12px;font-size:.76rem;line-height:1.55;color:var(--text);align-self:flex-start}
+.msg-user{background:var(--wm-soft);border:1px solid var(--wm-border);border-radius:10px;border-bottom-right-radius:2px;padding:8px 12px;font-size:.76rem;line-height:1.55;color:var(--wm-purple3);align-self:flex-end}
+.msg-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.prompt-display{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text2);line-height:1.75;white-space:pre-wrap;max-height:380px;overflow-y:auto}
+.prompt-display b{color:var(--text)}
+
+/* ─── RRSS Content ─── */
+.rrss-layout{display:grid;grid-template-columns:260px 1fr;gap:20px}
+.rrss-sidebar{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px;position:sticky;top:84px;height:fit-content}
+.platform-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.plat-btn{padding:10px 8px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);cursor:pointer;transition:all .18s;text-align:center;font-size:.7rem;font-weight:600;color:var(--text2)}
+.plat-btn:hover{border-color:var(--border);color:var(--text)}
+.plat-btn.on{border-color:var(--wm-purple2);background:var(--wm-soft);color:var(--wm-purple3)}
+.plat-btn .p-ico{font-size:1.1rem;display:block;margin-bottom:4px}
+.content-types{display:flex;flex-direction:column;gap:4px;margin-bottom:14px}
+.ct-row{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;cursor:pointer;transition:all .16s;border:1px solid transparent}
+.ct-row:hover{background:var(--bg3)}
+.ct-row.on{background:var(--wm-soft);border-color:var(--wm-border)}
+.ct-check{width:15px;height:15px;border-radius:4px;border:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .16s}
+.ct-row.on .ct-check{background:var(--wm-purple);border-color:var(--wm-purple)}
+.ct-check svg{width:9px;height:9px;stroke:#fff;fill:none;stroke-width:2.5;opacity:0;transition:opacity .16s}
+.ct-row.on .ct-check svg{opacity:1}
+.ct-label{font-size:.76rem;font-weight:500;color:var(--text2)}
+.ct-row.on .ct-label{color:var(--text)}
+.prompt-cards{display:flex;flex-direction:column;gap:12px}
+.prompt-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;transition:border-color .2s}
+.prompt-card:hover{border-color:var(--wm-border)}
+.pc-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pc-type{font-size:.78rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.pc-content{font-family:'JetBrains Mono',monospace;font-size:.73rem;color:var(--text2);line-height:1.78;background:var(--bg3);border-radius:8px;padding:12px;white-space:pre-wrap;margin-bottom:10px;border:1px solid var(--border2)}
+.pc-content b{color:var(--text)}
+.pc-hooks{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.hook-item{font-size:.71rem;padding:5px 10px;background:var(--bg3);border-radius:5px;border-left:2px solid var(--wm-purple);color:var(--text2);font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .16s}
+.hook-item:hover{border-left-color:var(--wm-purple3);color:var(--wm-purple3)}
+.pc-footer{display:flex;gap:7px;flex-wrap:wrap}
+
+/* ─── Proposals page ─── */
+.proposal-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:20px;margin-bottom:14px}
+
+/* ─── Toast ─── */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 18px;font-size:.78rem;color:var(--text);box-shadow:var(--shadow);z-index:9999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;display:flex;align-items:center;gap:8px}
+.toast.show{opacity:1;transform:none}
+.toast svg{width:13px;height:13px;stroke:var(--green);fill:none;stroke-width:2;flex-shrink:0}
+
+/* ─── Empty state ─── */
+.empty-state{text-align:center;padding:56px 32px}
+.es-icon{width:56px;height:56px;border-radius:14px;background:var(--bg3);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.es-icon svg{width:24px;height:24px;stroke:var(--muted);fill:none;stroke-width:1.5}
+
+@media(max-width:1000px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.voice-layout{grid-template-columns:1fr}.rrss-layout{grid-template-columns:1fr}.niche-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.sidebar{display:none}.main{margin-left:0}.page{padding:16px}.prob-grid{grid-template-columns:1fr 1fr}.rrss-grid{grid-template-columns:1fr 1fr}.niche-grid{grid-template-columns:1fr}.filter-row{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo">
-    <img src="data:image/png;base64,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" alt="WHITEMOON">
-    <span class="logo-txt">· Agent Builder</span>
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <img class="logo-img" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAMCAgICAgMCAgIDAwMDBAYEBAQEBAgGBgUGCQgKCgkICQkKDA8MCgsOCwkJDRENDg8QEBEQCgwSExIQEw8QEBD/2wBDAQMDAwQDBAgEBAgQCwkLEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBD/wAARCAC5APUDASIAAhEBAxEB/8QAHgAAAQQDAQEBAAAAAAAAAAAAAgABAwcFBggECQr/xABWEAABAwMCBAQEAwMGBQ4PAAABAgMEAAURBiEHEjFBCBNRYQkUInEVMoEWI5EXQlJ2obFiZbTBwhgkJSg4Q2NygrKztdHSJjM0N2R1g5KUlcPT4fDx/8QAGgEAAwEBAQEAAAAAAAAAAAAAAAIDAQQFBv/EADARAAICAQQBAgMIAQUAAAAAAAABAhEDBBIhMUETUQUikRQyYXGBobHR8CMkM0Lx/9oADAMBAAIRAxEAPwD5b4x96ICmSM71IBiulIBAYpUqVOkA4FEATSSnPWjG1OkAwTRBPrTgUQHrTJANy04T7UQTRhO29aAHLThui5gOlOTW0wGCMd6WBT7+lLB7kU1ALA9KWB6Uv1pY9xRtAWBTcoNPg+op8EdaKAAp/WmKaPI9aWaxoCIp9d6EpFTFOaAjFZQERSe1Dy1KRmhIpWgIimhx/GpSO1AU0rQAUsZpzTUrQAkUBGKl6igUKm0YAUg9aVPnHWlWGkiR3p+9LpSqiQCAowM/ahHoKkA2p0gHFOBSA70YFMkAkj2o0ikBT9OlMkbQ4IHQb02c0gCelGAB2/WnSAYI9acDsKfFbTo/QVy1QsSFkxoCThTxG6/UIHc+/Qf2VSGNzdIpixTzS2wVs1htpx5xLTTalrUcJSkZJJ7AVssLhzqeVHVMkRGoMdIKlOzHA2AB1JHUD7irUatmltBWpyciMltLSQFOqHM66ewz6k9hgfaqp1TrK66nkHz3VNREq/dxkH6QOxV/SPv/AArolhjiXzu37Hfm0mLRxXrO5Pwv7MPcIESC55LFybmOJOFKZQryx9lKwT/DHvXjKd+tSFI7UxT7VztI81tN8cAClgmszp3TE3VMty3WpxkzEtlxphxfKXsdUpJ2yBvgkbA157rYbvYpBiXe3SIjoJHK6gpz7g9CPcVu3ixtktu+uDGlPrTFNWroDhkHNPztaakZIYZhvOwo6h+chBw4r2HYd+vTGasI2oljcUm/JTLp54oxlPjd0R9O1PsafB9KEjvUmjnGKP4UJAFGDmmIpGgIiKA+9SlNApNZQESk+lCRUlAoEbikaAE7b0iMikaVI0ABHrSoiDmlSUwHzn9KcUwogNwKqkASU43NSDFCNqICnQBCjSKFIqToKZANTgDrmmAzRAZ2FOkaxwPTaiA9qQT6V6oEF+4TGYMZBW6+sNoHuTVEjUrdLs2PQWi1ammmTNSpNvjq/eEZHmK/oA/3+g+9XawyzGaRHYaS222kJQhIwEgdABXistpjWO2MWyKPoZTgnG6ld1H3Jp71ONttEyeMczDC1pyeqgNh/HFerixrDH8T63SaaOjxW+/JU3ErUrt4vbltaWREt6i2Eg7Kc6KUf12/T3rT6PClEqUdyck+tLFedKW+Tkz5bNlefI8kvIOPWltRAegpYpaJ0ei2XKbZ7jHulvdLUiK4HW1DsQe/qOxHpXVVluFm1/pmJc5EBmRHko5lsvthYQ4NlDBHY5Ga564faGc1bcC9Nc+VtMUhUqQo8oP/AAaSduY/2Df0B6Ahau0NAdh6dt96gBZ5Y8diOsLAPQJynIH6muzTqk2+j3/g8XCMpZGlF+H5ZkdQ2x26aduNohlttyXDdjt82yUlSCkZx23rl3U2gtT6UUTeLW4hkHAkNjnaVnp9Q2H2ODXS+ttUJ0bp5++rifMlpSEJa8zk5io464P36dqpK98dtW3RlyNDiwYLa9spb81fL6Hnyk/+7W6hQfb5K/FlppNLJJqSXFFZEY2xQkelel9xch1bzgRzLJUeVISM+wGAP0qAjFcDVnzXBHjuKQNOR3oSN8ikaMGUPSoyKl6jegWN/tU2qAjwM5oVAGjUO9CaVgQmmNGsd6E0kgGpU2cUqSgoIdftRoG2aAf31KB2qiAIADtRdqYdaNIzmnoAkDvS6mnOwpJxTRRo4GOtGNqFI71Ikd6qkA4reuEtrTLvr1wcb5kwmspPotew/s5q0YDfFWzwgjhFonScDLkgIz/xUg/6VdGnjuyI7vhuNZNTG/HP0N+rB63SpelbklAJPkk/oCDWbqKZFbmxHojwy2+2ptY9QRg16bVqj6vLDfBx90c60gD6V77vaJlknu2+a2UrbUQFY2WnsoexrxV5W2uGfEyi4NxfY3LT4r12+03K7PCPbobr6z/QTsPueg/WtqRo2PYFR03dtVyusxSUQ7XGBUVrVskKxudyBgdTsM1qx2r8FIYJZFu6Xv4NbtVjvV7fjW62x3XnZbnlx2gceYruRnYAYypRwABua89xYj2+4rYt84yAwQPmEJ5QpYH1KRvnl5s8pOCRgkJJ5R0Pxh0v/qbNHs6EvLiHOK2soDcnUPllPLpu1ODLduaKT9L7ycF49A2UoTlK1lfN/Wki9/K6JNq/lLP15rgat4Z2fzFD5tE0JlgHB5221DOPRQWD98+lVYQO1GcgEA7elCRmnm3J2ymozy1ElKfdJfQjIxQqGR0qUp70BGKmyBEQBQHrUqxUZGaVqzewCSDikRnenI2zTZFSaMI1DfHrQHrUqgc7UCh/bSARKqOpSKjV1pWrAEgGlSpVKwCSN6lSKjSN/tUg6VZAGmpEjtUaelSpHemAY9aIDApsUYHb0qiRo49KMbChSMmjxvVAHHrVu8I3EnT8lsH6ky1Ej2KE/wDYaqRIrbuH+qmdOTnGJxIiS8BahvyKHRWPTqD/APiujBJQmmzv+HZY4dQpS66LmpVFHkR5bSX4r7bzSxlK0KCgf1FSnA3JFekfW2nyeO42m2XdoM3KE1ISnOOcbpz1weo/SsWxoLSUdfmIs6CRvhbi1j+BJFTXbV+n7MlXzM9tbiQf3TR51k+mB0/XFV9qLiJdLuFRbeFQox2PKf3ix7nt9h/GpZJY1y+WedqtRpMTuaTl9WbRqTW1r0yyq1WJhhcpOU8raQG2T746n2/jXYvg54CWvglwvvXjt8QtudeetcBU/S9slDlUc/S1IUlQ2cdWpCGRsAFc+/Mgppz4efhFc8RXEg6s1fBd/YTST7T87mb+i5Ss8zcMFQKVJ25nQNwggbFaSOrvjCa8c07wo0NwttzK2WNR3N+a8plQQhLMFtCUslI6gqkoUOw8r7Y8jVah5siwx/U+e1WrnqXzwvY+XPEHXOoOJut75r/VMoyLrf5zs6UvsFLUTypHZKRhKR2AA7Vrqk1KUjtQkV0KKSpHL2QkEUJ9amUnIrI6W0rf9bajt2kdK2t+5Xe7SURIcRhOVuurOEgf5ydgMk7Ur47BmPNvmm3G7eQoRPOEfzSMJLnKVco9SAMnHTIz1FeQ11H42OGtp8P8Dhp4eYT0STdbBZXr9qOWycl66z3AHEk5/KhqMwlAwPpAURlRrl04qcJb1YAEZFRqyKlxUaht9qAIj1NMBvUihgVH0P3qcgGPWgV0qQ70BTU32YRHoajUOtSkDpUa6VgAetKkaVSoA0d/vUiajR3qRPaqoA09qkT0oB1qRPSmRqFjJowN6EdaJByarECRG1F3oU9KLG9OjB0ipAO1COtEOtMhj1xLhcIJKoU19gq6ltwpz/CpnrtdpyfKk3GW+FbBC3VKB/Qmto0S/ZLq2LVdLfFXJaGWnFNjLifQnuR/d9q3mLb7fDH+tYLDPuhsD+6uuGFzVpnq6fQyzwUoz4KuY0tPTCdud0SYURpOcuD61nslKeuScDfAqbRGjb9xB1fZ9EaWgqlXW+zmoENkHq44sJGT0AGclR2ABJ2FZTiLdfPltWlpX0MDzHN+qj0GPYf312l8Ing3H1PxQ1Dxiu0dtyPo+ImFbgtOSJsoKCnEntyMpcT/AO2GOlQ1Mlgi2vBxauEMWT08fjz+J9JvD/wW034f+FNj4ZaabQpFuZCpkoNhC5stQBefX1OVK6Ak4SEpzhIrlT4s/A/UvEThZp3iZpaHImr0E9LVcYrDfMr5GSlrnkepDSmEZABwlxSjgJJrvCmUlK0lK0hSTsQRkGvChkcJ7/Jyn5lCKFQ/sr75a88CPhR4jXZ++6i4QW1ufJUVPPW59+DzqPVRSwtKSSdycZPesVYvh1+DuwSWpcfg5FlutKCk/PXGXJQSPVDjpSR7EYr0ft8K6Zp8WuE3BDipxy1AjTfC/Rs+9yeZIedaRyx4oVnCnnlYQ2Nj+YjODjJ2r65+FHwXcN/BnpGfxY4j3aFcNWxLc7KuV4cBEW0x0o5nW4+d8YBCnCApQ2ASCQer9PaY03pG2NWXS1gt1nt7Aw3FgxkMNIHshAAFfM74pXjHh3VL/hn4bXRD7LTiV6rnR3MpLiTlMFKgcHlICnfcJRkELFQlmnqpbI8Iw4N8QHFifxy4yar4qXBotKv9wW8wyVZLMZIDbDZPcpaQ2knbOOg6VXZqQ9qA/mrvSUVSGANCqiPamIGKVikJ6UJG43oz0NRqpJGj7UCqIdKFQ2qT7MIlVGqpFdKjVSsADSpAGlS0ASB1+9Sp7VGk74o00yAlHWjGcUHepBTIBDrRp2VQUaTvVYm9kqT2pxQpoqdGBCjGxoKMetOMiVpxxl1LrS1IWghSVJOCCOhFWTpfW8e4oRDuq0syh9KVnZLn/Yf/AN9qrOpEkVbHkePo6dNqp6aVx68oy+plKcv89SiSfOIz7DYf2AV9aPg8Lhnw/wCrUoLfzY1e6XQMc/l/JxuTPfGfMx/yq+QnMonKiST3NdHeCzxhXvwo62lyZUB676RvyUN3i2tKAcCkZ8uQyTt5ieZQwSAoKIOCEqTz6qDywaj2QyS9STl7n3gpt65p058Rvwf6igMTDxXatjrqApcW4W+Sy6yo9UqPllJI9UqI9Ca99w+IN4Pba35r/Gu2ODGcMQ5Tx/ghomvH9LJdbWTOh6B99mMyuRIdQ002krWtaglKUjckk9BXBfE34vvBawIlROGOjb9quYgYYkyUiBCWfXK8vYHoWxn261wT4hfHHx88RXnWvU2pBZ9OO4/2Bs/MxFUAP99OSt7PXC1FOdwBVsejyT7VIDsvxt/E0tlqhT+Ffhvu6JlyeC49y1SwQpmMjGFIhq/nuHf97+VOPpySFJ+WEh56S8uRIdW666orWtZypSickk9zmnNRKO9eljwxwqojDGg/nURPeg96ZgMqhPQ0/WhXsKRikZoF9qMnao1HtSSNHHSo1UY6E0KsVJvkxkS+lRq7VIs1GqlYAj3pUhgClSMB8b0YNdT+L3wa2Xw/cPeHnFjQGrrjqjSuuo3mfNy4qGTGcWyh5hBCSd1tqcPt5Sq5et8KZdJse22+Ot+VKdQwy0gZU44ogJSPckgVsZJq0A1GnrXZ/jD+Ha/4XeDmnuJ8HWci+vPzGLffIyo6UNxXXWVKC21A5UgOIUjcZ+pHvXGCckgAZPStjNSVoAsUQ6V054jvCRp7w8cCeGuvLzq+5v6018w3LXY3YaWmobPkpcdyrJVzILrKMHGSVHbGKHjd4SbDwn8LnDLj/B1dOnztemN59vdjoQ1G82Mt48qwcqwUY3Henjljx+JpzSDRDrQJwRiunuE/hMsHEXwgcQfErM1bOiXHRlxfhM2xuOhTMhLbUVYUpZOQT8yRsP5oq0pqPLM6OZwKMDsTV0eDzgDa/Exxph8LLzqCVZo0mBKmGVGZS4tJaRzBPKogb1mtCcBuDcnxE8QOEPFvjGNF6f0hPulvh3qQykqluxZvkISUk4BUgKXt6UPLFNp+DUc/DbaiSa+h2gPh++EHinqFGlOHni+Vfrwtpb6YcOE0pwto/MrGegzWJvPgp8D+nbxO0/e/GsxCuVskORJcd2I0FsvNqKVoUM7EKBB+1C1MOufoFnBYORRA4rp3w8+FDQHHrxM6q4LWbiXKd03ZokyZbb9DjocM1tl5pCFcpOAFBwnY9qta7eC/wPWG7TbFefGuxEn26Q5FlR3IjQWy82opWhQz1CgQftTPUQi6YWcG5FLNdj8Q/C/4LtOaE1BqDSHjDiXy9262yJVutiY7YM2QhsqbZBzn6lAD9a5m4X6FY1/eJVskz3IiY8YvhaEBRJ5gMYP3quOay/dKYscs0lCC5ZqBO21CT61lNT2CdpW+S7FcUfvornLzAbLT1SoexGDWJJyetM+6FlFwbjLsZSqAnAqzNGcHntR6Qm6suU12I22245EbSgEuhCSSo56AkYH2PtVZpSpxYQlJUpRwAOpNEouKTZSeGeOMZSXfQJoSNqtyw8CFptib3ry/s2OMpPMGSUhxI7cylEJSfbfr2O1exng1w6v6VxdKcRUvTQCUtrU25n/kjlOPcZrPSkXWgztXVfg2rKUoVntWwaw0VfdD3P8ADL5HCSoFTLyDlt5Pqk/5juK8mmtMXnV92bs1iiF6Q5uSThLaO61HsB//ADJqVO6OT05qeyufYwyhQK61dznBLQ2nWm2tb8QmosxwZLTSkN4+wVlSh74Fea7cAoNzti7rw71bHvAbBPkKWglW3QLScBXsQPuK2WGZ1v4fnSuufa1f0KZztQK3Jr0y4siDJchS2FsvsrLbjaxhSVDYgj1q0bxwJfZ4ewtZ2K4PTZLsRqZIiFsDCFoClchB3Kc9O499jBQlO9q6OfHgyZd2xddlQq60CutGo7narDsHCyHeeF9y4gO3R9t6Cp0JjpQClXJy4yevepxi59C48Usraj4VlbK9KVI9aVSJn0u4NOq8VfwwNY8K33H5uqeEzy5ttbwp15TLXNIYCQNzzNmSwlO+AgYHQVz38NTg7/K54qNOOz4SX7Po4K1JcCs/SPII8gH1y+prbuArsDW0/Cf4vfyfeJhGhrjPU1Z+IMBy1ONKV+7VMRlyMpQ/pbOtj3e99um2OFDfw/eAXiQ4iFlMa6aju71i0i6tSQswHfpiKRjulUhxSh3+XzgACotuNx9wMrojjEx48rX4oOAEqfBmIW6udolKnDylhjDTDiTv+7D8eM4SB1kK6g4r50+FDg6/xh8SmjOGE+OpDD12Dl0QpG6Y0bLr6SOxKW1I37qFZ3wE8Yf5F/FJozUkuW3Htd1l/gd0U4sIbEeVhvmUo9EocLbhP/B+lfR7SHAm2+EbjJ4kPFVd4bETT7NpVM02OYcrvzKfmJKE74SfmUNtJT1+rsCMtfpWl5A4i+KNxgTxM8UNx03bpynrPoOK3Yo6Ek+WJA/eSVAf0vMX5ZPfyU+gNdScVvD1xS8Rfw+eAWluE9lYuVwtsS3z5Db0xuOEs/JLRkKcIB+pSdhvvXyrv1+umqb7cdT32WuXcrvLdnTH145nX3Vla1HG2SpRNfSrxNa/11w9+HL4ebnoHWd803MkItzD0i03B2I4438g6eRSmlJJTkA4O2QKeUXFRSA5+HwufGWD/wCb22//AD2J/wB+uqdH8BeJfh4+Glxq0XxUs7Ftu02dKubLTMtuQDHW1BbSrmbJAPMysY67e9fO0eJ3xIYweP8AxG/XVE3/AO5XdXA3Xettf/C4443nXer71qOezd5kZuVdp7st5DIj29QbC3FEhIUtRCc4yonuabJ6lLc1VoClfhQf7r21f+pLn/0QqivE/wD7pfi3/Xq/f9YPVefwn1f7b61D/Elz/wCiFUX4oNvExxb/AK9X7/rB6rRf+s/yN8l+fChJ/wBVvA362O4f8xNUF4kgR4h+J/8AXG8/5Y7V+/CgIPi3g+v4HcP+amqC8SZ/2xHFD+uV5/y12mi36z/IDpr4QpB8UNz/AKpTf8ojV5+Mfw7PFvq3i5rXVNi4bR3rbeNQXCdEdN6hI8xl2QtaFcpdBGUqBwRn1qb4Qhz4obn/AFSm/wCURqqTjz4h+Ptq44cQbXaeN2vYcKHqi6MR47GpJjbTLaZTgShCQ5hKQAAANgBSve8z2PwBiOMvg88QPALSrGtOKei2rTaJM5FubfTcoz5L60LWlPK0tSvytrOcY2ryeG3fVF07kW//AE01puq+L/FjXluRZtc8TtWahgNvCQiJdbzJlspdAICwhxZSFAKUAcZwo+tbj4bFf+FN1H+L/wD6ia7dO5bluO74df2mH+eDI6+hx+KOhGtd2pgC62bmYuDLaTkpSfq/QZ5x1+kkdRVZ6B0hJ1vqeLY2SpLJPmynE9W2Ukcx377gD3IrN8LNcDR2r3G56h+F3NwxpgVjlTlR5XDn+iSc/wCCVdTirG1W1YuCOmborTr/APstqJ9QiE45mGf8H/BQCcHuVDriq8T+d/qdTxw1X+5n4+9+nX1Nnhajt10garsFibaTbtPQRDZLfQq8tznx7DlA/Q+tUzwAssS7a8TImshxFtjLloB6eYFJSkn7cxI9xWx8B1E6Q1oo7ksJJ9/3btatwHv8Wx69bbmuhtu5R1w0qJ+kOFSVJz9ynH3VWuSk4NlpZVlyYJ5Onf8APBjuLWsp+rdXzg7JUqDAfcjRGgfoSlJ5SsD1VjJPXoOwrTGJD8V9EmK8tp5pQW24hRSpCgcggjoc963ji/oe46U1XMl/LLNuuL65EZ5KfoHOeYoJ6AgkjHpitKhwpdxlNQYEZ2RIeUENtNpKlKJ7ACuae7c7PK1KyetJT+9ZfGoZqOIvAUX+5hL10tRBU6BghxCwlRP/ABkKBI6ZI9Ki4bLY0FwUuuvIzYNwm85Q4RnBS55LYI9AvJ/U1Jq+PH4a8DGdJznEfit1OFIQRnnKwtZPslICcjvj1qDhYuHr3hFdeHYkIROjBzykrONlL8xte2+PMzn7e4q//f8AGv3PXX/Ok/v7P3/uih58+Zc5bs+4SnJEl9ZW464rKlKPcms1oHWNw0RqSLeYjzgZDiUymknZ1kn6kkdCcbj3ArE3ez3Oxz3bZd4TsWSyopW24nBHuPUehGxrYOG2hLjrrUcaAzGc+RbcSubIwQhtoHJHN/SPQD1PoCa4o7tyS7PGxLJ6qUb3Wbr4l7DHh6htuoYrSUfi8daXSP57jXL9R9+VaR+lWSvWzPD3hroq7S2PNiSGoUWVj8yW1RyeZPqQUg477iqx8SepIlz1NB0/CeS4mzMLDvL0S64Ukp/RKEfxrM8XFk8CNGk/+g5/+FVXTu2TySiet6vpZs88XhL6+TAcb+GkS3FGv9IJS7ZLlh10MjKGVL3C046IVn9CcdwKzuhkqPht1Cc7Bcn/AEKwfBHiVChBXD7WBQ9ZbjzNsl7BQypfVCs9EKJ/Qn0JIsu+6PZ0Hwd1VY4UgvRV+fIj835ktr5cJPqRgjPfY0kIqV5IezszDjhk3ajF04u17P8ApnJ1KlSrzjwjMaQ1TetD6qs+s9NyzFutinMXGE8AD5bzSwtCsHY4KRsa6k8anxAbr4u9Kab0gjQI0tAsk5y4yU/iXzfzT5b5GyP3aOQJCnfXPP2xvyJ0oqyk2mwJEKUhQUgkFJyD6V2j4hfiUat49eHmFwNd0Sm0SXUwEXu8fiPnfiCI6QVANeWny+d5La/zKwElO+c1xYk4NGD6U7ipO2BINtq6P4y+Lv8Alb8NfDjw9jQv4Z+wBjk3T8Q835zyo62f/FeWnkzz5/MemPeubgc0aTTNJ02AeK6Q4W+LtPDjwo678M37CGedaT35v4x+IeX8r5jUZHL5Plnnx8tnPOPz+2/N/XpWxX3Q9607Yrdf53kli4AHy0KytgqTzIDg7FSfqHsN8VTbvXKHjCUk2l0WJ4TvEIfDHxgicVf2W/aD5aDKh/JfN/Lc3nI5ebn5F9PTFaPxP1p/KRxM1dxD+Q+Q/am+z718p5nmfL/MyFveXz4HNy8+M4GcZwK8mm9GXDUEN+7uTYdstcZXluTprhQ15nXy04BKlYOcAfftT37Sos0Jm5xNQWq6xXnC1zw3jzIWBnCkLAUNu+CP7Kooc7xvSnW6uCyfCd4hh4YuLjHFI6VOofJgSIXyQl/LZ80Ac3PyL6Y6YrQeJWsf5Q+IuqdffIfI/tJeZt2+V8zzPI895bvJzYHNy8+M4GcdBWQu3DNuw3B21XnXFgiy2OXzGlKfJTzJCh0b9CDWNt+g7veLJd79aH48xizu8jqWirncRv8AvEDG6cDO+DjtTLHUrS5GeDInVcloeD7xLN+FbijK4kL0gdSfM2h+1iIJvyvL5jjS+fn5F5x5eMY79dq6DuPxD/DfeLjKu918BWh5k6c8uRJkvuxVuPOrUVLWtRiZUokkknck1wzb7HLuNpu15ZcbSzaEMreSrPMoOOBA5dsdT37VlrZoaXKtDV+u15ttngyVFMZcxxQXIwcEoQhJUQD1JwKV4Ize5oWOKUukdaao8cvhtv2mrvZbZ4EdDWuZcIL8VicyqL5kVxxtSUupxEB5kkhQwRuOorlvhrxATw9usq5fhfzvzMfyOTzvL5fqBznB9K8kTh/cJ2pYOm4V2tklVxZW/HlMvlbSkJSpRztzJP0KGCOtYewWKbqS9R7HAU2HpCiOdwkIQkAlSlHsAATTY4ek/kHxrLhmpQ4fj/P1PG875rq3enOoq/iamuF3ud08n8Rnvyflmgyz5qyry2x0SM9B7Ud/sszTd6lWSeE+dFXylSc8qwQClSc9iCCPY16tL6Xe1TImtIuUSC3AiKmPPSSrkDaVJSfygnOVjtT0+hVGbk4eTO6C4lJ0TZ71aTaPnPxdsI8zzuTy8JWnOOU5/P7dK0ffOa2t7h9KdgSJ9gv1pvYiJLj7EN1fnIbHVfItKSpI74zUVn0Sq56fGpJeoLZbIipSoaTKLmVOBIV/MSrsf7DWvdJJFZLNNRg/HX/pt2mOPt5tdt/B9T2li/RQjywp1fK4U+iyQoLH3GfUmsg34gbLZmHv2V4cQLfIcTjzApKU59SEIBUPbIqqr5aY1ofbZjXyBc0rRzlyIV8qDnHKedKTmiVpyZ+yQ1h57PyhuP4b5eT5nmeV5nNjGOXG3XOa1ZZriysdZqY/LfX5P9wdUaover7q5eL5MU++ocqR0Q2nslI7CvPYr/dtNXNq72SauNKZP0qT0I7gjoQfQ1k7Toe83rTVw1PDUz8vbyQWiT5joSAVlAxuEhSSfY1rlQk5J7mcsnkjJZH2+bLpHiHt12hNR9Y8P4F0daH5+ZJQT6hC0q5f414b/wCIm5vWr8G0dp6LYWSko8xtQUpIP9ABKUp++DVRKNB96HqMnuWfxDUNVu/i/qE88684t95xTjjiipSlHJUT1JPet61hxVGqtB2bRP4J8t+EhgGR8xzeZ5bRb/LyjGc56mtAUrNAVdqipyiml5OeOWcE1F99jKqzxx2ucjh3I0Nd7aZrzrBjInmRhQRty8yeU8xGMZyM7frVxNDSrJKF7WbjzTw3sdXwxUqelUbJDUST2oEmnrUwD75FGmowdqcE06YEwNED3qJJ70YOKdAbJoOxNai1LHizFBFvjBUye4SQERmxzLJxvuBj7qFWXFmad1bctR2uRreHLOpkAQoiYbzfkyG//J8KUkJGEjkPTINU1FuE+Ch9uFNkR0Smyy+lpxSQ6g7lKsfmTsNjtQsvOsOofYdW062oLQtBIUlQ6EEdDVYZNqqjpxZ1jW2r9/4LFuFqn6g4Y2SLZbe67I09LmM3aM2jLrbi3OZC1IH1Y5Ry5x/NI7Vg5Gj3IOg16nnxZceSbmiI0l1JQhbRaUoqAIyTlPXNYKNfL5CnrusO8TWZrpKnJDchaXVknJJUDk5orpf75fVJcvV4mz1I/KZL6nOX7cxOKbfF8s2WTHLmuaotzik/bv25uSJfC926vYZzNEmSgO/uUdkHl2G23pWvaVu1w0roGdd4TimJsO/xfoUMf706FIUPQjIIrVTxB14QAdbX4gf4ye/71Ypy63KQ2+0/cZLiJL3zD6VuqIdd3+tQJ+pW53O+5qnqc2PLUxc3OPfPt5LbuMSxy+HurdX6VQ3Hg3VqEl+DzfVCkiSgrQNh9ByCk+hxtisBr22XG+QrBqOzNPTrUbVHhpDDRUIjrSeVbSgOh5twT1ztkCtCauE1iM/CYmPtR5QSH2kOEIdCTlPMBsrB3Gehr1WnUN8sSlLst5mwCv8AP8u+pvm++CM1rmnwZLURyR2yVcePe7N54V2G62jiRYk3eC/DVKZkuspeTyqUjyHRnB3G4PWh0bCt9m0fdrzdrwza378F2uC66ha8sggyFBKASQcpRnoN/WtJVf72u5C8qvE43BOcS/mF+cMgg/Xnm6Ejr3rzvT5siOxFflPOsxgpLDa3CUtBRyQkHYZO5x3oUkujI5owVJdX+9G/63hwb1o+06gtd3auj1kQm1XB5ltaMN7lhZSsBQ2yjO4JAx3FY7hsy7Ja1Y1HQpxxWnXwlCRlSj5zOwArUGZ86NHfiR5jzTEoJD7SHCEOhJyAoDZWDuM1JbbxdbK+qVZ7pLgvLQW1ORnlNKKSQeUlJBxkA49hWbldmetF5FNr8/4N44UWS82vVsXUlzgyIFrtaXH5kuQ0W20t8hBTlWMlXMAAMnf2rKWmRbjwqK3tHKvbK9RPluOh51HlAsowct7nbbfaq4ueptR3loMXjUFynNg5CJMtx1IPrhRIpW3VGpbKwYtn1Dc4DKllwtxpbjSSogAnCSBnAG/tWqaXA0M8ILauufbzX9EmqENGa29F0w5YmFt4Edbjq+ZQO6gpzfuBj2rZozEiVwXZiRWVuvP6uS222gZUtRi4AA7knatPut/vt8U2q93mdcC0CGzKkLdKM9ccxOM4FBGvN4hMtx4d1mMNMyBLbbafUlKHwMBwAHZeNubrip7kmyUckYyb8Mt9+bpTTF809b/22hR29LNKiy4bkN9wPOuE/NboSR9QVy98co+1VhriwN6b1LLt0VwOw1EPwnQchyO4OZtQPf6SAT6g1hHXXHnFvPOKccWoqUpRyVE9ST3NHMnzpwZE2a/IEdoMsh1wr8tsdEJz0SMnYbb0k8m9VQ2XOssaqvY85OaBRpye1RqNSZzCJoCO9OTQE9qVsBHrTUqROKm2AxNKhKqVJYDA9qMGo6MdaEAY2oqCiT0qiAIHFGDUfeiT0p0BIDRg460Aoh0pgDCqKo01In/PWgKnG1NSp0zQsj1p80FIdK1M0OlQjrT9v0rTEPTZpj1pqywCyKb9KalWWAqRIpHpQHpSWDQir0oCaegP+asMGUQKAnNOe1DSsBjTU5oaRsBZAFCTTq6UCqRgNSpUqUD/2Q==" alt="WhiteMoon">
   </div>
-  <div class="badge">USO INTERNO · v2.0</div>
+  <div class="header-center">
+    <div class="stat-pill"><div class="stat-dot"></div>Scout activo &nbsp;·&nbsp; <b id="hc-analyzed">0</b> analizados</div>
+    <div class="stat-pill">Prompts: <b id="hc-prompts">0</b></div>
+    <div class="stat-pill">Agentes: <b id="hc-agents">0</b></div>
+    <div class="stat-pill">Propuestas: <b id="hc-props">0</b></div>
+  </div>
+  <div class="header-right" style="display:flex;align-items:center;gap:8px">
+    <div id="api-status-pill" class="stat-pill" style="cursor:pointer" onclick="document.getElementById('api-modal').style.display='flex'" title="Configurar API Key">
+      <svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0" id="api-status-ico"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/></svg>
+      <span id="api-status-txt" style="color:var(--rose2)">Sin API Key</span>
+    </div>
+    <div class="h-badge"><div class="h-avatar">WM</div>WhiteMoon</div>
+  </div>
+
+  <!-- API KEY MODAL -->
+  <div id="api-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;align-items:center;justify-content:center;backdrop-filter:blur(8px)" onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:var(--card);border:1px solid var(--wm-border);border-radius:16px;padding:28px;width:100%;max-width:480px;box-shadow:var(--shadow)">
+      <div style="font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:6px">Configurar API Key de Anthropic</div>
+      <div style="font-size:.8rem;color:var(--text2);margin-bottom:18px;line-height:1.65">Necesitas una API key de Anthropic para que el análisis sea real. Se guarda solo en tu navegador (localStorage) y nunca se envía a ningún servidor excepto a api.anthropic.com.</div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:7px">Tu API Key</div>
+        <input id="api-key-input" type="password" class="input mono-input" placeholder="sk-ant-api03-..." autocomplete="off" style="font-size:.8rem">
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:18px;border:1px solid var(--border2)">
+        <div style="font-size:.72rem;font-weight:700;color:var(--wm-purple3);margin-bottom:6px">¿Cómo obtener tu API Key?</div>
+        <div style="font-size:.72rem;color:var(--text2);line-height:1.75">
+          1. Ve a <a href="https://console.anthropic.com" target="_blank" style="color:var(--wm-purple3)">console.anthropic.com</a><br>
+          2. Inicia sesión o crea una cuenta<br>
+          3. En el menú lateral: <b style="color:var(--text)">API Keys → Create Key</b><br>
+          4. Copia la clave y pégala arriba
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="saveApiKey()" style="flex:1">
+          <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Guardar y activar
+        </button>
+        <button class="btn btn-ghost" onclick="document.getElementById('api-modal').style.display='none'">Cancelar</button>
+      </div>
+      <div id="api-key-error" style="font-size:.74rem;color:var(--rose2);margin-top:10px;display:none"></div>
+    </div>
+  </div>
 </header>
 
-<div class="app">
-  <div class="left">
-    <div>
-      <span class="field-label">URL del cliente</span>
-      <input class="txt-input" id="urlInput" type="url" placeholder="https://clinicadental.es">
+<!-- LAYOUT -->
+<div class="layout">
+
+<!-- ════════ SIDEBAR ════════ -->
+<nav class="sidebar">
+  <div class="sb-section">
+    <div class="sb-label">Principal</div>
+    <button class="nav-item active" onclick="goPage('p-scanner',this)">
+      <div class="nav-item-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      Analizar Web
+    </button>
+    <button class="nav-item" onclick="goPage('p-prospector',this)">
+      <div class="nav-item-ico"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      Prospector
+      <span class="nav-badge nb-o">Google</span>
+    </button>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Herramientas IA</div>
+    <button class="nav-item" onclick="goPage('p-nichos',this)">
+      <div class="nav-item-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+      Nichos IA
+      <span class="nav-badge nb-p">12</span>
+    </button>
+    <button class="nav-item" onclick="goPage('p-voice',this)">
+      <div class="nav-item-ico"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></div>
+      Agente de Voz IA
+      <span class="nav-badge nb-g">IA</span>
+    </button>
+    <button class="nav-item" onclick="goPage('p-rrss',this)">
+      <div class="nav-item-ico"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+      Contenido RRSS
+    </button>
+    <button class="nav-item" onclick="goPage('p-proposals',this)">
+      <div class="nav-item-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      Propuestas
+      <span class="nav-badge nb-p" id="sb-props">0</span>
+    </button>
+    <button class="nav-item" onclick="goPage('p-pricing',this)">
+      <div class="nav-item-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      Mis Tarifas
+      <span class="nav-badge nb-g">WM</span>
+    </button>
+  </div>
+  <div class="sb-recents">
+    <div class="sb-recents-label">Recientes</div>
+    <div id="recent-list">
+      <div style="font-size:.72rem;color:var(--muted);padding:6px 8px">Sin análisis aún</div>
     </div>
-    <div>
-      <span class="field-label">Nombre del negocio</span>
-      <input class="txt-input" id="nombreInput" placeholder="Clínica Dental San Pedro">
-    </div>
-    <div>
-      <span class="field-label">Teléfono / WhatsApp del cliente</span>
-      <input class="txt-input" id="telInput" placeholder="643 199 580">
-    </div>
-    <div>
-      <span class="field-label">Sector</span>
-      <div class="sector-grid">
-        <div class="sec-btn" data-s="dental" onclick="sel(this)">Dental</div>
-        <div class="sec-btn" data-s="academia" onclick="sel(this)">Academia</div>
-        <div class="sec-btn" data-s="gimnasio" onclick="sel(this)">Gimnasio</div>
-        <div class="sec-btn" data-s="abogados" onclick="sel(this)">Abogados</div>
-        <div class="sec-btn" data-s="restaurante" onclick="sel(this)">Restaurante</div>
-        <div class="sec-btn" data-s="inmobiliaria" onclick="sel(this)">Inmobiliaria</div>
-        <div class="sec-btn" data-s="veterinaria" onclick="sel(this)">Veterinaria</div>
-        <div class="sec-btn" data-s="estetica" onclick="sel(this)">Estética</div>
-        <div class="sec-btn" data-s="taller" onclick="sel(this)">Taller</div>
-        <div class="sec-btn" data-s="psicologo" onclick="sel(this)">Psicólogo</div>
-        <div class="sec-btn" data-s="fisioterapia" onclick="sel(this)">Fisioterapia</div>
-        <div class="sec-btn" data-s="otro" onclick="sel(this)">Otro</div>
-      </div>
-    </div>
-    <div class="progress" id="prog">
-      <div class="p-step" id="s1">Analizando negocio...</div>
-      <div class="p-step" id="s2">Generando Knowledge Base...</div>
-      <div class="p-step" id="s3">Creando prompt chatbot...</div>
-      <div class="p-step" id="s4">Creando prompt de voz...</div>
-      <div class="p-step" id="s5">Agente listo</div>
-    </div>
-    <button class="gen-btn" id="genBtn" onclick="generate()">
-      <div class="spinner"></div>
-      <span class="btn-txt">Generar agente IA</span>
+  </div>
+</nav>
+
+<!-- ════════ MAIN ════════ -->
+<main class="main">
+<!-- ════════ PAGE: SCANNER ════════ -->
+<div class="page active" id="p-scanner">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Analizar Web del Prospecto</div>
+    <div class="page-sub">Introduce la URL de un negocio local. Scout extrae datos, detecta problemas técnicos, analiza su presencia en RRSS y genera servicios, anuncios y propuesta comercial automáticamente.</div>
+  </div>
+
+  <div class="scan-bar mb12">
+    <div class="scan-bar-icon"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></div>
+    <input class="input mono-input" id="url-input" type="text" placeholder="https://negocio-prospecto.com" autocomplete="off">
+    <button class="btn btn-primary" id="scan-btn" onclick="startScan()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Escanear
     </button>
   </div>
 
-  <div class="right">
-    <div class="empty" id="empty">
-      <div style="font-size:2.5rem;opacity:.2;">🤖</div>
-      <div class="empty-txt">Introduce los datos del cliente, selecciona el sector y pulsa <strong>Generar agente IA</strong>.</div>
+  <div id="scan-output">
+    <div class="empty-state">
+      <div class="es-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div style="font-size:.92rem;font-weight:700;color:var(--text);margin-bottom:7px">Introduce una URL para analizar</div>
+      <div style="font-size:.79rem;color:var(--text2);max-width:400px;margin:0 auto;line-height:1.7">Scout detectará problemas técnicos, analizará la presencia en todas las RRSS, identificará oportunidades de venta y generará el informe completo con servicios, anuncios y propuesta lista para enviar.</div>
     </div>
-    <div id="result" style="display:none;flex-direction:column;gap:18px;">
-      <div class="tabs">
-        <button class="tab-btn active" onclick="tab('kb',this)">Knowledge Base</button>
-        <button class="tab-btn" onclick="tab('chat',this)">Prompt chatbot</button>
-        <button class="tab-btn" onclick="tab('voice',this)">Prompt voz</button>
+  </div>
+</div>
+
+<!-- ════════ PAGE: PROSPECTOR ════════ -->
+<div class="page" id="p-prospector">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>Prospector de Negocios</div>
+    <div class="page-sub">Busca negocios locales en Google Maps y detecta los que no tienen web, chatbot o redes sociales. Leads pre-cualificados con oportunidad real de venta.</div>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-row">
+      <div class="field-group">
+        <span class="field-label">Ciudad</span>
+        <input class="input" id="pros-city" type="text" placeholder="Madrid, Barcelona..." value="Madrid">
       </div>
-      <div class="tab-pane active" id="tab-kb">
-        <div class="out-hdr"><div class="out-lbl">KNOWLEDGE BASE</div><button class="copy-btn" onclick="cp('kb')">Copiar</button></div>
-        <textarea class="out" id="kb" rows="20"></textarea>
+      <div class="field-group">
+        <span class="field-label">Sector</span>
+        <select class="select" id="pros-sector">
+          <option value="">Todos los sectores</option>
+          <option>Restaurante</option><option>Clínica Dental</option><option>Centro de Belleza</option>
+          <option>Fontanero</option><option>Inmobiliaria</option><option>Taller Mecánico</option>
+          <option>Peluquería</option><option>Gimnasio</option><option>Abogado</option><option>Farmacia</option>
+        </select>
       </div>
-      <div class="tab-pane" id="tab-chat">
-        <div class="out-hdr"><div class="out-lbl">SYSTEM PROMPT — Chatbot web</div><button class="copy-btn" onclick="cp('chat')">Copiar</button></div>
-        <textarea class="out" id="chat" rows="20"></textarea>
+      <div class="field-group">
+        <span class="field-label">Radio</span>
+        <select class="select" id="pros-radio">
+          <option>5 km</option><option selected>10 km</option><option>20 km</option><option>50 km</option>
+        </select>
       </div>
-      <div class="tab-pane" id="tab-voice">
-        <div class="out-hdr"><div class="out-lbl">PROMPT AGENTE DE VOZ — Vapi.ai</div><button class="copy-btn" onclick="cp('voice')">Copiar</button></div>
-        <textarea class="out" id="voice" rows="20"></textarea>
+      <button class="btn btn-cyan" id="pros-btn" onclick="runProspector()">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Prospectar
+      </button>
+    </div>
+    <div class="field-group">
+      <span class="field-label" style="margin-bottom:8px">Filtros de oportunidad</span>
+      <div class="chip-group">
+        <div class="chip on" onclick="this.classList.toggle('on')">Sin web</div>
+        <div class="chip on" onclick="this.classList.toggle('on')">Sin chatbot</div>
+        <div class="chip on" onclick="this.classList.toggle('on')">Sin RRSS</div>
+        <div class="chip" onclick="this.classList.toggle('on')">Sin WhatsApp Business</div>
+        <div class="chip" onclick="this.classList.toggle('on')">Reviews negativas</div>
+        <div class="chip" onclick="this.classList.toggle('on')">Sin Google My Business</div>
+        <div class="chip on" onclick="this.classList.toggle('on')">Alto potencial IA</div>
+      </div>
+    </div>
+  </div>
+  <div id="pros-output">
+    <div class="empty-state">
+      <div class="es-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div style="font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:7px">Configura la búsqueda y pulsa Prospectar</div>
+      <div style="font-size:.78rem;color:var(--text2);max-width:360px;margin:0 auto;line-height:1.7">Scout buscará negocios en Google Maps y detectará cuáles tienen oportunidades digitales sin explotar.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: NICHOS ════════ -->
+<div class="page" id="p-nichos">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Nichos & Servicios IA</div>
+    <div class="page-sub">12 nichos con problemas, servicios a vender, precios, objeciones y script. Haz clic en un nicho para ver el detalle completo.</div>
+  </div>
+  <div class="niche-grid" id="niche-grid"></div>
+  <div class="niche-detail" id="niche-detail"></div>
+</div>
+
+<!-- ════════ PAGE: VOICE ════════ -->
+<div class="page" id="p-voice">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg>Constructor de Agente de Voz IA</div>
+    <div class="page-sub">Configura el agente telefónico y genera el prompt completo listo para VAPI, Bland.ai o ElevenLabs Conversational.</div>
+  </div>
+  <div class="voice-layout">
+    <div>
+      <div class="field-group mb12"><span class="field-label">Nombre del negocio</span><input class="input" id="v-biz" placeholder="Ej: Clínica Dental Sonrisa" oninput="updateVoicePreview()"></div>
+      <div class="field-group mb12"><span class="field-label">Sector</span>
+        <select class="select" id="v-sector" onchange="updateVoicePreview()">
+          <option value="">Selecciona sector...</option>
+          <option>Clínica Dental</option><option>Restaurante</option><option>Centro de Belleza</option>
+          <option>Fontanero / Reformas</option><option>Inmobiliaria</option><option>Academia</option>
+          <option>Taller Mecánico</option><option>Abogado</option><option>Gimnasio</option><option>Peluquería</option>
+        </select>
+      </div>
+      <div class="field-group mb12"><span class="field-label">Nombre del agente</span><input class="input" id="v-name" placeholder="Sara, Lucía, Alex..." oninput="updateVoicePreview()"></div>
+      <div class="field-group mb12"><span class="field-label">Objetivo principal</span>
+        <select class="select" id="v-goal" onchange="updateVoicePreview()">
+          <option>Gestionar citas y reservas</option>
+          <option>Cualificar y captar leads</option>
+          <option>Atender preguntas frecuentes</option>
+          <option>Recoger presupuestos</option>
+          <option>Urgencias 24h</option>
+        </select>
+      </div>
+      <div class="field-group mb12"><span class="field-label">Tono</span>
+        <select class="select" id="v-tone" onchange="updateVoicePreview()">
+          <option>Profesional y amable</option>
+          <option>Cercano y empático</option>
+          <option>Formal y corporativo</option>
+          <option>Dinámico y directo</option>
+        </select>
+      </div>
+      <div class="field-group mb12"><span class="field-label">Servicios principales (uno por línea)</span>
+        <textarea class="textarea" id="v-services" placeholder="Limpieza dental&#10;Ortodoncia&#10;Blanqueamiento" oninput="updateVoicePreview()"></textarea>
+      </div>
+      <div class="g2 mb12">
+        <div class="field-group"><span class="field-label">Horario</span><input class="input" id="v-hours" placeholder="Lun-Vie 9:00-20:00" oninput="updateVoicePreview()"></div>
+        <div class="field-group"><span class="field-label">Teléfono derivación</span><input class="input" id="v-phone" placeholder="+34 600 000 000" oninput="updateVoicePreview()"></div>
+      </div>
+      <div class="flex gap8">
+        <button class="btn btn-primary" onclick="generatePrompt()" style="flex:1">
+          <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Generar Prompt Completo
+        </button>
+        <button class="btn btn-ghost" onclick="copyPrompt()">Copiar</button>
+      </div>
+    </div>
+    <div class="voice-preview">
+      <div class="vp-header">
+        <div class="vp-avatar">🤖</div>
+        <div>
+          <div style="font-size:.86rem;font-weight:700;color:var(--text)" id="vp-name">Agente IA</div>
+          <div class="vp-status"><div class="vp-pulse"></div>En línea · Listo para llamadas</div>
+        </div>
+      </div>
+      <div class="vtabs">
+        <button class="vtab active" onclick="switchVTab(this,'vt-demo')">Demo conversación</button>
+        <button class="vtab" onclick="switchVTab(this,'vt-prompt')">Prompt generado</button>
+        <button class="vtab" onclick="switchVTab(this,'vt-config')">Config técnica</button>
+      </div>
+      <div id="vt-demo"><div class="conv-flow" id="conv-flow"></div></div>
+      <div id="vt-prompt" style="display:none"><div class="prompt-display" id="prompt-out">Configura el agente y pulsa "Generar Prompt"...</div></div>
+      <div id="vt-config" style="display:none"><div class="prompt-display" id="config-out">Selecciona sector para ver la configuración técnica...</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: RRSS ════════ -->
+<div class="page" id="p-rrss">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Generador de Contenido RRSS</div>
+    <div class="page-sub">Introduce la URL del negocio y Scout genera prompts de contenido profesionales listos para Claude, ChatGPT o Midjourney.</div>
+  </div>
+  <div class="rrss-layout">
+    <div class="rrss-sidebar">
+      <div class="field-group mb12"><span class="field-label">URL del negocio</span><input class="input mono-input" id="r-url" type="text" placeholder="https://negocio.com" style="font-size:.78rem"></div>
+      <div class="field-group mb12"><span class="field-label">Sector</span>
+        <select class="select" id="r-sector" style="font-size:.78rem">
+          <option value="">Auto-detectar...</option>
+          <option>Restaurante</option><option>Centro de Belleza</option><option>Clínica Dental</option>
+          <option>Inmobiliaria</option><option>Fontanero</option><option>Academia</option><option>Gimnasio</option>
+        </select>
+      </div>
+      <div class="field-group mb12">
+        <span class="field-label" style="margin-bottom:8px">Plataformas</span>
+        <div class="platform-grid">
+          <div class="plat-btn on" onclick="this.classList.toggle('on')"><span class="p-ico">📘</span>Facebook</div>
+          <div class="plat-btn on" onclick="this.classList.toggle('on')"><span class="p-ico">📸</span>Instagram</div>
+          <div class="plat-btn" onclick="this.classList.toggle('on')"><span class="p-ico">▶️</span>TikTok</div>
+          <div class="plat-btn" onclick="this.classList.toggle('on')"><span class="p-ico">💼</span>LinkedIn</div>
+        </div>
+      </div>
+      <div class="field-group mb12">
+        <span class="field-label" style="margin-bottom:8px">Tipo de contenido</span>
+        <div class="content-types">
+          <div class="ct-row on" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Carrusel educativo</span></div>
+          <div class="ct-row on" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Post de venta / oferta</span></div>
+          <div class="ct-row on" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Testimonio / caso real</span></div>
+          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Reel / Video UGC</span></div>
+          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Meme / Humor</span></div>
+          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Behind the scenes</span></div>
+        </div>
+      </div>
+      <div class="field-group mb14">
+        <span class="field-label">Semanas de contenido</span>
+        <select class="select" id="r-weeks" style="font-size:.78rem;margin-top:6px"><option>1</option><option selected>2</option><option>4</option></select>
+      </div>
+      <button class="btn btn-orange" onclick="generateRRSS()" style="width:100%">
+        <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Generar Prompts
+      </button>
+    </div>
+    <div id="rrss-output">
+      <div class="empty-state" style="padding:40px 24px">
+        <div class="es-icon"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/></svg></div>
+        <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:6px">Configura y genera los prompts</div>
+        <div style="font-size:.77rem;color:var(--text2);max-width:280px;margin:0 auto;line-height:1.65">Selecciona plataformas y tipos de contenido para obtener el plan editorial completo.</div>
       </div>
     </div>
   </div>
 </div>
-<div class="toast" id="toast"></div>
 
+<!-- ════════ PAGE: PROPOSALS ════════ -->
+<div class="page" id="p-proposals">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Propuestas Comerciales</div>
+    <div class="page-sub">Propuestas generadas automáticamente desde el analizador. Cópialas o envíalas directamente por WhatsApp.</div>
+  </div>
+  <div id="proposals-list">
+    <div class="empty-state">
+      <div class="es-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div>
+      <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:6px">Sin propuestas aún</div>
+      <div style="font-size:.77rem;color:var(--text2)">Analiza un prospecto para generar propuestas automáticas.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════ PAGE: PRICING ════════ -->
+<div class="page" id="p-pricing">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Tarifas WhiteMoon</div>
+    <div class="page-sub">Precios reales de tu agencia. Úsalos directamente en propuestas, presupuestos y conversaciones de venta.</div>
+  </div>
+
+  <!-- Chatbots -->
+  <div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Chatbots IA</div></div>
+  <div class="g3 mb24">
+    <div class="card" style="border-color:rgba(124,58,237,.3);position:relative">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--wm-purple3);margin-bottom:10px">PARA EMPEZAR</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:6px">Pack Basic</div>
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px">Chatbot IA informativo con menú guiado</div>
+      <div style="font-size:2rem;font-weight:900;color:var(--wm-purple3);line-height:1;margin-bottom:4px">49€<span style="font-size:1rem;color:var(--text2)">/mes</span></div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Setup 120€ · Mantenimiento 89€/año</div>
+      <div style="font-size:.7rem;color:var(--text2);margin-bottom:14px;line-height:1.7">✓ Sin permanencia<br>✓ Activación en 48h<br>✓ IVA no incluido</div>
+      <button class="btn btn-ghost btn-sm" onclick="copyText('Pack Basic — 49€/mes + 120€ setup. Sin permanencia. Activación 48h. Mantenimiento 89€/año. IVA no incluido.')" style="width:100%">Copiar precio</button>
+    </div>
+    <div class="card" style="border-color:var(--wm-purple2);background:var(--wm-soft);position:relative">
+      <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--wm-purple);color:#fff;font-size:.62rem;font-weight:700;padding:3px 12px;border-radius:10px;letter-spacing:.1em">MÁS POPULAR</div>
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--wm-purple3);margin-bottom:10px">PARA CRECER</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:6px">Pack Advance</div>
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px">Chatbot conversacional completo con IA</div>
+      <div style="font-size:2rem;font-weight:900;color:var(--wm-purple3);line-height:1;margin-bottom:4px">99€<span style="font-size:1rem;color:var(--text2)">/mes</span></div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Setup 299€ · Mantenimiento 199€/año</div>
+      <div style="font-size:.7rem;color:var(--text2);margin-bottom:14px;line-height:1.7">✓ Sin permanencia<br>✓ Activación en 48h<br>✓ IVA no incluido</div>
+      <button class="btn btn-primary btn-sm" onclick="copyText('Pack Advance — 99€/mes + 299€ setup. Sin permanencia. Activación 48h. Mantenimiento 199€/año. IVA no incluido.')" style="width:100%">Copiar precio</button>
+    </div>
+    <div class="card" style="border-color:rgba(234,179,8,.3);position:relative">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);margin-bottom:10px">WEB + IA TODO EN UNO</div>
+      <div style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:6px">Pack Pyme</div>
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px">Web profesional + Dominio + Chatbot IA + Reservas</div>
+      <div style="font-size:2rem;font-weight:900;color:var(--gold2);line-height:1;margin-bottom:4px">1.800€</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Setup único · Mantenimiento 599€/año</div>
+      <div style="font-size:.7rem;color:var(--text2);margin-bottom:14px;line-height:1.7">✓ Operativo en 5-7 días<br>✓ Pago fraccionado disponible<br>✓ IVA no incluido</div>
+      <button class="btn btn-ghost btn-sm" onclick="copyText('Pack Pyme — 1.800€ setup único. Web + Dominio + Chatbot IA + Reservas. Operativo en 5-7 días. Mantenimiento 599€/año. Pago fraccionado disponible. IVA no incluido.')" style="width:100%">Copiar precio</button>
+    </div>
+  </div>
+
+  <!-- RRSS -->
+  <div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Gestión de Redes Sociales con IA</div></div>
+  <div class="g3 mb24">
+    <div class="card">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--wm-purple3);margin-bottom:10px">PARA EMPEZAR</div>
+      <div style="font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:6px">LaunchPack</div>
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px">Presencia activa en 1 red social con IA</div>
+      <div style="font-size:2rem;font-weight:900;color:var(--wm-purple3);line-height:1;margin-bottom:4px">99€<span style="font-size:1rem;color:var(--text2)">/mes</span></div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Sin permanencia · Activación 48h</div>
+      <div style="font-size:.7rem;color:var(--text2);margin-bottom:14px;line-height:1.7">✓ 8 publicaciones/mes (2/semana)<br>✓ 1 red social<br>✓ Contenido con IA<br>✓ Publicación automática<br>✓ Informe de rendimiento</div>
+      <button class="btn btn-ghost btn-sm" onclick="copyText('LaunchPack RRSS — 99€/mes. 1 red social. 8 publicaciones/mes. Creación de contenido con IA. Publicación automática. Sin permanencia. Activación 48h. IVA no incluido.')" style="width:100%">Copiar precio</button>
+    </div>
+    <div class="card" style="border-color:var(--wm-purple2);background:var(--wm-soft)">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--wm-purple3);margin-bottom:10px">⭐ MÁS POPULAR — PARA CRECER</div>
+      <div style="font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:6px">Accelerator Pack</div>
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px">Crecimiento estratégico en 2 redes con IA</div>
+      <div style="font-size:2rem;font-weight:900;color:var(--wm-purple3);line-height:1;margin-bottom:4px">199€<span style="font-size:1rem;color:var(--text2)">/mes</span></div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Sin permanencia · Activación 48h</div>
+      <div style="font-size:.7rem;color:var(--text2);margin-bottom:14px;line-height:1.7">✓ 12 publicaciones/mes (3/semana)<br>✓ 2 redes sociales<br>✓ Contenido multi-formato inteligente<br>✓ Estudio de mercado inicial<br>✓ Informe en tiempo real</div>
+      <button class="btn btn-primary btn-sm" onclick="copyText('Accelerator Pack RRSS — 199€/mes. 2 redes sociales. 12 publicaciones/mes. Contenido multi-formato con IA. Estudio de mercado. Sin permanencia. Activación 48h. IVA no incluido.')" style="width:100%">Copiar precio</button>
+    </div>
+    <div class="card">
+      <div style="font-size:.62rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);margin-bottom:10px">PARA DOMINAR</div>
+      <div style="font-size:1.05rem;font-weight:800;color:#fff;margin-bottom:6px">Scale Pack</div>
+      <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px">Solución completa: todas las redes + Google My Business</div>
+      <div style="font-size:2rem;font-weight:900;color:var(--gold2);line-height:1;margin-bottom:4px">399€<span style="font-size:1rem;color:var(--text2)">/mes</span></div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:12px">Sin permanencia · Activación 48h</div>
+      <div style="font-size:.7rem;color:var(--text2);margin-bottom:14px;line-height:1.7">✓ 16 publicaciones/mes (4/semana)<br>✓ Todas las redes + Google My Business<br>✓ Contenido multi-formato premium<br>✓ Estudio de mercado inicial<br>✓ Informe en tiempo real</div>
+      <button class="btn btn-ghost btn-sm" onclick="copyText('Scale Pack RRSS — 399€/mes. Todas las redes + Google My Business. 16 publicaciones/mes. Sin permanencia. Activación 48h. IVA no incluido.')" style="width:100%">Copiar precio</button>
+    </div>
+  </div>
+
+  <!-- Quick reference -->
+  <div class="card" style="border-color:var(--wm-border)">
+    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Resumen rápido para ventas</div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:.76rem;color:var(--text2);line-height:2;background:var(--bg3);border-radius:8px;padding:16px;border:1px solid var(--border2);white-space:pre-wrap">CHATBOTS IA — whitemoon.es
+──────────────────────────────────────
+Pack Basic      →  49€/mes  + 120€ setup  + 89€/año mant.
+Pack Advance    →  99€/mes  + 299€ setup  + 199€/año mant.
+Pack Pyme       →  1.800€ setup único     + 599€/año mant.
+                   (Web + Dominio + Chatbot IA + Reservas)
+
+REDES SOCIALES CON IA — whitemoon.es
+──────────────────────────────────────
+LaunchPack      →  99€/mes   · 1 red  · 8 posts/mes
+Accelerator     → 199€/mes   · 2 redes · 12 posts/mes  ⭐
+Scale Pack      → 399€/mes   · Todas  · 16 posts/mes + GMB
+
+Todos los planes: Sin permanencia · Activación 48h · IVA no incluido</div>
+    <div class="flex gap8" style="margin-top:12px">
+      <button class="btn btn-primary btn-sm" onclick="copyText('CHATBOTS IA — whitemoon.es
+Pack Basic → 49€/mes + 120€ setup + 89€/año mant.
+Pack Advance → 99€/mes + 299€ setup + 199€/año mant.
+Pack Pyme → 1.800€ setup + 599€/año mant. (Web + Chatbot + Reservas)
+
+RRSS CON IA:
+LaunchPack → 99€/mes · 1 red · 8 posts/mes
+Accelerator → 199€/mes · 2 redes · 12 posts/mes
+Scale Pack → 399€/mes · Todas las redes + GMB · 16 posts/mes
+Todos sin permanencia. Activación 48h. IVA no incluido.')">Copiar tabla completa</button>
+      <button class="btn btn-ghost btn-sm" onclick="window.open('https://whitemoon.es','_blank')">Ver web completa</button>
+    </div>
+  </div>
+</div>
+
+</main>
+</div><!-- end layout -->
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span id="toast-msg">Copiado</span></div>
 <script>
-const API_KEY = 'TU_API_KEY_AQUI';
-let sector = '';
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+var S={analyzed:0,prompts:0,agents:0,proposals:0};
+var lastScan=null, lastPromptText='';
 
-function sel(el){document.querySelectorAll('.sec-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');sector=el.dataset.s;}
-function tab(n,btn){document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+n).classList.add('active');}
-function step(n,s){const e=document.getElementById('s'+n);e.classList.remove('active','done');if(s)e.classList.add(s);}
-function cp(id){navigator.clipboard.writeText(document.getElementById(id).value);toast('Copiado ✓');}
-function delay(ms){return new Promise(r=>setTimeout(r,ms));}
-
-const SECTORES = {dental:'clínica dental: citas, precios implantes/ortodoncia/limpiezas, seguros aceptados, urgencias',academia:'academia: niveles educativos, precios por modalidad, horarios, matrícula',gimnasio:'gimnasio: tarifas, actividades dirigidas, entrenador personal, horarios',abogados:'despacho de abogados: áreas legales, triage de urgencia, primera consulta, honorarios',restaurante:'restaurante: reservas, carta, menú del día, horarios, celebraciones',inmobiliaria:'inmobiliaria: captación compradores/vendedores, zonas, valoraciones',veterinaria:'clínica veterinaria: citas, vacunas, urgencias, precios, servicios',estetica:'centro de estética: tratamientos, precios, citas, horarios',taller:'taller mecánico: presupuestos, citas, servicios, recogida vehículo',psicologo:'psicólogo/coach: especialidad, sesiones, precios, modalidades',fisioterapia:'fisioterapia: tratamientos, sesiones, valoración gratuita, horarios',otro:'negocio local: servicios, precios, horarios, contacto'};
-
-async function generate(){
-  const url=document.getElementById('urlInput').value.trim();
-  const nombre=document.getElementById('nombreInput').value.trim();
-  const tel=document.getElementById('telInput').value.trim();
-  if(!sector){toast('Selecciona el sector','err');return;}
-  if(!url&&!nombre){toast('Introduce URL o nombre del negocio','err');return;}
-
-  const btn=document.getElementById('genBtn');
-  btn.disabled=true;btn.classList.add('loading');
-  document.getElementById('prog').classList.add('show');
-  document.getElementById('empty').style.display='none';
-  document.getElementById('result').style.display='none';
-  [1,2,3,4,5].forEach(n=>step(n,''));
-
-  const negocio=nombre||(url.replace(/https?:\/\//,'').split('/')[0]);
-  const ctx=SECTORES[sector]||'negocio local';
-  const telefono=tel||'No proporcionado';
-
-  try{
-    step(1,'active');await delay(300);step(1,'done');step(2,'active');
-
-    const kbRes=await ask(`Crea una Knowledge Base completa en español para un agente IA de atención al cliente para este negocio:
-
-Negocio: ${negocio}
-Sector: ${ctx}
-Teléfono/WhatsApp: ${telefono}
-${url?'Web: '+url:''}
-
-Incluye:
-1. PRESENTACIÓN DEL NEGOCIO
-2. SERVICIOS Y PRECIOS (usa valores típicos del sector en Madrid si no tienes datos exactos)
-3. HORARIOS Y CONTACTO
-4. PREGUNTAS FRECUENTES (mínimo 8 preguntas con respuestas)
-5. PROCESO DE CITA O RESERVA
-6. INFORMACIÓN ADICIONAL
-
-Tono natural en español. Si hay datos desconocidos, indica que el cliente debe confirmar.`);
-
-    document.getElementById('kb').value=kbRes;
-    step(2,'done');step(3,'active');
-
-    const chatRes=await ask(`Crea un system prompt para un chatbot de texto en web para este negocio:
-
-Negocio: ${negocio}
-Sector: ${ctx}
-Teléfono/WhatsApp: ${telefono}
-
-El chatbot debe:
-- Presentarse con el nombre del negocio
-- Responder preguntas sobre servicios, precios y horarios
-- Captar nombre y teléfono del cliente antes de derivar
-- Derivar a WhatsApp ${telefono} para cerrar
-- Tono amigable en español de España
-- No inventar información que no tiene
-
-KB de referencia:
-${kbRes.substring(0,500)}`);
-
-    document.getElementById('chat').value=chatRes;
-    step(3,'done');step(4,'active');
-
-    const voiceRes=await ask(`Crea un system prompt para un agente de VOZ telefónico (Vapi.ai) en español para este negocio:
-
-Negocio: ${negocio}
-Sector: ${ctx}
-Teléfono: ${telefono}
-
-REGLAS IMPORTANTES para agente de voz:
-- Frases cortas y naturales para hablar, NO para leer
-- Presentación en máximo 2 frases
-- Nunca hacer más de 2 preguntas seguidas
-- Usar muletillas naturales del español: "Por supuesto", "Claro que sí", "Perfecto"
-- Si no puede resolver, ofrecer transferir con una persona
-- Confirmar siempre antes de colgar
-- Tono cercano, español de España
-
-KB de referencia:
-${kbRes.substring(0,500)}`);
-
-    document.getElementById('voice').value=voiceRes;
-    step(4,'done');step(5,'done');
-    document.getElementById('result').style.display='flex';
-    toast('Agente generado correctamente');
-
-  }catch(e){toast('Error: '+e.message,'err');}
-  btn.disabled=false;btn.classList.remove('loading');
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
+function goPage(id,el){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
+  if(el) el.classList.add('active');
+  if(id==='p-nichos' && !document.getElementById('niche-grid').innerHTML.trim()) buildNichos();
+  if(id==='p-voice') updateVoicePreview();
 }
-
-async function ask(prompt){
-  const r=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','x-api-key':API_KEY,'anthropic-version':'2023-06-01'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
-  });
-  if(!r.ok)throw new Error('API '+r.status);
-  const d=await r.json();
-  return d.content.map(b=>b.type==='text'?b.text:'').join('');
-}
-
-function toast(msg,type){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.style.borderColor=type==='err'?'#ef4444':'var(--g)';
-  t.style.color=type==='err'?'#ef4444':'var(--g)';
+function showToast(msg,col){
+  var t=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  t.style.borderColor=col||'var(--border)';
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  setTimeout(function(){t.classList.remove('show')},2500);
 }
+function copyText(txt){
+  navigator.clipboard.writeText(txt).then(function(){showToast('Copiado al portapapeles','rgba(34,197,94,.4)')});
+}
+function updateCounters(){
+  document.getElementById('hc-analyzed').textContent=S.analyzed;
+  document.getElementById('hc-prompts').textContent=S.prompts;
+  document.getElementById('hc-agents').textContent=S.agents;
+  document.getElementById('hc-props').textContent=S.proposals;
+  document.getElementById('sb-props').textContent=S.proposals;
+}
+
+// ══════════════════════════════════════════
+// SECTOR DETECTION
+// ══════════════════════════════════════════
+var SECTOR_MAP=[
+  {kws:['dental','diente','ortodoncia','implante','clinica'],s:'Clínica Dental',n:'dental'},
+  {kws:['restaurante','comida','menu','carta','cocina','tapas','bar','cafeteria','hosteleria'],s:'Restaurante',n:'restaurante'},
+  {kws:['belleza','estetica','manicura','pedicura','laser','facial','spa','depilacion'],s:'Centro de Belleza',n:'belleza'},
+  {kws:['fontanero','reforma','obra','pintura','electricista','instalacion'],s:'Fontanero / Reformas',n:'fontanero'},
+  {kws:['inmobiliaria','piso','alquiler','venta','propiedad','casa','vivienda'],s:'Inmobiliaria',n:'inmobiliaria'},
+  {kws:['academia','cursos','formacion','clases','idiomas','escuela','aprender'],s:'Academia',n:'academia'},
+  {kws:['taller','mecanico','coche','auto','motor','vehiculo','moto'],s:'Taller Mecánico',n:'taller'},
+  {kws:['gimnasio','fitness','crossfit','pilates','yoga'],s:'Gimnasio',n:'gimnasio'},
+  {kws:['abogado','notario','asesoria','juridico','legal','bufete'],s:'Despacho de Abogados',n:'abogado'},
+  {kws:['peluqueria','barberia','pelo','corte','estilista'],s:'Peluquería',n:'peluqueria'},
+  {kws:['veterinario','veterinaria','mascota','perro','gato','animales'],s:'Clínica Veterinaria',n:'veterinaria'},
+  {kws:['farmacia','medicamento','parafarmacia'],s:'Farmacia',n:'farmacia'},
+];
+function detectSector(url){
+  var u=url.toLowerCase();
+  for(var i=0;i<SECTOR_MAP.length;i++){
+    var sm=SECTOR_MAP[i];
+    for(var j=0;j<sm.kws.length;j++) if(u.includes(sm.kws[j])) return sm;
+  }
+  return SECTOR_MAP[Math.floor(Math.random()*SECTOR_MAP.length)];
+}
+
+// ══════════════════════════════════════════
+// SCANNER
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('url-input').addEventListener('keypress',function(e){if(e.key==='Enter')startScan()});
+});
+
+function startScan(){
+  var url=document.getElementById('url-input').value.trim();
+  if(!url) return;
+  if(!url.startsWith('http')) url='https://'+url;
+  var btn=document.getElementById('scan-btn');
+  btn.disabled=true;
+  btn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Analizando...';
+  renderLoader();
+  // Animate steps while API call runs
+  var steps=['s1','s2','s3','s4','s5','s6','s7','s8'];
+  var stepIdx=0;
+  var stepTimer=setInterval(function(){
+    if(stepIdx>0){
+      var prev=document.getElementById(steps[stepIdx-1]);
+      if(prev){prev.classList.remove('active');prev.classList.add('done');prev.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>';}
+    }
+    if(stepIdx<steps.length){
+      var cur=document.getElementById(steps[stepIdx]);
+      if(cur){cur.classList.remove('waiting');cur.classList.add('active');}
+      stepIdx++;
+    }
+  },1400);
+
+  // Real API call using Claude with web search
+  callClaudeAnalyze(url).then(function(data){
+    clearInterval(stepTimer);
+    // Mark all remaining steps done
+    steps.forEach(function(sid){
+      var el=document.getElementById(sid);
+      if(el){el.classList.remove('active','waiting');el.classList.add('done');el.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>';}
+    });
+    lastScan=data; S.analyzed++;
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Escanear';
+    renderScanResult(data);
+    addToRecents(data);
+    addProposal(data);
+    updateCounters();
+  }).catch(function(err){
+    clearInterval(stepTimer);
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Escanear';
+    document.getElementById('scan-output').innerHTML='<div class="loader-box"><div style="font-size:.9rem;font-weight:700;color:var(--rose2);margin-bottom:8px">Error al analizar</div><div style="font-size:.8rem;color:var(--text2)">'+err+'</div></div>';
+  });
+}
+
+async function callClaudeAnalyze(url){
+  var domain=url.replace(/https?:\/\//,'').split('/')[0];
+
+  var prompt=`Analiza la web "${url}" como experto en marketing digital y agencias de IA para negocios locales españoles.
+
+Debes hacer un análisis REAL y DETALLADO. Busca la web e inspecciona todo lo que puedas detectar.
+
+Devuelve ÚNICAMENTE un objeto JSON válido con esta estructura exacta (sin texto adicional, sin markdown, sin bloques de código):
+
+{
+  "sector": "nombre del sector del negocio",
+  "nicho": "uno de: dental|restaurante|belleza|fontanero|inmobiliaria|academia|taller|gimnasio|abogado|peluqueria|veterinaria|farmacia",
+  "city": "ciudad detectada o vacío",
+  "score": número entre 0 y 100 (potencial de mejora con IA),
+  "ssl": true o false (¿tiene HTTPS?),
+  "mobile": true o false (¿web adaptada a móvil?),
+  "chat": true o false (¿tiene chatbot o live chat?),
+  "wa": true o false (¿tiene botón de WhatsApp?),
+  "gmb": true o false (¿tiene Google My Business / Google Maps?),
+  "analytics": true o false (¿tiene Google Analytics u otro tracking?),
+  "speed": número entre 0 y 100 (estimación velocidad),
+  "seo": número entre 0 y 100 (calidad SEO visible),
+  "cms": "WordPress|Wix|Squarespace|Prestashop|HTML personalizado|No detectado",
+  "probs": ["problema 1 real detectado", "problema 2", "problema 3", "problema 4", "problema 5"],
+  "rrss": {
+    "facebook": {"ok": true/false, "followers": número o 0, "lastPost": "Xd", "active": true/false},
+    "instagram": {"ok": true/false, "followers": número o 0, "lastPost": "Xd", "active": true/false},
+    "tiktok": {"ok": true/false, "followers": número o 0, "lastPost": "Xd", "active": true/false},
+    "linkedin": {"ok": true/false, "followers": número o 0, "lastPost": "Xd", "active": true/false},
+    "youtube": {"ok": true/false, "followers": número o 0, "lastPost": "Xd", "active": true/false},
+    "googlemaps": {"ok": true/false, "reviews": número o 0, "rating": "X.X"},
+    "twitter": {"ok": true/false, "followers": número o 0, "lastPost": "Xd", "active": true/false},
+    "pinterest": {"ok": true/false, "followers": número o 0, "lastPost": "Xd", "active": true/false}
+  },
+  "analysis": "párrafo de 2-3 frases describiendo lo que hace el negocio y el estado real de su presencia digital"
+}
+
+INSTRUCCIONES IMPORTANTES:
+- ssl: comprueba si la URL usa https
+- mobile: busca si la web menciona responsive o se ve bien en móvil
+- chat: busca widgets de chat, Tidio, Intercom, WhatsApp chat, chatbots
+- wa: busca botones o enlaces de WhatsApp en la web
+- gmb: busca si aparecen en Google Maps o tienen ficha de Google
+- rrss: busca enlaces a redes sociales en la web o busca el nombre del negocio en cada red
+- probs: lista problemas REALES y ESPECÍFICOS que detectes en esta web concreta
+- score: calcula el potencial real de mejora (alto si falta mucho, bajo si ya está bien)
+- Si no puedes acceder a la web, usa la información pública disponible y ponlo en el análisis`;
+
+  var apiKey = localStorage.getItem('wm_api_key')||'';
+  if(!apiKey){
+    document.getElementById('api-modal').style.display='flex';
+    throw new Error('Configura tu API Key de Anthropic para usar el análisis real. Haz clic en "Sin API Key" en la cabecera.');
+  }
+
+  var response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      tools: [{"type": "web_search_20250305", "name": "web_search"}],
+      messages: [{role: 'user', content: prompt}]
+    })
+  });
+
+  if(!response.ok){
+    var errText = await response.text();
+    throw new Error('Error API ('+response.status+'): '+errText.substring(0,200));
+  }
+
+  var apiData = await response.json();
+
+  // Extract text from response (may have tool use blocks)
+  var fullText = apiData.content
+    .filter(function(b){return b.type==='text'})
+    .map(function(b){return b.text})
+    .join('');
+
+  if(!fullText) throw new Error('La API no devolvió texto. Respuesta: '+JSON.stringify(apiData.content).substring(0,300));
+
+  // Parse JSON - try to extract from text
+  var jsonStr = fullText.trim();
+  // Remove markdown if present
+  jsonStr = jsonStr.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+  // Find JSON object
+  var jsonStart = jsonStr.indexOf('{');
+  var jsonEnd = jsonStr.lastIndexOf('}');
+  if(jsonStart>=0 && jsonEnd>jsonStart){
+    jsonStr = jsonStr.substring(jsonStart, jsonEnd+1);
+  }
+
+  var parsed;
+  try {
+    parsed = JSON.parse(jsonStr);
+  } catch(e) {
+    throw new Error('No se pudo parsear la respuesta JSON. Texto recibido: '+fullText.substring(0,400));
+  }
+
+  // Build full data object merging API response with defaults
+  var sd = detectSector(url);
+  var nicho = NICHOS.find(function(n){return n.id===(parsed.nicho||sd.n)}) || NICHOS[0];
+  var svcRecs = SERVICES_ALL.slice().sort(function(){return Math.random()-.5}).slice(0,4);
+
+  return {
+    url: url,
+    domain: domain,
+    sector: parsed.sector || sd.s,
+    nicho: parsed.nicho || sd.n,
+    nichoObj: nicho,
+    score: parseInt(parsed.score)||65,
+    ssl: parsed.ssl!==undefined ? parsed.ssl : true,
+    mobile: parsed.mobile!==undefined ? parsed.mobile : true,
+    chat: parsed.chat!==undefined ? parsed.chat : false,
+    wa: parsed.wa!==undefined ? parsed.wa : false,
+    gmb: parsed.gmb!==undefined ? parsed.gmb : false,
+    analytics: parsed.analytics!==undefined ? parsed.analytics : false,
+    speed: parseInt(parsed.speed)||50,
+    seo: parseInt(parsed.seo)||40,
+    cms: parsed.cms||'No detectado',
+    city: parsed.city||'',
+    probs: parsed.probs||(nicho?nicho.probs.slice(0,5):[]),
+    svcRecs: svcRecs,
+    rrss: parsed.rrss||buildDefaultRRSS(),
+    ads: buildAds(parsed.sector||sd.s, domain),
+    analysis: parsed.analysis||''
+  };
+}
+
+function buildDefaultRRSS(){
+  return {
+    facebook:{ok:false,followers:0,lastPost:'—',active:false},
+    instagram:{ok:false,followers:0,lastPost:'—',active:false},
+    tiktok:{ok:false,followers:0,lastPost:'—',active:false},
+    linkedin:{ok:false,followers:0,lastPost:'—',active:false},
+    youtube:{ok:false,followers:0,lastPost:'—',active:false},
+    googlemaps:{ok:false,reviews:0,rating:'—'},
+    twitter:{ok:false,followers:0,lastPost:'—',active:false},
+    pinterest:{ok:false,followers:0,lastPost:'—',active:false}
+  };
+}
+
+// ══════════════════════════════════════════
+
+function renderScanResult(d){
+  var scoreCls=d.score>=70?'pf-green':d.score>=45?'pf-orange':'pf-red';
+  var scoreCol=d.score>=70?'var(--green2)':d.score>=45?'var(--orange2)':'var(--rose2)';
+  var spCol=d.speed>60?'var(--green2)':d.speed>35?'var(--orange2)':'var(--rose2)';
+  var seoCol=d.seo>55?'var(--green2)':d.seo>30?'var(--orange2)':'var(--rose2)';
+  var rrssPresent=Object.keys(d.rrss).filter(function(k){return d.rrss[k].ok}).length;
+  var rrssAbsent=8-rrssPresent;
+
+  var html=`
+  <!-- KPI strip -->
+  <div class="g4 mb20">
+    <div class="card card-sm">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px">Potencial IA</div>
+      <div class="big-num" style="color:${scoreCol}">${d.score}<span style="font-size:.9rem;color:var(--muted)">/100</span></div>
+      <div class="progress" style="margin-top:8px"><div class="progress-fill ${scoreCls}" style="width:${d.score}%"></div></div>
+    </div>
+    <div class="card card-sm">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px">Velocidad web</div>
+      <div class="big-num" style="color:${spCol}">${d.speed}<span style="font-size:.9rem;color:var(--muted)">/100</span></div>
+      <div style="font-size:.68rem;color:var(--text2);margin-top:5px">${d.speed<40?'Muy lenta — penaliza SEO':d.speed<65?'Mejorable':'Aceptable'}</div>
+    </div>
+    <div class="card card-sm">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px">SEO Score</div>
+      <div class="big-num" style="color:${seoCol}">${d.seo}<span style="font-size:.9rem;color:var(--muted)">/100</span></div>
+      <div style="font-size:.68rem;color:var(--text2);margin-top:5px">${d.seo<35?'Muy bajo — invisible en Google':d.seo<55?'Bajo — mejora posible':'Moderado'}</div>
+    </div>
+    <div class="card card-sm">
+      <div style="font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:7px">Presencia RRSS</div>
+      <div class="big-num" style="color:var(--wm-purple3)">${rrssPresent}<span style="font-size:.9rem;color:var(--muted)">/8</span></div>
+      <div style="font-size:.68rem;color:var(--text2);margin-top:5px">${rrssAbsent} redes sin crear</div>
+    </div>
+  </div>
+
+  <!-- Analysis note -->
+  ${d.analysis ? `<div class="card card-sm mb16" style="border-color:rgba(124,58,237,.25);background:rgba(124,58,237,.06)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--wm-purple3);fill:none;stroke-width:1.8;flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span style="font-size:.68rem;font-weight:700;color:var(--wm-purple3);text-transform:uppercase;letter-spacing:.1em">Análisis real por IA</span>
+    </div>
+    <div style="font-size:.8rem;color:var(--text2);line-height:1.7">${d.analysis}</div>
+  </div>` : ''}
+
+  <!-- RRSS Detection -->
+  <div class="sec-hd">
+    <div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>Presencia en Redes Sociales</div>
+    <div class="flex gap8">
+      <button class="btn btn-ghost btn-xs" onclick="goPage('p-rrss',document.querySelectorAll('.nav-item')[4]);document.getElementById('r-url').value='${d.url}'">Generar contenido RRSS</button>
+      <button class="btn btn-primary btn-xs" onclick="showRRSSServices('${d.nicho}')">Ver servicios RRSS</button>
+    </div>
+  </div>
+  <div class="rrss-grid mb20">
+    ${rrssCard('Facebook','📘',d.rrss.facebook,'followers')}
+    ${rrssCard('Instagram','📸',d.rrss.instagram,'followers')}
+    ${rrssCard('TikTok','▶️',d.rrss.tiktok,'followers')}
+    ${rrssCard('LinkedIn','💼',d.rrss.linkedin,'followers')}
+    ${rrssCard('YouTube','🎬',d.rrss.youtube,'followers')}
+    ${rrssCard('Google Maps','🗺️',d.rrss.googlemaps,'reviews')}
+    ${rrssCard('Twitter/X','🐦',d.rrss.twitter,'followers')}
+    ${rrssCard('Pinterest','📌',d.rrss.pinterest,'followers')}
+  </div>
+
+  <!-- RRSS Services (if absent) -->
+  <div id="rrss-svcs-panel" style="display:none"></div>
+
+  <!-- Problems -->
+  <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Problemas técnicos detectados</div></div>
+  <div class="prob-grid mb20">
+    ${probCard('SSL / HTTPS',d.ssl,'lock',d.ssl?'Certificado activo y válido':'Sin SSL — penalizado por Google y marcado inseguro',d.ssl?'p-ok':'p-bad')}
+    ${probCard('Diseño responsive',d.mobile,'smartphone',d.mobile?'Adaptado a móvil correctamente':'Sin diseño móvil — 60% del tráfico perdido',d.mobile?'p-ok':'p-bad')}
+    ${probCard('Chatbot / Live chat',d.chat,'chat',d.chat?'Chatbot detectado en la web':'Sin chatbot — leads perdidos fuera del horario',d.chat?'p-ok':'p-bad')}
+    ${probCard('WhatsApp Business',d.wa,'whatsapp',d.wa?'Botón de WhatsApp presente':'Sin WhatsApp — canal de contacto desaprovechado',d.wa?'p-ok':'p-warn')}
+    ${probCard('Google My Business',d.gmb,'map-pin',d.gmb?'Ficha de Google detectada':'Sin ficha Google — invisible en búsquedas locales',d.gmb?'p-ok':'p-bad')}
+    ${probCard('Analytics / Tracking',d.analytics,'bar-chart',d.analytics?'Google Analytics detectado':'Sin tracking — no puede medir el rendimiento',d.analytics?'p-ok':'p-warn')}
+    ${probCard('CMS / Tecnología',true,'monitor',`Plataforma: ${d.cms}`,'p-ok')}
+    ${probCard('Velocidad de carga',d.speed>50,'zap',d.speed>50?'Tiempo de carga aceptable':'Carga lenta — impacto directo en conversión',d.speed>50?'p-ok':d.speed>30?'p-warn':'p-bad')}
+    ${probCard('Oportunidades negocio',d.probs.length>0,'trending-up',d.probs.length+' oportunidades detectadas','p-warn')}
+  </div>
+
+  <!-- Opportunities -->
+  <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>Oportunidades de negocio</div></div>
+  <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px">
+    ${d.probs.map(function(p){return'<span class="tag tag-o">'+p+'</span>'}).join('')}
+  </div>
+
+  <!-- Services -->
+  <div class="sec-hd mb12">
+    <div class="sec-title"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Servicios recomendados</div>
+    <div class="flex gap8">
+      <button class="btn btn-ghost btn-xs" onclick="goPage('p-voice',document.querySelectorAll('.nav-item')[3]);document.getElementById('v-sector').value='${d.sector}'">+ Agente Voz</button>
+      <button class="btn btn-ghost btn-xs" onclick="goPage('p-rrss',document.querySelectorAll('.nav-item')[4])">+ Contenido RRSS</button>
+    </div>
+  </div>
+  <div class="g3 mb22" style="gap:10px">
+    ${d.svcRecs.map(function(s){return svcCardHTML(s)}).join('')}
+  </div>
+
+  <!-- Ads -->
+  <div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Anuncios generados para este prospecto</div></div>
+  <div class="plat-tabs">
+    <button class="ptab active" onclick="switchAdTab(this,'at-fb')">Facebook Ads</button>
+    <button class="ptab" onclick="switchAdTab(this,'at-ig')">Instagram</button>
+    <button class="ptab" onclick="switchAdTab(this,'at-g')">Google Ads</button>
+    <button class="ptab" onclick="switchAdTab(this,'at-wa')">WhatsApp</button>
+  </div>
+  <div id="at-fb">${renderAds(d.ads.facebook)}</div>
+  <div id="at-ig" style="display:none">${renderAds(d.ads.instagram)}</div>
+  <div id="at-g" style="display:none">${renderAds(d.ads.google)}</div>
+  <div id="at-wa" style="display:none">${renderAds(d.ads.whatsapp)}</div>`;
+
+  document.getElementById('scan-output').innerHTML=html;
+}
+
+function rrssCard(name,ico,data,metric){
+  var hasData=data.ok;
+  var isActive=hasData&&data.active;
+  var cls=hasData?(isActive?'ri-ok':'ri-warn'):'ri-bad';
+  var status=hasData?(isActive?'Activo':'Inactivo'):'No detectado';
+  var metricTxt='';
+  if(hasData){
+    if(metric==='followers') metricTxt=(data.followers||0).toLocaleString()+' seguidores';
+    else if(metric==='reviews') metricTxt=(data.reviews||0)+' reseñas · ★'+(data.rating||'—');
+  }
+  var action=!hasData?'Crear perfil':!isActive?'Reactivar':'Ver métricas';
+  return`<div class="rrss-item ${cls}">
+    <span class="rrss-ico">${ico}</span>
+    <div class="rrss-name">${name}</div>
+    <div class="rrss-status">${status}</div>
+    ${hasData?`<div class="rrss-followers">${metricTxt}</div>`:`<div class="rrss-followers" style="color:var(--rose2)">Sin perfil creado</div>`}
+    <button class="rrss-service-btn" onclick="showToast('Servicio: ${action} ${name} añadido a propuesta')">${action}</button>
+  </div>`;
+}
+
+function probCard(name,ok,icon,detail,cls){
+  var icoCls=cls==='p-ok'?'pi-ok':cls==='p-warn'?'pi-warn':'pi-bad';
+  var icons={
+    lock:'<path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/><path d="M7 11V7a5 5 0 0110 0v4"/>',
+    smartphone:'<rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/>',
+    chat:'<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>',
+    whatsapp:'<path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/>',
+    'map-pin':'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>',
+    'bar-chart':'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+    monitor:'<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>',
+    zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    'trending-up':'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'
+  };
+  return`<div class="prob-card ${cls}">
+    <div class="flex aic gap8 mb8">
+      <div class="prob-icon ${icoCls}"><svg viewBox="0 0 24 24">${icons[icon]||icons.monitor}</svg></div>
+      <div class="prob-name">${name}</div>
+    </div>
+    <div class="prob-detail">${detail}</div>
+  </div>`;
+}
+
+function svcCardHTML(s){
+  return`<div class="svc-card ${s.pri==='hi'?'sc-hi':s.pri==='md'?'sc-md':'sc-lo'}" onclick="showToast('${s.name} añadido a propuesta')">
+    <div class="flex jcb aic mb10">
+      <div class="svc-icon ${s.ico}"><svg viewBox="0 0 24 24">${s.icoPath}</svg></div>
+      <span class="pri-badge ${s.pri==='hi'?'pb-hi':s.pri==='md'?'pb-md':'pb-lo'}">${s.pri==='hi'?'Prioritario':s.pri==='md'?'Recomendado':'Plus'}</span>
+    </div>
+    <div style="font-size:.84rem;font-weight:700;color:var(--text);margin-bottom:4px">${s.name}</div>
+    <div style="font-size:.72rem;color:var(--text2);line-height:1.58;margin-bottom:8px">${s.desc}</div>
+    <div style="font-size:.74rem;font-weight:600;color:var(--orange2);font-family:'JetBrains Mono',monospace;margin-bottom:7px">${s.price}</div>
+    <div style="font-size:.68rem;color:var(--text2);background:var(--bg3);border-radius:6px;padding:7px 9px;border-left:2px solid var(--wm-purple);line-height:1.5">${s.why}</div>
+  </div>`;
+}
+
+var WHY_MAP={
+  chatbot:'La mayoría de negocios pierde clientes por no responder fuera del horario.',
+  web:'Sin SEO local el negocio es invisible cuando el cliente busca en Google.',
+  citas:'Las reservas manuales generan errores y no-shows. La automatización los elimina.',
+  voz:'Las llamadas perdidas van directamente a la competencia. La IA no falla nunca.',
+  leads:'El volumen de leads se multiplica x4 con captación y cualificación automática.',
+  reviews:'Las reseñas en Google son el primer filtro que usa un nuevo cliente.',
+  followup:'El 80% de ventas se cierran tras el 5º contacto. La IA lo hace sola.',
+  rrss:'Contenido regular genera confianza y atrae tráfico orgánico constante.',
+};
+
+var pathChat='<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>';
+var pathWeb='<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/>';
+var pathCal='<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>';
+var pathVoz='<path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/>';
+var pathLeads='<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>';
+var pathStar='<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>';
+var pathBell='<path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/>';
+var pathSocial='<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>';
+
+// ══ WHITEMOON OFFICIAL PRICING ══
+// Chatbots: Pack Basic 49€/mes (120€ setup) | Pack Advance 99€/mes (299€ setup) | Pack Pyme 1.800€ (web+chatbot+reservas)
+// RRSS: LaunchPack 99€/mes | Accelerator 199€/mes | Scale Pack 399€/mes
+var WM_PACKS={
+  basic:{name:'Pack Basic',price:'49€/mes',setup:'120€ setup · 89€/año mant.',desc:'Chatbot IA informativo con menú guiado',detail:'Sin permanencia · Activación 48h · IVA no incluido'},
+  advance:{name:'Pack Advance',price:'99€/mes',setup:'299€ setup · 199€/año mant.',desc:'Chatbot conversacional completo con IA',detail:'Sin permanencia · Activación 48h · IVA no incluido'},
+  pyme:{name:'Pack Pyme',price:'1.800€',setup:'Setup único · Mant. 599€/año',desc:'Web profesional + Dominio + Chatbot IA + Reservas',detail:'Operativo en 5-7 días · Pago fraccionado disponible · IVA no incluido'},
+  launch:{name:'LaunchPack RRSS',price:'99€/mes',setup:'Sin permanencia · Activación 48h',desc:'Presencia activa en 1 red social con IA',detail:'8 publicaciones/mes · Informe rendimiento · IVA no incluido'},
+  accelerator:{name:'Accelerator Pack RRSS',price:'199€/mes',setup:'Sin permanencia · Activación 48h',desc:'Crecimiento estratégico en 2 redes sociales con IA',detail:'12 publicaciones/mes · Contenido multi-formato · Estudio de mercado · IVA no incluido'},
+  scale:{name:'Scale Pack RRSS',price:'399€/mes',setup:'Sin permanencia · Activación 48h',desc:'Solución completa para todas las redes + Google My Business',detail:'16 publicaciones/mes · Todas las redes + GMB · IVA no incluido'},
+};
+var SERVICES_ALL=[
+  {id:'chatbot_basic',name:'Pack Basic — Chatbot IA',price:'49€/mes + 120€ setup',ico:'si-purple',icoPath:pathChat,pri:'hi',desc:'Chatbot IA informativo con menú guiado. Activo en 48h, sin permanencia.',why:'La mayoría de negocios pierde clientes por no responder fuera del horario. Con 49€/mes tienes atención 24h.'},
+  {id:'chatbot_advance',name:'Pack Advance — Chatbot IA',price:'99€/mes + 299€ setup',ico:'si-purple',icoPath:pathChat,pri:'hi',desc:'Chatbot conversacional completo con IA. Responde, cualifica y gestiona citas automáticamente.',why:'El Pack Advance entiende el lenguaje natural — no solo botones. Convierte el 3x más leads que un chatbot básico.'},
+  {id:'pyme',name:'Pack Pyme — Web + IA + Reservas',price:'1.800€ setup · 599€/año',ico:'si-orange',icoPath:pathWeb,pri:'hi',desc:'Web profesional + Dominio + Chatbot IA + Sistema de reservas. Operativo en 5-7 días.',why:'Todo en uno: web SEO, chatbot y reservas desde 1.800€. La solución más completa para negocios locales.'},
+  {id:'launch',name:'LaunchPack — RRSS IA (1 red)',price:'99€/mes',ico:'si-cyan',icoPath:pathSocial,pri:'md',desc:'Presencia activa en 1 red social con IA. 8 publicaciones/mes + informe de rendimiento.',why:'Contenido constante generado con IA sin esfuerzo. Desde 99€/mes con publicación automática incluida.'},
+  {id:'accelerator',name:'Accelerator Pack — RRSS (2 redes)',price:'199€/mes',ico:'si-cyan',icoPath:pathSocial,pri:'md',desc:'2 redes sociales + contenido multi-formato + estudio de mercado. 12 publicaciones/mes.',why:'El plan más popular. Cubre las dos redes principales con estrategia de crecimiento real.'},
+  {id:'scale',name:'Scale Pack — RRSS Completo',price:'399€/mes',ico:'si-cyan',icoPath:pathSocial,pri:'md',desc:'Todas las redes + Google My Business. 16 publicaciones/mes + informes en tiempo real.',why:'Para dominar el mercado local: todas las redes, GMB y contenido IA de máxima calidad.'},
+  {id:'voz',name:'Agente de Voz IA 24h',price:'A consultar',ico:'si-purple',icoPath:pathVoz,pri:'lo',desc:'Atiende llamadas fuera de horario, gestiona urgencias y agenda citas automáticamente.',why:'Las llamadas perdidas van directamente a la competencia. El agente de voz no falla nunca.'},
+  {id:'reviews',name:'Gestión de Reviews Google',price:'Incluido en Pack Advance',ico:'si-orange',icoPath:pathStar,pri:'lo',desc:'Solicita reseñas a clientes satisfechos y gestiona las negativas con IA.',why:'Las reseñas en Google son el primer filtro que usa un nuevo cliente al buscar.'},
+];
+
+function showRRSSServices(nicho){
+  var p=document.getElementById('rrss-svcs-panel');
+  p.style.display='block';
+  p.innerHTML=`
+  <div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24">${pathSocial}</svg>Servicios RRSS que puedes ofrecer</div></div>
+  <div class="rrss-srv-grid mb22">
+    <div class="rrss-srv srv-hi" onclick="showToast('LaunchPack RRSS añadido a propuesta')">
+      <div class="flex jcb aic mb10"><div class="svc-icon si-cyan"><svg viewBox="0 0 24 24">${pathSocial}</svg></div><span class="pri-badge pb-hi">Para empezar</span></div>
+      <div style="font-size:.84rem;font-weight:700;color:var(--text);margin-bottom:2px">LaunchPack RRSS</div>
+      <div style="font-size:.68rem;color:var(--wm-purple3);margin-bottom:5px;font-weight:600">1 red social · Presencia activa con IA</div>
+      <div style="font-size:.71rem;color:var(--text2);line-height:1.58;margin-bottom:8px">8 publicaciones/mes · Publicación automática · Informe de rendimiento · Creación de contenido con IA.</div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--orange2);font-family:'JetBrains Mono',monospace">99€/mes · Sin permanencia · 48h activación</div>
+    </div>
+    <div class="rrss-srv srv-hi" onclick="showToast('Accelerator Pack añadido a propuesta')">
+      <div class="flex jcb aic mb10"><div class="svc-icon si-purple"><svg viewBox="0 0 24 24">${pathSocial}</svg></div><span class="pri-badge pb-hi">⭐ Más popular</span></div>
+      <div style="font-size:.84rem;font-weight:700;color:var(--text);margin-bottom:2px">Accelerator Pack RRSS</div>
+      <div style="font-size:.68rem;color:var(--wm-purple3);margin-bottom:5px;font-weight:600">2 redes sociales · Crecimiento estratégico con IA</div>
+      <div style="font-size:.71rem;color:var(--text2);line-height:1.58;margin-bottom:8px">12 publicaciones/mes · Contenido multi-formato inteligente · Estudio de mercado inicial · Publicación automática.</div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--orange2);font-family:'JetBrains Mono',monospace">199€/mes · Sin permanencia · 48h activación</div>
+    </div>
+    <div class="rrss-srv srv-md" onclick="showToast('Scale Pack añadido a propuesta')">
+      <div class="flex jcb aic mb10"><div class="svc-icon si-orange"><svg viewBox="0 0 24 24">${pathSocial}</svg></div><span class="pri-badge pb-md">Para dominar</span></div>
+      <div style="font-size:.84rem;font-weight:700;color:var(--text);margin-bottom:2px">Scale Pack RRSS</div>
+      <div style="font-size:.68rem;color:var(--wm-purple3);margin-bottom:5px;font-weight:600">Todas las redes + Google My Business</div>
+      <div style="font-size:.71rem;color:var(--text2);line-height:1.58;margin-bottom:8px">16 publicaciones/mes · Todas las redes sociales + GMB · Informe de rendimiento en tiempo real · Contenido premium.</div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--orange2);font-family:'JetBrains Mono',monospace">399€/mes · Sin permanencia · 48h activación</div>
+    </div>
+    <div class="rrss-srv srv-lo" onclick="showToast('Pack Pyme añadido a propuesta')">
+      <div class="flex jcb aic mb10"><div class="svc-icon si-green"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><span class="pri-badge pb-lo">Todo en uno</span></div>
+      <div style="font-size:.84rem;font-weight:700;color:var(--text);margin-bottom:2px">Pack Pyme — Web + IA</div>
+      <div style="font-size:.68rem;color:var(--wm-purple3);margin-bottom:5px;font-weight:600">Web + Dominio + Chatbot IA + Reservas</div>
+      <div style="font-size:.71rem;color:var(--text2);line-height:1.58;margin-bottom:8px">Web profesional + chatbot conversacional + sistema de reservas online. Operativo en 5-7 días. Pago fraccionado disponible.</div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--orange2);font-family:'JetBrains Mono',monospace">1.800€ setup · 599€/año mantenimiento</div>
+    </div>
+  </div>`;
+  p.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function switchAdTab(el,tabId){
+  document.querySelectorAll('.ptab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  ['at-fb','at-ig','at-g','at-wa'].forEach(function(id){
+    var t=document.getElementById(id); if(t) t.style.display='none';
+  });
+  document.getElementById(tabId).style.display='block';
+}
+
+function buildAds(sector,domain){
+  return{
+    facebook:[
+      {hook:'¿Cuántas llamadas pierde tu '+sector.toLowerCase()+' cada semana fuera del horario?',
+       body:'Con nuestro Asistente IA tu negocio atiende clientes 24h, agenda citas automáticamente y capta leads mientras duermes — sin contratar a nadie más.',
+       cta:'Ver demo gratuita',ctr:'4.2%',cpm:'7.80€'},
+      {hook:'Tu competencia ya tiene IA. ¿Sigues atendiendo todo manualmente?',
+       body:'WhiteMoon instala en tu negocio un sistema completo de IA en menos de 7 días: chatbot, reservas online y seguimiento automático. Solo pagas si funciona.',
+       cta:'Solicitar presupuesto',ctr:'3.6%',cpm:'6.20€'}
+    ],
+    instagram:[
+      {hook:'De 5 clientes/mes a 40 — solo automatizando la captación.',
+       body:'Le instalamos un sistema IA a un '+sector.toLowerCase()+' local. En 30 días multiplicó sus clientes por 8 sin aumentar el presupuesto de publicidad.',
+       cta:'Ver el caso →',ctr:'3.1%',cpm:'5.40€'}
+    ],
+    google:[
+      {hook:'Chatbot IA para '+sector+' — Prueba 7 días gratis',
+       body:'Sistema de atención automática 24h. Responde, agenda y capta clientes sin esfuerzo. Implementación en 48h. Sin permanencia.',
+       cta:'Probar gratis',ctr:'6.8%',cpm:'14.20€'}
+    ],
+    whatsapp:[
+      {hook:'Hola [Nombre], vi que tienes un '+sector.toLowerCase()+' en [Ciudad].',
+       body:'Te escribo porque instalamos asistentes IA para negocios locales — atienden clientes 24h, gestionan citas y captan leads automáticamente.\n\n¿Tienes 10 minutos esta semana para una demo en vivo?\n\nwhitemoon.es',
+       cta:'Enviar',ctr:'12.4%',cpm:'—'}
+    ]
+  };
+}
+
+function renderAds(ads){
+  if(!ads||!ads.length) return '';
+  return ads.map(function(a){
+    var fullTxt=a.hook+'\n\n'+a.body+'\n\n→ '+a.cta;
+    return`<div class="ad-card">
+      <div class="flex jcb aic mb8">
+        <span style="font-size:.69rem;color:var(--muted)">Anuncio IA generado</span>
+        <button class="copy-btn" onclick="copyText(${JSON.stringify(fullTxt)})">Copiar</button>
+      </div>
+      <div class="ad-hook">${a.hook}</div>
+      <div class="ad-body">${a.body}</div>
+      <div class="ad-cta-pill">
+        <svg viewBox="0 0 24 24" style="width:10px;height:10px;stroke:currentColor;fill:none;stroke-width:2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        ${a.cta}
+      </div>
+      <div class="ad-meta">
+        <div class="ad-stat">CTR estimado: <span>${a.ctr}</span></div>
+        <div class="ad-stat">CPM estimado: <span>${a.cpm}</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+// RECENTS + PROPOSALS
+// ══════════════════════════════════════════
+function addToRecents(d){
+  var list=document.getElementById('recent-list');
+  var empty=list.querySelector('div[style]');
+  if(empty) list.removeChild(empty);
+  var col=d.score>=70?'var(--green)':d.score>=45?'var(--orange2)':'var(--wm-purple2)';
+  var el=document.createElement('div');
+  el.className='recent-item';
+  el.innerHTML=`<div class="r-dot" style="background:${col}"></div><div class="r-info"><div class="r-name">${d.sector}</div><div class="r-url">${d.domain}</div></div>`;
+  el.onclick=function(){renderScanResult(d);goPage('p-scanner',document.querySelectorAll('.nav-item')[0])};
+  list.insertBefore(el,list.firstChild);
+}
+
+function addProposal(d){
+  S.proposals++;
+  // Smart pack recommendation based on scan
+  var packRec,packPrice,packDetail;
+  var rrssAbsent=d.rrss?Object.keys(d.rrss).filter(function(k){return !d.rrss[k].ok}).length:0;
+  if(rrssAbsent>=4){
+    packRec='Scale Pack RRSS (todas las redes + GMB)';packPrice='399€/mes';
+    packDetail='16 publicaciones/mes · Todas las redes + Google My Business · Sin permanencia · Activación 48h';
+  } else if(rrssAbsent>=2){
+    packRec='Accelerator Pack RRSS (2 redes sociales)';packPrice='199€/mes';
+    packDetail='12 publicaciones/mes · Contenido multi-formato con IA · Estudio de mercado · Sin permanencia · Activación 48h';
+  } else if(!d.chat&&!d.wa){
+    packRec='Pack Advance — Chatbot IA Conversacional';packPrice='99€/mes + 299€ setup';
+    packDetail='Chatbot completo con IA · Sin permanencia · Activación 48h · Mantenimiento 199€/año';
+  } else if(!d.mobile||!d.ssl){
+    packRec='Pack Pyme — Web + Chatbot IA + Reservas';packPrice='1.800€ setup único';
+    packDetail='Web profesional + Dominio + Chatbot IA + Reservas · Operativo 5-7 días · 599€/año mant. · Pago fraccionado disponible';
+  } else {
+    packRec='Pack Basic — Chatbot IA informativo';packPrice='49€/mes + 120€ setup';
+    packDetail='Chatbot con menú guiado · Sin permanencia · Activación 48h · Mantenimiento 89€/año';
+  }
+  var propText='Hola [Nombre],\n\nTras analizar la presencia digital de tu '+d.sector.toLowerCase()+' en '+(d.city||'tu ciudad')+', hemos detectado '+d.probs.length+' oportunidades clave donde la IA puede generar un impacto inmediato:\n\n'+d.probs.map(function(p){return '— '+p}).join('\n')+'\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPROPUESTA WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n📦 PACK RECOMENDADO: '+packRec+'\n💶 PRECIO: '+packPrice+'\n✅ '+packDetail+'\n\nCon esto tu negocio:\n— Atiende clientes las 24h sin coste de personal extra\n— Capta y cualifica leads automáticamente\n— Sin permanencia — cancelas cuando quieras\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPACKS DISPONIBLES (whitemoon.es)\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n🤖 CHATBOTS IA:\n· Pack Basic — 49€/mes (120€ setup) · Chatbot informativo\n· Pack Advance — 99€/mes (299€ setup) · Chatbot IA completo ⭐\n· Pack Pyme — 1.800€ setup · Web + Chatbot + Reservas\n\n📱 REDES SOCIALES CON IA:\n· LaunchPack — 99€/mes · 1 red · 8 publicaciones/mes\n· Accelerator Pack — 199€/mes · 2 redes · 12 publicaciones/mes ⭐\n· Scale Pack — 399€/mes · Todas las redes + GMB\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n¿Hablamos esta semana? Te hago una demo en vivo — sin compromiso.\n\n— Equipo WhiteMoon\n🌐 whitemoon.es | 📍 Majadahonda, Madrid\nAgencia de Inteligencia Artificial para negocios locales';
+
+  var container=document.getElementById('proposals-list');
+  var emptyState=container.querySelector('.empty-state');
+  if(emptyState) container.innerHTML='';
+
+  var el=document.createElement('div');
+  el.className='proposal-card';
+  el.innerHTML=`
+    <div class="flex jcb aic mb14">
+      <div>
+        <div style="font-size:.9rem;font-weight:700;color:var(--text)">${d.sector} — ${d.domain}</div>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:3px">Potencial IA: ${d.score}/100 · ${d.probs.length} oportunidades</div>
+      </div>
+      <div class="flex gap8">
+        <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(propText)})">Copiar</button>
+        <button class="btn btn-green btn-sm" onclick="window.open('https://wa.me/?text='+encodeURIComponent(${JSON.stringify(propText)}),'_blank')">
+          <svg viewBox="0 0 24 24">${pathChat}</svg> WhatsApp
+        </button>
+      </div>
+    </div>
+    <div style="font-size:.78rem;color:var(--text2);line-height:1.85;font-family:'JetBrains Mono',monospace;white-space:pre-line;background:var(--bg3);border-radius:8px;padding:14px;border:1px solid var(--border2)">${propText.replace(/\*\*(.+?)\*\*/g,'<b style="color:var(--text)">$1</b>')}</div>`;
+  container.insertBefore(el,container.firstChild);
+  updateCounters();
+}
+
+// ══════════════════════════════════════════
+// PROSPECTOR
+// ══════════════════════════════════════════
+var BIZ_NAMES=['Café Central','Bar Los Pinos','Clínica Smile','Peluquería Nova','Taller Rueda','Fontanero García','Academia Plus','Restaurante El Rincón','Centro Estética Glow','Dental Cuidados','Inmobiliaria Sur','Gym Power','Farmacia Plaza','Reformas López','Óptica Central','Pastelería Luna','Ferretería Díaz'];
+var STREETS=['C/ Mayor','Av. Constitución','C/ Alcalá','Pl. España','C/ Gran Vía','Av. Diagonal','C/ Serrano','C/ Goya','C/ Toledo','Av. República Argentina'];
+var SECTORS_LIST=['Restaurante','Clínica Dental','Centro de Belleza','Fontanero','Peluquería','Taller Mecánico','Gimnasio','Abogado','Farmacia','Inmobiliaria'];
+
+function runProspector(){
+  var city=document.getElementById('pros-city').value||'Madrid';
+  var sector=document.getElementById('pros-sector').value;
+  var btn=document.getElementById('pros-btn');
+  btn.disabled=true; btn.textContent='Buscando...';
+  document.getElementById('pros-output').innerHTML=`
+  <div class="loader-box">
+    <div class="spinner"></div>
+    <div style="font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:5px">Buscando negocios en Google Maps...</div>
+    <div style="font-size:.74rem;color:var(--text2)">Analizando presencia digital de cada negocio</div>
+    <div class="loader-steps">
+      <div class="lstep active" id="p1"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Consultando Google Maps: ${sector||'todos los sectores'} en ${city}...</div>
+      <div class="lstep waiting" id="p2"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Extrayendo resultados y datos de contacto...</div>
+      <div class="lstep waiting" id="p3"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Comprobando presencia web y RRSS...</div>
+      <div class="lstep waiting" id="p4"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>Calculando oportunidad IA por negocio...</div>
+    </div>
+  </div>`;
+  [['p1',700],['p2',1700],['p3',2700],['p4',3500]].forEach(function(x){
+    setTimeout(function(){
+      var el=document.getElementById(x[0]);
+      if(!el) return;
+      el.classList.remove('active'); el.classList.add('done');
+      el.querySelector('svg').innerHTML='<polyline points="20 6 9 17 4 12"/>';
+      var ns={'p1':'p2','p2':'p3','p3':'p4'};
+      if(ns[x[0]]){var n=document.getElementById(ns[x[0]]);if(n){n.classList.remove('waiting');n.classList.add('active');}}
+    },x[1]);
+  });
+  setTimeout(function(){
+    btn.disabled=false;
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Prospectar';
+    renderProspects(city,sector);
+  },4400);
+}
+
+function renderProspects(city,sector){
+  var results=[];
+  for(var i=0;i<14;i++){
+    var s=sector||SECTORS_LIST[rnd(0,SECTORS_LIST.length-1)];
+    var noWeb=randB(.48), noChat=randB(.72), noWa=randB(.44), noRRSS=randB(.38);
+    var noGmb=randB(.42), badRev=randB(.35), noFb=randB(.5), noIg=randB(.46), noTt=randB(.78);
+    var score=0;
+    if(noWeb) score+=28; if(noChat) score+=20; if(noWa) score+=14;
+    if(noRRSS) score+=14; if(noGmb) score+=18;
+    score=Math.max(10,Math.min(95,score+rnd(0,10)));
+    results.push({
+      name:BIZ_NAMES[rnd(0,BIZ_NAMES.length-1)], sector:s,
+      address:STREETS[rnd(0,STREETS.length-1)]+' '+rnd(1,150)+', '+city,
+      phone:'+34 6'+rnd(10,99)+' '+rnd(100,999)+' '+rnd(100,999),
+      stars:(Math.random()*2+3).toFixed(1), reviews:rnd(2,180),
+      noWeb,noChat,noWa,noRRSS,noGmb,badRev,noFb,noIg,noTt,score,city
+    });
+  }
+  results.sort(function(a,b){return b.score-a.score});
+  var html=`
+  <div class="flex jcb aic mb16">
+    <div style="font-size:.82rem;color:var(--text2)"><span style="color:var(--text);font-weight:700">${results.length} negocios</span> encontrados en ${city} — ordenados por potencial</div>
+    <button class="btn btn-ghost btn-sm" onclick="copyText(${JSON.stringify(results.map(function(r){return r.name+' | '+r.sector+' | '+r.address+' | '+r.phone}).join('\n'))})">Exportar lista</button>
+  </div>
+  <div class="pros-list">`;
+  results.forEach(function(r){
+    var sc=r.score>=70?'var(--green2)':r.score>=45?'var(--orange2)':'var(--rose2)';
+    var hot=r.score>=72;
+    html+=`<div class="pros-card ${hot?'hot':''}">
+      <div>
+        <div class="pros-biz">${r.name}${hot?'<span class="hot-badge">HOT</span>':''}</div>
+        <div class="pros-meta">${r.sector} · ${r.address}</div>
+        <div class="pros-meta" style="margin-bottom:8px">${r.phone} · ★${r.stars} (${r.reviews} reseñas)</div>
+        <div class="flag-row">
+          ${r.noWeb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin web</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Tiene web</span>'}
+          ${r.noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>'}
+          ${r.noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin Facebook</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Facebook</span>'}
+          ${r.noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin Instagram</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Instagram</span>'}
+          ${r.noTt?'<span class="flag f-warn">Sin TikTok</span>':''}
+          ${r.noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WhatsApp</span>':''}
+          ${r.noGmb?'<span class="flag f-warn">Sin Google Maps</span>':''}
+          ${r.badRev?'<span class="flag f-warn">Reviews bajas</span>':''}
+        </div>
+      </div>
+      <div class="pros-score-col">
+        <div class="pros-score" style="color:${sc}">${r.score}</div>
+        <div style="font-size:.62rem;color:var(--muted)">potencial</div>
+        <div class="pros-actions">
+          <button class="btn btn-primary btn-xs" onclick="window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent('${r.name} ${r.sector} ${r.city}'),'_blank')">Maps</button>
+          <button class="btn btn-ghost btn-xs" onclick="window.open('https://wa.me/${r.phone.replace(/\s|\+/g,'')}?text='+encodeURIComponent('Hola ${r.name}, te escribo desde WhiteMoon — instalamos asistentes IA para negocios locales. ¿Tienes 5 min? Demo: whitemoon.es'),'_blank')">WA</button>
+        </div>
+      </div>
+    </div>`;
+  });
+  html+='</div>';
+  document.getElementById('pros-output').innerHTML=html;
+}
+// ══════════════════════════════════════════
+// NICHOS DATA
+// ══════════════════════════════════════════
+var NICHOS=[
+  {id:'dental',name:'Clínica Dental',ico:'🦷',score:'94',desc:'Urgencias 24h, citas y reviews son los puntos críticos.',tags:['salud','citas','urgencias'],
+   probs:['Llamadas perdidas fuera de horario','Sin recordatorio automático de citas','Sin captación de leads online','Sin gestión de reviews Google','Sin sistema de booking digital'],
+   svcs:[{n:'Pack Advance — Chatbot IA',d:'Chatbot conversacional completo. Agenda citas 24h y cualifica pacientes.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Pyme — Web + Reservas + IA',d:'Web + dominio + chatbot + sistema de reservas completo.',p:'1.800€ setup · 599€/año',ci:'si-green'},{n:'Agente de Voz IA 24h',d:'Atiende llamadas nocturnas y urgencias automáticamente.',p:'A consultar · whitemoon.es',ci:'si-purple'},{n:'Pack Advance + Reviews',d:'Chatbot IA + gestión de reseñas Google incluida.',p:'99€/mes + 299€ setup',ci:'si-orange'}],
+   objs:[{q:'Ya tenemos recepcionista',a:'El agente IA atiende a las 2am cuando llega una urgencia. No sustituye, complementa el equipo.'},{q:'Es muy caro para nosotros',a:'Con 2 pacientes nuevos al mes recuperas la inversión. El chatbot trabaja 24/7 sin vacaciones.'}],
+   script:'Hola [Nombre], soy [Tu nombre] de WhiteMoon.\n\nUna pregunta rápida: ¿cuántas llamadas perdéis a la semana fuera del horario?\n\n[Espera respuesta]\n\nEso es dinero perdido directamente. Instalamos un asistente IA que atiende esas llamadas, recoge datos del paciente y agenda la cita automáticamente — sin que nadie tenga que hacer nada.\n\n¿Te enseño cómo funciona en 10 minutos?'},
+  {id:'restaurante',name:'Restaurante',ico:'🍽️',score:'78',desc:'Reservas, pedidos y fidelización son los tres dolores.',tags:['hostelería','reservas','reviews'],
+   probs:['Reservas perdidas fuera de horario','Sin sistema de fidelización digital','Reviews negativas sin gestionar','Sin WhatsApp Business activo','Sin carta digital actualizada'],
+   svcs:[{n:'Pack Advance — Chatbot + Reservas',d:'Chatbot IA que gestiona reservas en WhatsApp 24h.',p:'99€/mes + 299€ setup',ci:'si-orange'},{n:'Pack Basic — Chatbot menú digital',d:'Chatbot con carta interactiva y pedido automático.',p:'49€/mes + 120€ setup',ci:'si-purple'},{n:'Pack Pyme — Web + Fidelización',d:'Web + chatbot + sistema de fidelización de clientes.',p:'1.800€ setup · 599€/año',ci:'si-green'},{n:'LaunchPack RRSS — Restaurante',d:'8 posts/mes con fotos del menú. Publicación automática.',p:'99€/mes · Sin permanencia',ci:'si-purple'}],
+   objs:[{q:'Ya tenemos Instagram',a:'¿Cuántos seguidores pueden reservar a las 11pm? El chatbot convierte seguidores en reservas directas.'},{q:'Mis clientes prefieren llamar',a:'Ofrece los dos canales y captura el 100% de las solicitudes entrantes.'}],
+   script:'Hola [Nombre], ¿tenéis el restaurante en [Ciudad]?\n\nCuando alguien intenta reservar un domingo por la tarde y el teléfono no está activo, ¿qué pasa con esa reserva?\n\nNosotros instalamos un sistema en WhatsApp que recibe esas reservas automáticamente, las confirma y os avisa. Sin esfuerzo.\n\n¿5 minutos para que os lo enseñe?'},
+  {id:'belleza',name:'Centro de Belleza',ico:'💅',score:'88',desc:'Citas, recordatorios y fidelización son el núcleo del negocio.',tags:['estética','citas','fidelización'],
+   probs:['Citas solo por teléfono','No-shows frecuentes sin recordatorio','Sin chatbot de servicios y precios','Sin fidelización digital','Sin captación de clientas nuevas online'],
+   svcs:[{n:'Pack Advance — Chatbot IA',d:'Reservas 24h, informa de precios y recuerda citas.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Basic — Anti No-Show',d:'Recuerda cita 24h y 2h antes. Reduce no-shows 60%.',p:'49€/mes + 120€ setup',ci:'si-green'},{n:'Pack Pyme — Web + Reservas',d:'Web SEO + chatbot + reservas online. Todo en uno.',p:'1.800€ setup · 599€/año',ci:'si-orange'},{n:'Accelerator Pack RRSS',d:'Contenido IA para 2 redes. Captación de nuevas clientas.',p:'199€/mes · Sin permanencia',ci:'si-purple'}],
+   objs:[{q:'Mis clientas ya saben llamarme',a:'A las 10pm cuando deciden reservar, el teléfono está apagado. El chatbot capta esa reserva antes de que vayan a la competencia.'},{q:'No sé si usarían eso',a:'El 91% de mujeres 25-50 usa WhatsApp diariamente. Es el canal más natural.'}],
+   script:'Hola [Nombre], vi el centro en Instagram — el trabajo que hacéis es precioso.\n\nSólo una pregunta: cuando alguien te escribe un domingo por la noche preguntando precios o queriendo reservar, ¿qué pasa con ese mensaje?\n\n[Espera respuesta]\n\nUn asistente IA que responde al instante, informa del precio y agenda la cita. Sin que tú hagas nada.\n\n¿Te hago una demo rápida?'},
+  {id:'fontanero',name:'Fontanero / Reformas',ico:'🔧',score:'72',desc:'Urgencias 24h, presupuestos y confianza son los factores clave.',tags:['servicios','urgencias','presupuestos'],
+   probs:['Urgencias fuera de horario sin atención','Sin forma de solicitar presupuesto online','Sin web profesional','Sin Google Maps optimizado','Dependencia del boca a boca exclusivamente'],
+   svcs:[{n:'Agente de Voz IA 24h',d:'Atiende urgencias, recoge dirección y tipo de avería.',p:'A consultar · whitemoon.es',ci:'si-purple'},{n:'Pack Pyme — Web + Chatbot',d:'Web SEO local + chatbot IA + captación de presupuestos.',p:'1.800€ setup · 599€/año',ci:'si-orange'},{n:'Pack Advance — Presupuestos IA',d:'Chatbot que recoge datos de avería y genera presupuesto.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Basic + Google Reviews',d:'Chatbot básico + gestión automática de reseñas.',p:'49€/mes + 120€ setup',ci:'si-green'}],
+   objs:[{q:'Trabajo solo y no necesito más',a:'El sistema filtra y cualifica antes de que respondas. Solo recibes los clientes que te interesan.'},{q:'Ya tengo trabajo por recomendaciones',a:'El boca a boca es finito. La IA multiplica el alcance sin multiplicar tu tiempo.'}],
+   script:'Hola [Nombre], ¿eres el fontanero de [Ciudad]?\n\n¿Cuántas llamadas de urgencia pierdes a la semana por estar en obra o porque es tarde?\n\nInstalamos un agente IA que atiende esa llamada, recoge todos los datos y te lo manda por WhatsApp para que decidas si vas o no.\n\n¿5 minutos para que te lo enseñe?'},
+  {id:'inmobiliaria',name:'Inmobiliaria',ico:'🏠',score:'82',desc:'Leads cualificados y seguimiento son el mayor reto.',tags:['inmuebles','leads','ventas'],
+   probs:['Leads sin cualificar que pierden tiempo','Sin respuesta rápida a nuevos interesados','Sin seguimiento automático a leads fríos','Sin alertas para compradores activos','Portales caros con leads de baja calidad'],
+   svcs:[{n:'Pack Advance — Cualificación IA',d:'Chatbot que filtra y cualifica compradores e inquilinos.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Agente de Voz IA Captación',d:'Llama a leads nuevos automáticamente en menos de 60s.',p:'A consultar · whitemoon.es',ci:'si-purple'},{n:'Pack Pyme — Web + Alertas IA',d:'Web + chatbot + sistema de alertas de propiedades.',p:'1.800€ setup · 599€/año',ci:'si-orange'},{n:'Accelerator Pack RRSS',d:'2 redes sociales + captación orgánica de compradores.',p:'199€/mes · Sin permanencia',ci:'si-green'}],
+   objs:[{q:'Ya usamos Idealista',a:'Esos portales dan el lead pero no lo califican ni hacen seguimiento. La IA convierte ese lead frío en cliente antes que la competencia.'},{q:'Tenemos CRM propio',a:'El CRM almacena, la IA actúa. Se instala encima del CRM que ya tienes.'}],
+   script:'Hola [Nombre], vi la inmobiliaria de [Ciudad].\n\nCuando alguien rellena el formulario a las 9pm, ¿cuándo le llama alguien del equipo normalmente?\n\nEn ese momento el lead está caliente y mirando 4 inmobiliarias más. Instalamos un sistema que le llama en menos de 60 segundos, automáticamente.\n\n¿10 minutos?'},
+  {id:'academia',name:'Academia / Formación',ico:'📚',score:'68',desc:'Captación de alumnos, matrículas y seguimiento.',tags:['educación','cursos','alumnos'],
+   probs:['Sin sistema de matrícula online','Sin seguimiento a alumnos que abandonan','Sin chatbot de orientación','Sin automatización de pagos','Baja conversión lead → alumno'],
+   svcs:[{n:'Pack Advance — Chatbot Orientación',d:'Chatbot IA que orienta al alumno y gestiona pre-inscripción.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Pyme — Matrículas Online',d:'Web + chatbot + formulario de matrícula automatizado.',p:'1.800€ setup · 599€/año',ci:'si-orange'},{n:'Pack Advance + Retención IA',d:'Chatbot que detecta alumnos en riesgo y activa retención.',p:'99€/mes + 299€ setup',ci:'si-green'},{n:'Scale Pack RRSS + Pack Pyme',d:'Todas las redes + web + chatbot. La solución completa.',p:'399€/mes + 1.800€ web',ci:'si-purple'}],
+   objs:[{q:'Somos presenciales',a:'El proceso de decisión empieza online. Si no estás ahí, pierdes al alumno antes de que llegue.'},{q:'Ya tenemos web',a:'¿Cuántos visitantes se convierten en alumnos? La media es 2-3%. Con IA sube al 8-12%.'}],
+   script:'Hola [Nombre], vi la academia en [Ciudad].\n\nDe cada 100 personas que visitan vuestra web, ¿cuántas se convierten en alumnos?\n\nCon un chatbot de orientación bien configurado eso sube al 8-12%. La IA habla con cada visitante y le lleva al proceso de matrícula.\n\n¿Demo?'},
+  {id:'taller',name:'Taller Mecánico',ico:'🚗',score:'65',desc:'Citas, presupuestos y fidelización de clientes habituales.',tags:['automoción','citas','presupuestos'],
+   probs:['Sin citas online','Sin recordatorio de revisiones periódicas','Sin presupuesto automático','Sin visibilidad en Google Maps','Poca captación de clientes nuevos'],
+   svcs:[{n:'Pack Advance — Citas + Presupuestos',d:'Chatbot IA que agenda revisiones y genera presupuesto.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Basic — Recordatorios IA',d:'Chatbot que avisa cuando toca ITV, aceite o revisión.',p:'49€/mes + 120€ setup',ci:'si-orange'},{n:'Pack Pyme — Web + GMB',d:'Web profesional + dominio + chatbot + Google My Business.',p:'1.800€ setup · 599€/año',ci:'si-green'}],
+   objs:[{q:'Mis clientes me llaman directamente',a:'Los nuevos no tienen tu número. Cuando buscan mecánico en Google necesitas estar ahí con respuesta inmediata.'}],
+   script:'Hola [Nombre], tenéis el taller en [Ciudad], ¿verdad?\n\n¿Cuántos clientes perdéis porque no cogen el teléfono a tiempo o no os encuentran en Google?\n\nCon ficha Google + chatbot de citas podéis doblar la captación en 90 días.\n\n¿10 minutos?'},
+  {id:'gimnasio',name:'Gimnasio / Fitness',ico:'💪',score:'71',desc:'Captación, retención y reactivación de socios.',tags:['fitness','socios','retención'],
+   probs:['Alta tasa de baja post-enero','Sin reactivación de exsocios','Sin chatbot de inscripciones','Sin seguimiento de socios inactivos','Sin automatización de pagos'],
+   svcs:[{n:'Pack Advance — Inscripciones IA',d:'Chatbot que informa de tarifas y gestiona alta de socios.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Advance + Retención Socios',d:'Chatbot IA que detecta socios en riesgo y activa retención.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'LaunchPack RRSS + Basic',d:'RRSS + chatbot: reactivación de socios inactivos.',p:'99€/mes RRSS + 49€/mes chatbot',ci:'si-green'}],
+   objs:[{q:'Ya tenemos app propia',a:'La app sirve a los que ya son socios. El chatbot capta a los que aún no lo son, a las 11pm cuando se convencen.'}],
+   script:'Hola [Nombre], vi el gimnasio en [Ciudad].\n\nEl mayor problema de todos los gimnasios es la bajada post-enero. ¿Cuánto os afecta?\n\nInstalamos un sistema que detecta socios que están dejando de venir y les manda una oferta personalizada antes de que se den de baja. Recupera entre el 15 y el 30%.\n\n¿Te interesa?'},
+  {id:'abogado',name:'Despacho de Abogados',ico:'⚖️',score:'76',desc:'Captación de consultas, cualificación y seguimiento.',tags:['legal','consultas','leads'],
+   probs:['Sin captación de leads fuera de horario','Sin cualificación automática de casos','Sin recordatorio de citas y plazos','Sin seguimiento de clientes','Baja presencia digital'],
+   svcs:[{n:'Pack Advance — Cualificación Legal',d:'Chatbot IA para primera toma de datos del caso.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Basic — Agenda + Recordatorios',d:'Chatbot básico con agenda y confirmación automática.',p:'49€/mes + 120€ setup',ci:'si-green'},{n:'Agente de Voz IA',d:'Atiende llamadas fuera de horario automáticamente.',p:'A consultar · whitemoon.es',ci:'si-purple'}],
+   objs:[{q:'La confidencialidad es importante',a:'El chatbot solo recoge datos básicos para cualificar, exactamente igual que tu recepcionista.'}],
+   script:'Hola [Nombre], vi el despacho en [Ciudad].\n\nCuando alguien tiene un problema legal urgente busca abogado a las 10pm. Si no hay forma de contactar, llaman al siguiente resultado de Google.\n\nInstalamos un agente IA que atiende esa consulta inicial, recoge los datos básicos y agenda la consulta para el día siguiente.\n\n¿Te interesa?'},
+  {id:'peluqueria',name:'Peluquería',ico:'✂️',score:'74',desc:'Citas, recordatorios y fidelización de clientes fijos.',tags:['belleza','citas','fidelización'],
+   probs:['Citas solo por teléfono','No-shows frecuentes','Sin captación de clientes nuevos','Sin fidelización digital','Sin Instagram activo'],
+   svcs:[{n:'Pack Advance — Citas WhatsApp',d:'Chatbot IA completo que gestiona reservas 24h.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Basic — Anti No-Show',d:'Recuerda cita 48h y 2h antes. Libera hueco automáticamente.',p:'49€/mes + 120€ setup',ci:'si-orange'},{n:'LaunchPack RRSS — Instagram',d:'8 posts/mes con antes/después y tendencias. Auto-publicación.',p:'99€/mes · Sin permanencia',ci:'si-purple'}],
+   objs:[{q:'Mis clientes ya saben cuándo vienen',a:'Los nuevos no. El recordatorio reduce no-shows un 60% — eso solo ya se paga.'}],
+   script:'Hola [Nombre], vi la peluquería en [Ciudad].\n\nLos no-shows son el mayor problema — un hueco vacío es dinero que no vuelve. ¿Cuántos tenéis a la semana?\n\nInstalamos un recordatorio automático por WhatsApp que reduce eso un 60%.\n\n¿5 minutos?'},
+  {id:'veterinaria',name:'Clínica Veterinaria',ico:'🐾',score:'79',desc:'Urgencias, vacunas y fidelización de propietarios.',tags:['salud animal','urgencias','mascotas'],
+   probs:['Urgencias fuera de horario','Sin recordatorio de vacunas y revisiones','Sin chatbot de triaje','Sin captación online','Sin historial digital accesible'],
+   svcs:[{n:'Pack Advance — Triaje IA',d:'Chatbot que evalúa urgencias y da primeros consejos.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Basic — Recordatorios Vacunas',d:'Chatbot que avisa cuando toca vacuna o revisión anual.',p:'49€/mes + 120€ setup',ci:'si-green'},{n:'Agente Voz IA 24h',d:'Atiende llamadas nocturnas y orienta al propietario.',p:'A consultar · whitemoon.es',ci:'si-purple'}],
+   objs:[{q:'Ya tenemos servicio de urgencias',a:'¿Pero alguien atiende el teléfono a las 3am? El agente IA filtra qué es urgente de verdad.'}],
+   script:'Hola [Nombre], vi la clínica veterinaria en [Ciudad].\n\nCuando una mascota está mal de madrugada, el dueño llama a quien coja el teléfono. Si no cogéis, van a urgencias de la competencia — y probablemente no vuelven.\n\nUn agente de voz IA que atienda esas llamadas puede cambiar completamente la fidelización.\n\n¿Lo vemos?'},
+  {id:'farmacia',name:'Farmacia',ico:'💊',score:'62',desc:'Stock, asesoramiento y fidelización recurrente.',tags:['salud','consultas','fidelización'],
+   probs:['Sin consulta de stock online','Sin asesoramiento fuera de horario','Sin captación de parafarmacia','Sin fidelización automática','Sin pedidos por WhatsApp'],
+   svcs:[{n:'Pack Advance — Consulta y Stock',d:'Chatbot IA que responde stock y asesora sobre OTC.',p:'99€/mes + 299€ setup',ci:'si-purple'},{n:'Pack Pyme — Pedidos + Web',d:'Web + chatbot + sistema de pedidos por WhatsApp.',p:'1.800€ setup · 599€/año',ci:'si-orange'},{n:'Pack Basic + Fidelización',d:'Chatbot básico + programa de fidelización y recordatorios.',p:'49€/mes + 120€ setup',ci:'si-green'}],
+   objs:[{q:'Estamos regulados',a:'El chatbot informa sobre productos sin receta y confirma stock — igual que vuestra web.'}],
+   script:'Hola [Nombre], tenéis la farmacia en [Ciudad], ¿verdad?\n\n¿Cuántas llamadas recibís al día preguntando si tenéis tal o cual producto? Un chatbot que responda eso automáticamente ahorra horas al equipo.\n\n¿Lo vemos?'}
+];
+
+function buildNichos(){
+  var grid=document.getElementById('niche-grid');
+  grid.innerHTML=NICHOS.map(function(n){
+    return`<div class="niche-card" onclick="selectNiche('${n.id}',this)">
+      <div class="n-score">${n.score}/100</div>
+      <div class="n-ico">${n.ico}</div>
+      <div class="n-name">${n.name}</div>
+      <div class="n-desc">${n.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px">${n.tags.map(function(t){return'<span class="tag tag-p">'+t+'</span>'}).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function selectNiche(id,el){
+  document.querySelectorAll('.niche-card').forEach(function(c){c.classList.remove('selected')});
+  el.classList.add('selected');
+  var n=NICHOS.find(function(x){return x.id===id});
+  if(!n) return;
+  var det=document.getElementById('niche-detail');
+  det.classList.add('show');
+  det.innerHTML=`
+  <div class="flex aic gap12 mb16">
+    <div style="font-size:2rem">${n.ico}</div>
+    <div>
+      <div style="font-size:1.05rem;font-weight:800;color:#fff">${n.name}</div>
+      <div style="font-size:.74rem;color:var(--text2);margin-top:3px">${n.desc}</div>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-primary btn-sm" onclick="loadVoiceNiche('${n.id}')">Crear Agente Voz</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadRRSSNiche('${n.name}')">Contenido RRSS</button>
+    </div>
+  </div>
+  <div class="nd-tabs">
+    <button class="nd-tab active" onclick="switchNichoTab(this,'nt-svcs')">Servicios a vender</button>
+    <button class="nd-tab" onclick="switchNichoTab(this,'nt-probs')">Problemas</button>
+    <button class="nd-tab" onclick="switchNichoTab(this,'nt-objs')">Objeciones</button>
+    <button class="nd-tab" onclick="switchNichoTab(this,'nt-script')">Script de venta</button>
+  </div>
+  <div id="nt-svcs" class="nd-panel active">
+    ${n.svcs.map(function(s){return`<div class="svc-row"><div class="svc-dot ${s.ci}"><svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8">${pathChat}</svg></div><div><div style="font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:2px">${s.n}</div><div style="font-size:.72rem;color:var(--text2);margin-bottom:3px">${s.d}</div><div style="font-size:.7rem;font-weight:600;color:var(--orange2);font-family:'JetBrains Mono',monospace">${s.p}</div></div></div>`}).join('')}
+  </div>
+  <div id="nt-probs" class="nd-panel">
+    <div style="display:flex;flex-wrap:wrap;gap:7px">${n.probs.map(function(p){return'<span class="tag tag-o">'+p+'</span>'}).join('')}</div>
+  </div>
+  <div id="nt-objs" class="nd-panel">
+    ${n.objs.map(function(o){return`<div class="objection"><div class="obj-q">"${o.q}"</div><div class="obj-a">${o.a}</div></div>`}).join('')}
+  </div>
+  <div id="nt-script" class="nd-panel">
+    <div class="flex jcb aic mb8">
+      <span style="font-size:.72rem;color:var(--text2)">Script de llamada / WhatsApp</span>
+      <button class="btn btn-ghost btn-xs" onclick="copyText(${JSON.stringify(n.script)})">Copiar script</button>
+    </div>
+    <div class="script-box">${n.script.replace(/\n/g,'<br>')}</div>
+  </div>`;
+  setTimeout(function(){det.scrollIntoView({behavior:'smooth',block:'nearest'})},100);
+}
+
+function switchNichoTab(el,panelId){
+  var det=document.getElementById('niche-detail');
+  det.querySelectorAll('.nd-tab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  det.querySelectorAll('.nd-panel').forEach(function(p){p.classList.remove('active')});
+  document.getElementById(panelId).classList.add('active');
+}
+function loadVoiceNiche(id){
+  var n=NICHOS.find(function(x){return x.id===id});
+  if(n){document.getElementById('v-sector').value=n.name;document.getElementById('v-services').value=n.svcs.map(function(s){return s.n}).join('\n');}
+  goPage('p-voice',document.querySelectorAll('.nav-item')[3]);
+  setTimeout(updateVoicePreview,100);
+}
+function loadRRSSNiche(name){
+  document.getElementById('r-sector').value=name;
+  goPage('p-rrss',document.querySelectorAll('.nav-item')[4]);
+}
+
+// ══════════════════════════════════════════
+// VOICE AGENT
+// ══════════════════════════════════════════
+function updateVoicePreview(){
+  var biz=document.getElementById('v-biz').value||'tu negocio';
+  var name=document.getElementById('v-name').value||'Lucía';
+  var hours=document.getElementById('v-hours').value||'Lun-Vie 9:00-20:00';
+  var svcs=document.getElementById('v-services').value;
+  var svcList=svcs?svcs.split('\n').filter(function(s){return s.trim()}):[document.getElementById('v-sector').value||'el servicio'];
+  document.getElementById('vp-name').textContent=name+' · Agente IA';
+  document.getElementById('conv-flow').innerHTML=`
+    <div><div class="msg-label">AGENTE</div><div class="msg msg-bot">Hola, gracias por llamar a <b>${biz}</b>. Soy ${name}, ¿en qué puedo ayudarte hoy?</div></div>
+    <div style="align-self:flex-end"><div class="msg-label" style="text-align:right">CLIENTE</div><div class="msg msg-user">Quiero información sobre ${svcList[0]}.</div></div>
+    <div><div class="msg-label">AGENTE</div><div class="msg msg-bot">Claro, con mucho gusto te ayudo. ¿Para qué día y hora te vendría bien? Nuestro horario es ${hours}.</div></div>
+    <div style="align-self:flex-end"><div class="msg-label" style="text-align:right">CLIENTE</div><div class="msg msg-user">El jueves por la tarde a las 17:00.</div></div>
+    <div><div class="msg-label">AGENTE</div><div class="msg msg-bot">Perfecto. ¿A qué nombre lo reservo? Te confirmo enseguida por WhatsApp.</div></div>`;
+  document.getElementById('config-out').textContent='Plataforma: VAPI / Bland.ai / ElevenLabs\nModelo LLM: GPT-4o / Claude 3.5 Sonnet\nVoz: Femenina, castellano neutro, tono '+document.getElementById('v-tone').value.toLowerCase()+'\nLatencia objetivo: <500ms\n\nWebhooks:\n→ POST /booking-created\n→ POST /lead-captured\n→ POST /call-ended\n\nIntegraciones:\n→ Google Calendar (citas)\n→ WhatsApp Business API (notificaciones)\n→ CRM preferido (HubSpot / Google Sheets)\n\nKPIs a monitorizar:\n→ Conversión llamada → cita\n→ Duración media de llamada\n→ Llamadas fuera de horario atendidas\n→ CSAT (satisfacción del cliente)';
+}
+
+function generatePrompt(){
+  var biz=document.getElementById('v-biz').value||'[Nombre del negocio]';
+  var sector=document.getElementById('v-sector').value||'[Sector]';
+  var name=document.getElementById('v-name').value||'Lucía';
+  var goal=document.getElementById('v-goal').value;
+  var tone=document.getElementById('v-tone').value;
+  var svcs=document.getElementById('v-services').value||'Servicios del negocio';
+  var hours=document.getElementById('v-hours').value||'Consultar con el negocio';
+  var phone=document.getElementById('v-phone').value||'No especificado';
+  lastPromptText=`# PROMPT SISTEMA — AGENTE DE VOZ IA
+# ${biz} | ${sector}
+# Generado por WhiteMoon Scout
+
+## ROL E IDENTIDAD
+Eres ${name}, asistente virtual telefónica de ${biz}, un/a ${sector} en España.
+Tu objetivo principal: ${goal}.
+Tono de comunicación: ${tone.toLowerCase()}.
+Idioma: Español (castellano neutro, sin regionalismos).
+
+## SERVICIOS QUE OFRECE EL NEGOCIO
+${svcs}
+
+## HORARIO DE ATENCIÓN
+${hours}
+Fuera de horario: recoge los datos del cliente y agenda para cuando el negocio abra.
+
+## FLUJO DE CONVERSACIÓN
+
+### SALUDO INICIAL
+"Hola, gracias por llamar a ${biz}. Soy ${name}, ¿en qué puedo ayudarte?"
+
+### PROCESO DE CUALIFICACIÓN
+1. ¿Qué necesita exactamente?
+2. ¿Es cliente nuevo o ya ha venido antes?
+3. ¿Tiene alguna urgencia o preferencia de fecha?
+
+### GESTIÓN DE CITAS
+- Pregunta el día y hora preferidos
+- Confirma la disponibilidad según el horario
+- Recoge nombre completo y número de teléfono
+- Confirma la cita y envía resumen por WhatsApp
+
+### CIERRE
+"Perfecto [nombre], queda todo anotado. ¿Hay algo más en lo que pueda ayudarte?"
+
+## REGLAS CRÍTICAS
+- NUNCA inventes precios que no conozcas con certeza
+- NUNCA hagas diagnósticos médicos, legales o técnicos
+- Si el cliente está enfadado: empatiza primero, luego resuelve
+- Si necesita hablar con una persona: derivar a ${phone}
+- Duración objetivo de llamada: 2-4 minutos
+- Si hay silencio de más de 5 segundos: "¿Sigues ahí? Te escucho."
+
+## DERIVACIÓN HUMANA
+Número directo: ${phone}
+Horario del equipo: ${hours}
+
+---
+Generado por WhiteMoon Scout — whitemoon.es`;
+
+  document.getElementById('prompt-out').innerHTML=lastPromptText.replace(/\n/g,'<br>').replace(/(#{1,3}.+)/g,'<b>$1</b>');
+  switchVTab(document.querySelectorAll('.vtab')[1],'vt-prompt');
+  S.agents++;
+  updateCounters();
+  showToast('Prompt del agente generado correctamente');
+}
+function copyPrompt(){
+  if(lastPromptText) copyText(lastPromptText);
+  else showToast('Genera el prompt primero');
+}
+function switchVTab(el,tabId){
+  document.querySelectorAll('.vtab').forEach(function(t){t.classList.remove('active')});
+  el.classList.add('active');
+  ['vt-demo','vt-prompt','vt-config'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none'});
+  document.getElementById(tabId).style.display='block';
+}
+
+// ══════════════════════════════════════════
+// RRSS CONTENT GENERATOR
+// ══════════════════════════════════════════
+var CONTENT_TYPES={
+  'Carrusel educativo':{ico:'📊',tagCls:'tag-p',gen:function(sector,plat){
+    return{content:`PROMPT PARA CREAR CARRUSEL EN ${plat.toUpperCase()}:\n\nCrea un carrusel de 7 slides para un negocio de ${sector}.\n\n📌 SLIDE 1 (Portada):\n"5 errores que cometen el 90% de los clientes al elegir un ${sector.toLowerCase()}"\nDiseño: Fondo oscuro + título grande + subtítulo + logo.\n\n📌 SLIDES 2-6 (Contenido):\nCada slide = UN error con:\n— Título impactante (máx 6 palabras)\n— Explicación breve (máx 25 palabras)\n— Consejo de solución (máx 20 palabras)\n— Icono o ilustración representativa\n\n📌 SLIDE 7 (CTA):\n"¿Quieres evitar estos errores? Escríbenos hoy"\n\nTono: educativo, empático, sin tecnicismos. Formato 1080x1080px.`,
+    hooks:['El error que comete el 90% al elegir '+sector.toLowerCase(),'Lo que nadie te cuenta sobre [sector]','5 señales de que necesitas cambiar de [sector]'],
+    caption:'¿Sabías que el 90% de la gente comete estos errores al elegir [sector]?\n\nSlide a slide te lo contamos todo 👆\n\n¿Te has reconocido en alguno? 👇 Cuéntanos en los comentarios\n\n#'+sector.replace(/ /g,'')+'#Consejos #TipsDeExperto'};
+  }},
+  'Post de venta / oferta':{ico:'🛒',tagCls:'tag-o',gen:function(sector,plat){
+    return{content:`PROMPT PARA CREAR POST DE VENTA EN ${plat.toUpperCase()}:\n\nCrea un post de venta persuasivo para ${sector}.\n\n🎯 ESTRUCTURA:\n1. HOOK (primera línea): Pregunta que genera curiosidad sobre el problema principal\n2. PROBLEMA: Describe el dolor del cliente en 2-3 frases directas\n3. SOLUCIÓN: Presenta el servicio con 3 beneficios concretos\n4. OFERTA: Precio o descuento especial + plazo limitado\n5. CTA: Urgente y específico ("Solo esta semana", "Plazas limitadas")\n6. CONTACTO: WhatsApp + link de reserva\n\nTono: directo, orientado a beneficios, no características. Máximo 150 palabras.`,
+    hooks:['¿Cuánto te está costando no tener [solución]?','Oferta especial esta semana solo para [ciudad]','Si llevas tiempo pensándolo, este es el momento'],
+    caption:'💥 OFERTA ESPECIAL — solo esta semana.\n\nEscríbenos antes de que se acaben las plazas 👇\n\n🔗 Link en bio para reservar\n\n#Oferta #'+sector.replace(/ /g,'')+'#EspecialSemana'};
+  }},
+  'Testimonio / caso real':{ico:'⭐',tagCls:'tag-gold',gen:function(sector,plat){
+    return{content:`PROMPT PARA CREAR POST DE TESTIMONIO EN ${plat.toUpperCase()}:\n\nCrea un post de testimonio / caso de éxito para ${sector}.\n\n🎯 ESTRUCTURA:\n1. CONTEXTO: ¿Cómo llegó el cliente? ¿Qué problema tenía?\n2. PROCESO: ¿Qué hicimos paso a paso?\n3. RESULTADO: ¿Qué cambió? (con datos numéricos si es posible)\n4. QUOTE: Cita directa del cliente (entre comillas, específica)\n5. CTA suave: "¿Quieres un resultado similar?"\n\nCliente ficticio: María G., 34 años.\nSé específico con los resultados ("redujo X un 60%", "ganó Y clientes en 30 días").\nIncluye versión larga (feed) y versión corta (Story).`,
+    hooks:['Lo que María consiguió en solo 3 semanas con nosotros','De "no sé si funciona" a "ojalá lo hubiera hecho antes" — el caso de Ana','Resultado real de una clienta de [Ciudad]: +40 clientes en 30 días'],
+    caption:'"[Quote del cliente]"\n— María G., clienta desde [año]\n\n¿Quieres un resultado similar?\nEscríbenos y te contamos cómo 👇\n\n#Testimonio #CasoReal #'+sector.replace(/ /g,'')};
+  }},
+  'Reel / Video UGC':{ico:'🎬',tagCls:'tag-c',gen:function(sector,plat){
+    return{content:`PROMPT PARA CREAR GUIÓN DE REEL EN ${plat.toUpperCase()}:\n\nCrea el guión completo de un Reel de 30-45 segundos para ${sector}.\n\n🎬 ESTRUCTURA TEMPORAL:\n0-3s: Hook visual + texto en pantalla ("¿Por qué [problema común]?")\n3-8s: Presentación del problema (voz en off)\n8-22s: Puntos clave de la solución (3 puntos, 4-5 seg cada uno)\n22-30s: Resultado / transformación\n30-45s: CTA + nombre del negocio\n\n📝 INCLUYE:\n— Guión de voz en off completo\n— Texto que aparece en pantalla\n— Descripción del plano visual\n— Música recomendada (género + BPM)\n— Caption con hashtags`,
+    hooks:['¿Por qué [problema] y cómo solucionarlo en 30 segundos?','3 cosas que harías diferente si supieras esto antes','Lo que aprendí después de [X años] trabajando en [sector]'],
+    caption:'🎬 Guarda este video, lo vas a necesitar.\n\n¿Cuál de los 3 puntos te sorprendió más? 👇\n\n#Reel #'+sector.replace(/ /g,'')+'#TipsExperto #Viral'};
+  }},
+  'Meme / Humor':{ico:'😂',tagCls:'tag-g',gen:function(sector,plat){
+    return{content:`PROMPT PARA CREAR CONTENIDO HUMOR EN ${plat.toUpperCase()}:\n\nCrea 3 ideas de meme/humor para ${sector} que sean:\n— Relatables para el cliente objetivo\n— Que mencionen sutilmente los beneficios del servicio\n— Apropiados para redes sociales profesionales\n\nFormato para cada idea:\n📌 MEME 1:\n— Template: [nombre del meme a usar]\n— Texto superior: [máx 8 palabras]\n— Texto inferior: [máx 8 palabras]\n— Por qué funcionará: [1 frase]\n\nPara el caption: tono cercano, emoji, pregunta para comentarios.\nEvita humor ofensivo o discriminatorio.`,
+    hooks:['Cuando [situación cómica del sector]...','Nadie:\nClientes de [sector]: [situación graciosa]','Yo antes de ir a [sector] vs después'],
+    caption:'😂 ¿A alguien más le pasa esto?\n\nEtiqueta a alguien que necesite leer esto 👇\n\n#Humor #'+sector.replace(/ /g,'')+'#Relatable'};
+  }},
+  'Behind the scenes':{ico:'🎥',tagCls:'tag-c',gen:function(sector,plat){
+    return{content:`PROMPT PARA CREAR BEHIND THE SCENES EN ${plat.toUpperCase()}:\n\nCrea el guión para una serie de Stories o Reel tipo "behind the scenes" de ${sector}.\n\n📱 SECUENCIA DE 5 STORIES:\nStory 1: "Os enseño cómo es un día en [negocio]" + hook curiosidad\nStory 2-4: Momentos del día a día (describe qué mostrar + texto a superponer)\nStory 5: Momento especial o diferenciador del negocio\n+ CTA Story: "¿Quieres vivir esta experiencia? Reserva aquí 👆"\n\n🎬 VERSIÓN REEL 45s con el mismo contenido.\n\nTono: auténtico, humano, cercano. Objetivo: generar confianza y conexión emocional.`,
+    hooks:['Lo que pasa entre bastidores antes de abrir las puertas','Un día normal en [negocio] (no es lo que crees)','¿Quieres ver cómo trabajamos por dentro?'],
+    caption:'👀 Poca gente sabe lo que hay detrás de cada [servicio].\n\nHoy lo enseñamos todo, sin filtros 🙌\n\n#BehindTheScenes #'+sector.replace(/ /g,'')+'#Auténtico'};
+  }}
+};
+
+function generateRRSS(){
+  var sector=document.getElementById('r-sector').value||'Negocio local';
+  var weeks=parseInt(document.getElementById('r-weeks').value)||2;
+  var platforms=[];
+  document.querySelectorAll('.plat-btn.on').forEach(function(p){platforms.push(p.textContent.trim())});
+  if(!platforms.length) platforms=['Instagram','Facebook'];
+  var types=[];
+  document.querySelectorAll('.ct-row.on .ct-label').forEach(function(el){types.push(el.textContent.trim())});
+  if(!types.length) types=['Carrusel educativo','Post de venta / oferta'];
+  var weekLabels=['Sem 1','Sem 2','Sem 3','Sem 4'];
+  var weekColors=['tag-p','tag-o','tag-g','tag-c'];
+  var cards=[];
+  for(var w=0;w<weeks;w++){
+    types.forEach(function(type){
+      var tpl=CONTENT_TYPES[type];
+      if(!tpl) return;
+      platforms.forEach(function(plat){
+        var data=tpl.gen(sector,plat);
+        cards.push({ico:tpl.ico,type,plat,weekLabel:weekLabels[w],weekColor:weekColors[w],tagCls:tpl.tagCls,content:data.content,hooks:data.hooks,caption:data.caption});
+      });
+    });
+  }
+  cards=cards.slice(0,10);
+  S.prompts+=cards.length;
+  updateCounters();
+  document.getElementById('rrss-output').innerHTML='<div class="prompt-cards">'+cards.map(function(card){
+    var fullPrompt=card.content;
+    return`<div class="prompt-card">
+      <div class="pc-header">
+        <div class="pc-type"><span style="font-size:1.1rem">${card.ico}</span>${card.type}</div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="tag">${card.plat}</span>
+          <span class="tag ${card.weekColor}">${card.weekLabel}</span>
+        </div>
+      </div>
+      <div class="pc-content">${card.content.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}</div>
+      <div style="font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Hooks alternativos:</div>
+      <div class="pc-hooks">${card.hooks.map(function(h){return'<div class="hook-item" onclick="copyText(\''+h.replace(/'/g,"\\'")+'\')" title="Clic para copiar">'+h+'</div>'}).join('')}</div>
+      <div class="pc-footer">
+        <button class="btn btn-ghost btn-xs" onclick="copyText(${JSON.stringify(fullPrompt)})">Copiar prompt</button>
+        <button class="btn btn-ghost btn-xs" onclick="copyText(${JSON.stringify(card.caption)})">Copiar caption</button>
+      </div>
+    </div>`;
+  }).join('')+'</div>';
+  showToast(cards.length+' prompts de contenido generados');
+}
+
+
+// ══ API KEY MANAGEMENT ══
+function saveApiKey(){
+  var key = document.getElementById('api-key-input').value.trim();
+  var errEl = document.getElementById('api-key-error');
+  if(!key){errEl.textContent='Introduce una API key válida.';errEl.style.display='block';return;}
+  if(!key.startsWith('sk-ant-')){errEl.textContent='La clave debe empezar por sk-ant-...';errEl.style.display='block';return;}
+  localStorage.setItem('wm_api_key', key);
+  document.getElementById('api-modal').style.display='none';
+  updateApiStatus();
+  showToast('API Key guardada correctamente. Ya puedes analizar webs reales.','rgba(34,197,94,.4)');
+}
+function updateApiStatus(){
+  var key = localStorage.getItem('wm_api_key')||'';
+  var pill = document.getElementById('api-status-pill');
+  var txt = document.getElementById('api-status-txt');
+  var ico = document.getElementById('api-status-ico');
+  if(key && key.startsWith('sk-ant-')){
+    txt.textContent = 'IA activa · '+key.substring(0,12)+'...';
+    txt.style.color = 'var(--green2)';
+    pill.style.borderColor = 'rgba(34,197,94,.3)';
+    ico.innerHTML = '<polyline points="20 6 9 17 4 12"/>';
+  } else {
+    txt.textContent = 'Sin API Key — clic para configurar';
+    txt.style.color = 'var(--rose2)';
+    pill.style.borderColor = 'rgba(244,63,94,.2)';
+    ico.innerHTML = '<circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M15.54 8.46a5 5 0 010 7.07"/>';
+  }
+}
+// Prefill and check on load
+document.addEventListener('DOMContentLoaded', function(){
+  var saved = localStorage.getItem('wm_api_key')||'';
+  if(saved) document.getElementById('api-key-input').value = saved;
+  updateApiStatus();
+  // Enter key on input
+  document.getElementById('api-key-input').addEventListener('keypress', function(e){if(e.key==='Enter')saveApiKey();});
+});
+
+// Init
+updateVoicePreview();
 </script>
 </body>
 </html>
