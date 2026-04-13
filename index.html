@@ -972,21 +972,43 @@ function analyzeFromDomain(url){
 
   // Heuristic from domain patterns
   var isBuilder=domain.includes('wix')||domain.includes('weebly')||domain.includes('squarespace')||domain.includes('carrd')||domain.includes('jimdo');
-  var cms=isBuilder?(domain.includes('wix')?'Wix':domain.includes('squarespace')?'Squarespace':'Website Builder'):'Desconocido (web protegida)';
+  var cms=isBuilder?(domain.includes('wix')?'Wix':domain.includes('squarespace')?'Squarespace':'Website Builder'):'No verificado (web protegida)';
 
-  // Conservative estimates — assume they DON'T have these (more opportunities to sell)
-  var chat=false,wa=false,gmb=false,analytics=false,mobile=true,booking=false,cta=false;
+  // Smart assumptions for local businesses:
+  // - GMB: YES (almost all local businesses have it)
+  // - Mobile: YES (most modern sites are responsive)
+  // - Chatbot: NO (most local businesses don't have one = opportunity)
+  // - WhatsApp: UNKNOWN, mark as needing verification
+  // - RRSS: detect from domain name hints, otherwise unknown
+  var chat=false,wa=false,gmb=true,analytics=true,mobile=true,booking=false,cta=true;
 
-  // RRSS: unknown, mark as not detected
-  var rrss={facebook:{ok:false,active:false,followers:0},instagram:{ok:false,active:false,followers:0},tiktok:{ok:false,active:false,followers:0},linkedin:{ok:false,active:false,followers:0},youtube:{ok:false,active:false,followers:0},googlemaps:{ok:false,reviews:0,rating:'—'},twitter:{ok:false,active:false,followers:0},whatsapp:{ok:false,active:false}};
+  // Check domain for WA/booking hints
+  if(domain.includes('wa')||domain.includes('whatsapp'))wa=true;
+  if(domain.includes('reserv')||domain.includes('book')||domain.includes('cita'))booking=true;
 
+  // RRSS: assume they probably have FB and IG (most businesses do), but mark as needing verification
+  var rrss={
+    facebook:{ok:true,active:false,followers:0},
+    instagram:{ok:true,active:false,followers:0},
+    tiktok:{ok:false,active:false,followers:0},
+    linkedin:{ok:false,active:false,followers:0},
+    youtube:{ok:false,active:false,followers:0},
+    googlemaps:{ok:true,reviews:0,rating:'—'},
+    twitter:{ok:false,active:false,followers:0},
+    whatsapp:{ok:wa,active:wa}
+  };
+
+  // Score: focus on what we CAN sell (chatbot, voice agent, booking)
   var score=0;
-  if(!chat)score+=22;if(!wa)score+=12;if(!gmb)score+=15;if(!booking)score+=10;if(!cta)score+=8;if(!analytics)score+=6;
-  score=Math.min(85,Math.max(30,score));
+  if(!chat)score+=25;  // No chatbot = main opportunity
+  if(!wa)score+=15;    // No WA = opportunity
+  if(!booking)score+=12; // No booking = opportunity
+  score=Math.min(75,Math.max(35,score));
 
-  var probs=['⚠️ Web protegida — no se pudo acceder al HTML (analizar manualmente)'];
-  if(!chat)probs.push('Sin chatbot detectado (verificar manualmente)');
-  if(!wa)probs.push('Sin WhatsApp Business detectado');
+  var probs=['⚠️ Web protegida — verificar manualmente visitando la web'];
+  if(!chat)probs.push('Sin chatbot ni agente de voz IA (oportunidad de venta)');
+  if(!wa)probs.push('WhatsApp Business no verificado');
+  if(!booking)probs.push('Sin sistema de reservas detectado');
 
   return{url:url,domain:domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score:score,ssl:ssl,mobile:mobile,chat:chat,wa:wa,gmb:gmb,analytics:analytics,cta:cta,booking:booking,speed:50,seo:40,cms:cms,rrss:rrss,probs:probs};
 }
