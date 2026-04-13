@@ -629,14 +629,14 @@ document.addEventListener('DOMContentLoaded',function(){});
 // ═══════════════════════════════════════
 var SECTORS=[
 {kws:['dental','diente','ortodoncia','implante','clinica dental','sonris','smile','tooth','teeth','odonto','endodoncia','periodoncia','bucal','protesis dental','blanqueamiento dental','higienista'],s:'Clínica Dental',ico:'🦷',n:'dental'},
-{kws:['restaurante','comida','menu','carta','tapas','bar ','cafeteria','pizza','sushi','gastro','paella','asador','marisquer','taberna','bistro','trattoria','burguer','kebab','wok','buffet','catering','food','comer','brunch','lunch','dinner','cocina','chiringuito','mesón','bodega','vinoteca','cerveceria','pub','cantina'],s:'Restaurante / Hostelería',ico:'🍽️',n:'restaurante'},
+{kws:['restaurante','comida','tapas','bar ','cafeteria','pizza','sushi','gastro','paella','asador','marisquer','taberna','bistro','trattoria','burguer','kebab','wok','buffet','catering','food','comer','brunch','lunch','dinner','cocina','chiringuito','mesón','bodega','vinoteca','cerveceria','pub','cantina'],s:'Restaurante / Hostelería',ico:'🍽️',n:'restaurante'},
 {kws:['belleza','estetica','manicura','facial','spa','depilacion','beauty','laser','nail','uña','corporal','antiedad','mesoterapia','radiofrecuencia','centro estetica','microblading','pestañ','bronceado','tratamiento facial','body','wellness'],s:'Centro de Belleza / Estética',ico:'💅',n:'belleza'},
 {kws:['fontanero','reforma','pintura','electricista','plumber','instalacion','albanil','techado','impermeabiliz','desatasc','calefacc','aire acondicionado','climatiz','cerrajer','reformas','construccion','obra','interiorismo','decoracion','carpinter','cristaler','persianer','mampara'],s:'Fontanero / Reformas / Hogar',ico:'🔧',n:'fontanero'},
 {kws:['inmobiliaria','piso','alquiler','propiedad','casa','vivienda','realestate','finca','chalet','apartamento','local comercial','hipoteca','tasacion','real estate','venta pisos','compra venta','arrendamiento','inmueble','promotora'],s:'Inmobiliaria',ico:'🏠',n:'inmobiliaria'},
 {kws:['academia','cursos','formacion','clases','escuela','aprender','training','estudio','centroestudio','centro de estudio','centro de formacion','enseñanza','tutor','oposicion','idioma','master','educacion','colegio','instituto','aula','docen','pedagog','capacitacion','online learning','e-learning','campus','universidad','centro educativo','autoescuela','driving school','refuerzo escolar','preparacion','certificacion','bootcamp','seminario','taller formativo'],s:'Academia / Formación',ico:'📚',n:'academia'},
 {kws:['taller','mecanico','coche','auto','motor','vehiculo','moto','car','garage','itv','neumatico','freno','suspension','chapa','pintura coche','electromecanica','reparacion vehiculo','grua','recambio','postventa auto','concesionario','car wash','lavadero','autolavado'],s:'Taller Mecánico / Automoción',ico:'🚗',n:'taller'},
 {kws:['gimnasio','fitness','crossfit','pilates','yoga','gym','sport','entrenamiento','musculacion','spinning','boxing','artes marciales','padel','squash','entrenador personal','personal trainer','deporte','natacion','piscina','centro deportivo','club deportivo','functional training','hiit','zumba','danza','baile'],s:'Gimnasio / Fitness',ico:'💪',n:'gimnasio'},
-{kws:['abogado','notario','asesoria','juridico','legal','bufete','lawyer','law','procurador','letrado','mercantil','laboral','fiscal','penal','divorcio','herencia','extranjeria','asesoria legal','gestoria','consultoria legal','despacho','compliance','mediacion','arbitraje'],s:'Abogado / Asesoría Legal',ico:'⚖️',n:'abogado'},
+{kws:['abogado','notario','asesoria','juridico','legal','bufete','lawyer','law','procurador','letrado','mercantil','laboral','fiscal','penal','divorcio','herencia','extranjeria','asesoria legal','gestoria','consultoria legal','despacho','compliance','mediacion','arbitraje','litigio','litigi','demanda','reclamacion','indemnizacion','bancario','hipoteca','clausula suelo','microcredito','microprestamo','usura','deuda','concurso acreedor','ley segunda oportunidad','negligencia','accidente','lesion','incapacidad','pension','custodia','familia','civil','constitucional','administrativo','tributario','defensa','denuncia','querella','juicio','sentencia','recurso','juzgado','tribunal','derecho','jurisprudencia','justicia'],s:'Abogado / Asesoría Legal',ico:'⚖️',n:'abogado'},
 {kws:['peluqueria','barberia','pelo','corte','estilista','hair','barber','salon','tinte','mechas','keratina','alisado','extensiones','salon de belleza','hairdresser','coiffeur','coloracion','balayage','degradado'],s:'Peluquería / Barbería',ico:'✂️',n:'peluqueria'},
 {kws:['veterinario','veterinaria','mascota','perro','gato','animales','pet','vet','clinica animal','vacuna animal','peluqueria canina','adiestramiento','residencia canina','tienda mascota','acuario','reptil','etologia','cirugia animal'],s:'Clínica Veterinaria',ico:'🐾',n:'veterinaria'},
 {kws:['farmacia','medicamento','parafarmacia','pharmacy','botica','drogueria','herbolario','ortopedia','optica farmacia','nutricosmetica'],s:'Farmacia / Parafarmacia',ico:'💊',n:'farmacia'},
@@ -703,14 +703,23 @@ function analyzeHTML(url,html){
   var domain=url.replace(/https?:\/\//,'').split('/')[0].toLowerCase();
   var h=html.toLowerCase();
 
-  // Sector detection: manual > URL > HTML content
+  // Sector detection: manual > HTML content (more reliable) > URL
   var manualSector=$('scan-sector').value;
   var sec;
   if(manualSector){
     sec=getSectorByNicho(manualSector);
   } else {
-    sec=detectSector(url);
-    if(!sec) sec=detectSector(html.substring(0,5000));
+    // First try HTML content (title + description + headings — most reliable)
+    var titleText=(doc.querySelector('title')?doc.querySelector('title').textContent:'')
+      +' '+(doc.querySelector('meta[name="description"]')?doc.querySelector('meta[name="description"]').getAttribute('content')||'':'')
+      +' '+(doc.querySelector('h1')?doc.querySelector('h1').textContent:'')
+      +' '+(doc.querySelector('meta[property="og:title"]')?doc.querySelector('meta[property="og:title"]').getAttribute('content')||'':'')
+      +' '+(doc.querySelector('meta[property="og:description"]')?doc.querySelector('meta[property="og:description"]').getAttribute('content')||'':'');
+    sec=detectSector(titleText);
+    // Then try broader HTML content
+    if(!sec) sec=detectSector(html.substring(0,10000));
+    // Last resort: URL
+    if(!sec) sec=detectSector(url);
     if(!sec) sec={s:'Negocio local',ico:'🏪',n:'generic',kws:[]};
   }
 
@@ -895,12 +904,73 @@ function buildVP(d){
 function buildCP(d){
   var biz=d.bizName||d.domain;
   var ph=d.phones&&d.phones.length?d.phones[0]:'[teléfono]';
-  var svcs=d.services&&d.services.length?d.services.slice(0,8):'';
+  var svcs=d.services&&d.services.length?d.services.slice(0,10):[];
   var hrs=d.hours||'Consultar horario en la web';
   var addr=d.address||'';
   var waNum=d.waNumber||'';
-  var svcMenu=svcs?svcs.map(function(s,i){return (i+1)+'. '+s}).join('\n'):'1. Ver servicios\n2. Reservar cita\n3. Horarios y ubicación\n4. Hablar con una persona';
-  return '# PROMPT SISTEMA — CHATBOT IA WEB\n# Negocio: '+biz+'\n# Web: '+d.url+'\n# Sector: '+d.sector+'\n\n## IDENTIDAD\nEres el asistente virtual de '+biz+', un/a '+d.sector+'.\nApareces como widget de chat en su web ('+d.url+').\n'+(addr?'Dirección: '+addr+'\n':'')+(ph!=='[teléfono]'?'Teléfono: '+ph+'\n':'')+(waNum?'WhatsApp: '+waNum+'\n':'')+'\n## SERVICIOS DEL NEGOCIO\n'+(svcs?svcs.join('\n'):'Consultar en la web')+'\n\n## HORARIO\n'+hrs+'\n\n## OBJETIVO\nAtender visitantes 24h: responder preguntas, captar datos de contacto y agendar citas/reservas.\n\n## TONO\nProfesional, amable y directo. Respuestas cortas (máx 3 frases). Máximo 1 emoji por mensaje.\n\n## SALUDO AUTOMÁTICO (tras 5 segundos en la web)\n"¡Hola! 👋 Bienvenido/a a '+biz+'. ¿En qué puedo ayudarte?"\n\n## MENÚ RÁPIDO (botones)\n'+svcMenu+'\n\n## CAPTURA DE LEAD\nAntes de dar información detallada, pedir:\n- Nombre\n- Teléfono o email\n- Qué servicio le interesa\n"Para darte la mejor información, ¿me dices tu nombre y un teléfono de contacto?"\n\n## GESTIÓN DE CITAS\n- Mostrar disponibilidad según horario\n- Recoger nombre + teléfono + servicio\n- Confirmar cita'+(waNum?' y enviar confirmación por WhatsApp':'')+'\n\n## FUERA DE HORARIO\n"Ahora mismo el equipo no está disponible. Deja tus datos y te contactamos mañana a primera hora. ¡Sin falta!"\n\n## PREGUNTAS FRECUENTES A PROGRAMAR\n- ¿Dónde estáis? → '+(addr||'[configurar dirección]')+'\n- ¿Cuál es el horario? → '+hrs+'\n- ¿Cuánto cuesta? → "Depende del servicio. ¿Te agendo una consulta?"\n- ¿Tenéis parking? → [configurar]\n- ¿Aceptáis tarjeta? → [configurar]\n\n## REGLAS\n- Si no sabe la respuesta: "Deja tu contacto y el equipo te responde personalmente"\n- NUNCA inventar precios\n- Máx 3 mensajes antes de pedir datos de contacto\n- Si detecta urgencia: ofrecer llamada a '+ph+'\n\n## DATOS DEL NEGOCIO EXTRAÍDOS\n'+(d.description?'Descripción: '+d.description+'\n':'')+'CMS: '+d.cms+'\nChatbot actual: '+(d.chat?'Sí (reemplazar o mejorar)':'No tiene — instalar')+'\nWhatsApp: '+(d.wa?'Sí':'No — activar')+'\nReservas online: '+(d.booking?'Sí':'No — integrar');
+  var svcList=svcs.length?svcs.join(', '):'Consultar en la web';
+
+  // Generate service-specific conversation flows based on sector + detected services
+  var svcFlows='';
+  var h=d.description?d.description.toLowerCase():'';
+  var allText=(svcs.join(' ')+' '+h+' '+(d.bizName||'')).toLowerCase();
+
+  // ABOGADOS — detect specialties and generate specific intake flows
+  if(d.nicho==='abogado'||allText.match(/abogad|legal|juridic|derecho|letrad|bufete|litigi|demanda|reclamacion/)){
+    svcFlows+='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    if(allText.match(/bancario|microcrédito|micropréstamo|microprestamo|microcredito|usura|revolving|tarjeta revolving|clausula suelo|hipoteca|intereses abusivos/)){
+      svcFlows+='\n### DERECHO BANCARIO / RECLAMACIONES MICROCRÉDITOS\nCuando el cliente menciona microcréditos, préstamos rápidos, tarjetas revolving o intereses abusivos:\n1. "Entiendo tu situación. Para ayudarte necesito algunos datos. ¿Cuántos contratos de microcrédito o préstamo rápido tienes actualmente?"\n2. "¿Con qué empresas? (Ej: Vivus, Creditea, Moneyman, Wandoo, Cashper, Zaplo...)"\n3. "¿Cuál es el importe total que solicitaste originalmente?"\n4. "¿Cuánto llevas pagado en total hasta ahora?"\n5. "¿Estás al día en los pagos o tienes algún impago?"\n6. "¿Has recibido alguna comunicación de empresa de recobro o amenaza de embargo?"\n7. "¿Tienes copia de los contratos o algún documento?"\n→ Recoger: nombre, teléfono, email\n→ "Perfecto, con estos datos el equipo de '+biz+' puede valorar tu caso. Te contactamos en menos de 24h para darte una primera valoración gratuita."\n';
+    }
+    if(allText.match(/familia|divorcio|custodia|pension|alimento|separacion|matrimon/)){
+      svcFlows+='\n### DERECHO DE FAMILIA\nCuando el cliente menciona divorcio, custodia o temas familiares:\n1. "¿Se trata de un divorcio/separación de mutuo acuerdo o contencioso?"\n2. "¿Hay hijos menores en común?"\n3. "¿Hay bienes compartidos (vivienda, cuentas, vehículos)?"\n4. "¿Tu pareja tiene abogado ya?"\n→ Recoger datos de contacto para consulta inicial.\n';
+    }
+    if(allText.match(/laboral|despido|finiquito|nómina|trabajo|erte|prestacion|desempleo/)){
+      svcFlows+='\n### DERECHO LABORAL\nCuando menciona despido, problemas laborales:\n1. "¿Cuándo te comunicaron el despido/situación?"\n2. "¿Tienes la carta de despido o documento?"\n3. "¿Cuánto tiempo llevas/llevabas en la empresa?"\n4. "¿Qué tipo de contrato tenías?"\n→ URGENTE si despido <20 días: "Es importante actuar rápido. El plazo para reclamar es de 20 días hábiles."\n';
+    }
+    if(allText.match(/accidente|lesion|negligencia|indemnizacion|seguro|siniestro/)){
+      svcFlows+='\n### ACCIDENTES / INDEMNIZACIONES\nCuando menciona accidente o lesiones:\n1. "¿Cuándo ocurrió el accidente?"\n2. "¿Qué tipo de accidente? (tráfico, laboral, caída, médico...)"\n3. "¿Tienes informe médico de las lesiones?"\n4. "¿Has presentado denuncia o parte al seguro?"\n→ Recoger datos y derivar urgente al equipo.\n';
+    }
+    if(allText.match(/extranjeria|visa|visado|nie|residencia|permiso|nacionalidad|inmigra/)){
+      svcFlows+='\n### EXTRANJERÍA / INMIGRACIÓN\nCuando menciona papeles, residencia, NIE:\n1. "¿Qué trámite necesitas? (residencia, trabajo, reagrupación, nacionalidad...)"\n2. "¿Cuál es tu situación actual? (con/sin papeles, visado turista, etc.)"\n3. "¿Cuánto tiempo llevas en España?"\n4. "¿Tienes padrón y documentación básica?"\n→ Recoger datos para valorar el caso.\n';
+    }
+    // Default for any law firm
+    if(!svcFlows.includes('### ')){
+      svcFlows+='\n### CONSULTA GENERAL LEGAL\n1. "¿En qué área necesitas ayuda? (Ej: laboral, familia, reclamaciones, herencias...)"\n2. "¿Podrías contarme brevemente tu situación?"\n3. "¿Tienes algún documento relacionado?"\n4. "¿Hay algún plazo urgente que debamos tener en cuenta?"\n→ Recoger: nombre, teléfono, email, breve resumen\n→ "El equipo de '+biz+' te contactará en menos de 24h con una primera valoración."\n';
+    }
+  }
+
+  // CLÍNICAS DENTALES
+  else if(d.nicho==='dental'||allText.match(/dental|diente|ortodoncia|implante/)){
+    svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    svcFlows+='\n### PRIMERA VISITA / REVISIÓN\n1. "¿Es tu primera visita a '+biz+'?"\n2. "¿Tienes alguna molestia concreta o quieres una revisión general?"\n3. "¿Cuándo fue tu última visita al dentista?"\n→ Agendar primera consulta gratuita si aplica.\n';
+    if(allText.match(/ortodoncia|brackets|invisible|invisalign/)){
+      svcFlows+='\n### ORTODONCIA\n1. "¿Quieres información sobre ortodoncia para ti o para un menor?"\n2. "¿Has llevado ortodoncia antes?"\n3. "¿Tienes preferencia? (brackets metálicos, estéticos, invisibles...)"\n→ Agendar estudio de ortodoncia.\n';
+    }
+    if(allText.match(/implante|protesis|diente perdido/)){
+      svcFlows+='\n### IMPLANTES\n1. "¿Cuántos dientes necesitas reponer?"\n2. "¿Hace cuánto perdiste el/los diente(s)?"\n3. "¿Tienes algún problema de salud que debamos saber?"\n→ Agendar valoración de implantes.\n';
+    }
+  }
+
+  // CENTROS DE BELLEZA / ESTÉTICA
+  else if(d.nicho==='belleza'||allText.match(/belleza|estetica|facial|corporal|depilacion|laser/)){
+    svcFlows='\n\n## FLUJOS ESPECÍFICOS POR SERVICIO\n';
+    svcFlows+='\n### PRIMERA VISITA\n1. "¿Has visitado '+biz+' antes?"\n2. "¿Qué tratamiento te interesa?"\n3. "¿Tienes alguna alergia o condición de la piel que debamos saber?"\n→ Ofrecer diagnóstico gratuito si aplica.\n';
+    svcs.forEach(function(s){
+      var sl=s.toLowerCase();
+      if(sl.match(/depilacion|laser/)) svcFlows+='\n### '+s.toUpperCase()+'\n1. "¿Qué zona quieres tratar?"\n2. "¿Has hecho sesiones de depilación láser antes?"\n3. "¿Cuál es tu tipo de piel y color de vello?"\n→ Agendar sesión de valoración.\n';
+      else if(sl.match(/facial|limpieza|peeling/)) svcFlows+='\n### '+s.toUpperCase()+'\n1. "¿Cuál es tu principal preocupación? (arrugas, manchas, acné, hidratación...)"\n2. "¿Qué productos usas actualmente?"\n→ Recomendar tratamiento y agendar.\n';
+    });
+  }
+
+  // GENERIC — generate flows from detected services
+  else if(svcs.length>0){
+    svcFlows='\n\n## FLUJOS POR SERVICIO DETECTADO\n';
+    svcs.slice(0,5).forEach(function(s){
+      svcFlows+='\n### '+s.toUpperCase()+'\nCuando el cliente pregunta por "'+s+'":\n1. Informar brevemente sobre el servicio\n2. Preguntar qué necesita específicamente\n3. Recoger datos de contacto\n4. Agendar consulta/cita\n';
+    });
+  }
+
+  return '# PROMPT SISTEMA — CHATBOT IA WEB\n# Negocio: '+biz+'\n# Web: '+d.url+'\n# Sector: '+d.sector+'\n\n## IDENTIDAD\nEres el asistente virtual de '+biz+', un/a '+d.sector+'.\nApareces como widget de chat en su web ('+d.url+').\n'+(addr?'Dirección: '+addr+'\n':'')+(ph!=='[teléfono]'?'Teléfono: '+ph+'\n':'')+(waNum?'WhatsApp: '+waNum+'\n':'')+'\n## SERVICIOS DEL NEGOCIO\n'+svcList+'\n\n## HORARIO\n'+hrs+'\n\n## OBJETIVO\nAtender visitantes 24h: responder preguntas sobre los servicios, cualificar la consulta del cliente, captar datos de contacto y agendar citas.\n\n## TONO\nProfesional, empático y directo. Respuestas cortas (máx 3 frases). Máximo 1 emoji por mensaje.\n\n## SALUDO AUTOMÁTICO (tras 5 segundos en la web)\n"¡Hola! 👋 Bienvenido/a a '+biz+'. ¿En qué puedo ayudarte?"\n\n## MENÚ RÁPIDO (botones)\n'+(svcs.length?svcs.slice(0,4).map(function(s,i){return(i+1)+'. '+s}).join('\n')+'\n'+(svcs.length>4?(svcs.length-3)+'. Otros servicios\n':''):'1. Ver servicios\n2. Consulta / cita\n3. Horarios y ubicación\n4. Hablar con una persona\n')+'\n## CAPTURA DE LEAD\nAntes de dar información detallada, recoger:\n- Nombre completo\n- Teléfono\n- Email (opcional)\n- Servicio que necesita\n- Breve descripción de su caso/necesidad\n"Para poder ayudarte mejor, ¿me dices tu nombre y un teléfono de contacto?"'+svcFlows+'\n\n## FUERA DE HORARIO\n"El equipo de '+biz+' no está disponible ahora mismo. Deja tus datos y tu consulta — te contactamos mañana a primera hora sin falta."\n\n## REGLAS CRÍTICAS\n- Si no sabe la respuesta: "Deja tu contacto y el equipo te responde personalmente"\n- NUNCA inventar precios ni plazos\n- NUNCA dar consejo legal/médico/técnico específico\n- Máx 3 mensajes antes de pedir datos de contacto\n- Si detecta urgencia: ofrecer llamada directa a '+ph+'\n- Siempre terminar intentando agendar una cita o recoger datos';
 }
 function buildPP(d){
   var biz=d.bizName||d.domain;
