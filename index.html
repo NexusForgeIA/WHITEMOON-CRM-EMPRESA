@@ -929,22 +929,66 @@ function runBatchAnalysis(){
     }
     var url=urls[idx];
     if(!url.startsWith('http'))url='https://'+url;
-    $('batch-progress').textContent=idx+'/'+urls.length+' — analizando '+url.replace(/https?:\/\//,'').split('/')[0]+'...';
+    $('batch-progress').textContent=(idx+1)+'/'+urls.length+' — analizando '+url.replace(/https?:\/\//,'').split('/')[0]+'...';
 
-    fetch(url,{mode:'cors'}).then(function(r){return r.text()}).then(function(html){
+    smartFetch(url).then(function(html){
       var data=analyzeHTML(url,html);
       results.push(data);
-      idx++;
-      S.analyzed++;
-      updateCounters();
-      setTimeout(analyzeNext,500);
+      idx++;S.analyzed++;updateCounters();
+      setTimeout(analyzeNext,600);
     }).catch(function(err){
-      results.push({url:url,domain:url.replace(/https?:\/\//,'').split('/')[0],sector:'No accesible',sectorIco:'❌',score:0,error:err.message,probs:['No se pudo acceder a la web'],ssl:false,mobile:false,chat:false,wa:false,gmb:false,analytics:false,cta:false,booking:false,speed:0,seo:0,cms:'Error',rrss:{facebook:{ok:false},instagram:{ok:false},tiktok:{ok:false},linkedin:{ok:false},youtube:{ok:false},googlemaps:{ok:false},twitter:{ok:false},whatsapp:{ok:false}},nicho:'generic'});
-      idx++;
-      setTimeout(analyzeNext,500);
+      // Fallback: analyze from domain/URL only
+      var data=analyzeFromDomain(url);
+      data.fetchError=true;
+      results.push(data);
+      idx++;S.analyzed++;updateCounters();
+      setTimeout(analyzeNext,400);
     });
   }
   analyzeNext();
+}
+
+// Smart fetch: try multiple strategies
+function smartFetch(url){
+  return fetch(url,{mode:'cors',redirect:'follow',headers:{'Accept':'text/html,application/xhtml+xml,*/*'}})
+    .then(function(r){
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return r.text();
+    })
+    .then(function(html){
+      if(html.length<200) throw new Error('Respuesta vacía');
+      return html;
+    });
+}
+
+// Fallback analysis when fetch fails — analyze from domain name + URL patterns
+function analyzeFromDomain(url){
+  var domain=url.replace(/https?:\/\//,'').split('/')[0].toLowerCase();
+  var manualSector=$('scan-sector').value;
+  var sec;
+  if(manualSector){sec=getSectorByNicho(manualSector)}
+  else{sec=detectSector(url);if(!sec)sec={s:'Negocio local',ico:'🏪',n:'generic',kws:[]};}
+  var ssl=url.startsWith('https');
+
+  // Heuristic from domain patterns
+  var isBuilder=domain.includes('wix')||domain.includes('weebly')||domain.includes('squarespace')||domain.includes('carrd')||domain.includes('jimdo');
+  var cms=isBuilder?(domain.includes('wix')?'Wix':domain.includes('squarespace')?'Squarespace':'Website Builder'):'Desconocido (web protegida)';
+
+  // Conservative estimates — assume they DON'T have these (more opportunities to sell)
+  var chat=false,wa=false,gmb=false,analytics=false,mobile=true,booking=false,cta=false;
+
+  // RRSS: unknown, mark as not detected
+  var rrss={facebook:{ok:false,active:false,followers:0},instagram:{ok:false,active:false,followers:0},tiktok:{ok:false,active:false,followers:0},linkedin:{ok:false,active:false,followers:0},youtube:{ok:false,active:false,followers:0},googlemaps:{ok:false,reviews:0,rating:'—'},twitter:{ok:false,active:false,followers:0},whatsapp:{ok:false,active:false}};
+
+  var score=0;
+  if(!chat)score+=22;if(!wa)score+=12;if(!gmb)score+=15;if(!booking)score+=10;if(!cta)score+=8;if(!analytics)score+=6;
+  score=Math.min(85,Math.max(30,score));
+
+  var probs=['⚠️ Web protegida — no se pudo acceder al HTML (analizar manualmente)'];
+  if(!chat)probs.push('Sin chatbot detectado (verificar manualmente)');
+  if(!wa)probs.push('Sin WhatsApp Business detectado');
+
+  return{url:url,domain:domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score:score,ssl:ssl,mobile:mobile,chat:chat,wa:wa,gmb:gmb,analytics:analytics,cta:cta,booking:booking,speed:50,seo:40,cms:cms,rrss:rrss,probs:probs};
 }
 
 function renderBatchResults(results){
