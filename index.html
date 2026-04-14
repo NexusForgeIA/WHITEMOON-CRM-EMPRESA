@@ -1596,7 +1596,10 @@ function handleChatStep(idx,msg){
       },800);
     } else {
       s.step=20;
-      setTimeout(function(){chatDemoAddMsg('\u00bfPara qu\u00e9 d\u00eda te vendr\u00eda bien la cita?',false)},800);
+      setTimeout(function(){
+        chatDemoAddMsg('Genial. Elige el d\u00eda que prefieras para tu cita:',false);
+        setTimeout(function(){showChatCalendar(idx)},400);
+      },800);
     }
   } else if(s.step===10){
     s.contratos=msg;s.step=11;
@@ -1607,6 +1610,7 @@ function handleChatStep(idx,msg){
       chatDemoAddMsg('Perfecto '+s.name.split(' ')[0]+'. He tomado nota de tu caso:\n\u2022 Nombre: '+s.name+'\n\u2022 Tel\u00e9fono: '+s.tel+'\n\u2022 Contratos: '+s.contratos+' con '+s.empresas+'\n\nNuestro equipo revisar\u00e1 tu caso y te contactar\u00e1 en menos de 24 horas por WhatsApp con una primera valoraci\u00f3n GRATUITA y sin compromiso. \ud83d\ude0a',false);
     },1000);
   } else if(s.step===20){
+    // Manual text fallback if they type instead of clicking calendar
     s.cita=msg;s.step=99;
     setTimeout(function(){
       chatDemoAddMsg('Perfecto '+s.name.split(' ')[0]+'. He tomado nota:\n\u2022 Nombre: '+s.name+'\n\u2022 Tel\u00e9fono: '+s.tel+'\n\u2022 Servicio: '+(s.service||'')+'\n\u2022 Cita: '+msg+'\n\nNuestro equipo revisar\u00e1 los datos y confirmar\u00e1 la cita por WhatsApp. Si no hubiera disponibilidad, te propondremos la alternativa m\u00e1s cercana. \u00a1Saludos y gracias! \ud83d\ude0a',false);
@@ -1614,6 +1618,83 @@ function handleChatStep(idx,msg){
   } else {
     setTimeout(function(){chatDemoAddMsg('Gracias '+s.name.split(' ')[0]+'. Nuestro equipo te contactar\u00e1 por WhatsApp para confirmar. \u00a1Saludos y gracias! \ud83d\ude0a',false)},800);
   }
+}
+
+// Calendar and time picker for chatbot demo
+function showChatCalendar(idx){
+  var s=window._chatDemoState;
+  var c=document.getElementById('cd-msgs');if(!c)return;
+  var today=new Date();
+  var month=today.getMonth(),year=today.getFullYear();
+  var daysInMonth=new Date(year,month+1,0).getDate();
+  var firstDay=new Date(year,month,1).getDay();
+  var dayOff=firstDay===0?6:firstDay-1;
+  var monthNames=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  var dayNames=['L','M','X','J','V','S','D'];
+
+  var h='<div style="background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;max-width:280px">';
+  h+='<div style="text-align:center;font-weight:700;font-size:.8rem;color:var(--text);margin-bottom:8px">'+monthNames[month]+' '+year+'</div>';
+  h+='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;font-size:.68rem">';
+  dayNames.forEach(function(d){h+='<div style="font-weight:700;color:var(--muted);padding:3px 0">'+d+'</div>'});
+  for(var i=0;i<dayOff;i++)h+='<div></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var date=new Date(year,month,d);
+    var dow=date.getDay();
+    var isPast=date<new Date(today.getFullYear(),today.getMonth(),today.getDate());
+    var isSun=dow===0;
+    if(isPast||isSun){
+      h+='<div style="padding:5px 2px;color:var(--muted);font-size:.7rem;border-radius:6px;opacity:.4">'+d+'</div>';
+    } else {
+      var ds=d+'/'+(month+1)+'/'+year;
+      h+='<div onclick="selectChatDate(this,\''+ds+'\','+idx+')" style="padding:5px 2px;cursor:pointer;border-radius:6px;font-size:.7rem;color:var(--text);border:1px solid transparent;transition:all .15s" onmouseover="this.style.background=\'var(--accent)\';this.style.color=\'#fff\'" onmouseout="if(!this.dataset.sel){this.style.background=\'\';this.style.color=\'var(--text)\'}">'+d+'</div>';
+    }
+  }
+  h+='</div></div>';
+  var div=document.createElement('div');div.innerHTML=h;
+  c.appendChild(div);c.scrollTop=c.scrollHeight;
+}
+
+function selectChatDate(el,dateStr,idx){
+  var s=window._chatDemoState;
+  // Highlight selected
+  el.closest('[style*="grid"]').querySelectorAll('[onclick^="selectChatDate"]').forEach(function(d){d.dataset.sel='';d.style.background='';d.style.color='var(--text)'});
+  el.dataset.sel='1';el.style.background='var(--accent)';el.style.color='#fff';
+  s.date=dateStr;
+  chatDemoAddMsg(dateStr,true);
+  setTimeout(function(){
+    chatDemoAddMsg('Perfecto, d\u00eda '+dateStr+'. \u00bfQu\u00e9 hora te viene mejor?',false);
+    setTimeout(function(){showChatTimeSlots(idx)},400);
+  },600);
+}
+
+function showChatTimeSlots(idx){
+  var s=window._chatDemoState;
+  var c=document.getElementById('cd-msgs');if(!c)return;
+  var times=['09:00','09:30','10:00','10:30','11:00','11:30','12:00','12:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+  var occupied={};for(var i=0;i<4;i++){occupied[times[Math.floor(Math.random()*times.length)]]=true}
+
+  var h='<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px;max-width:290px">';
+  times.forEach(function(t){
+    if(occupied[t]){
+      h+='<div style="padding:5px 10px;border-radius:6px;font-size:.68rem;background:var(--bg2);color:var(--muted);text-decoration:line-through;opacity:.5">'+t+'</div>';
+    } else {
+      h+='<button onclick="selectChatTime(this,\''+t+'\','+idx+')" style="padding:5px 10px;border-radius:6px;font-size:.68rem;background:rgba(124,58,237,.08);color:var(--accent);border:1px solid rgba(124,58,237,.2);cursor:pointer;font-family:inherit;transition:all .15s" onmouseover="this.style.background=\'var(--accent)\';this.style.color=\'#fff\'" onmouseout="if(!this.dataset.sel){this.style.background=\'rgba(124,58,237,.08)\';this.style.color=\'var(--accent)\'}">'+t+'</button>';
+    }
+  });
+  h+='</div>';
+  var div=document.createElement('div');div.innerHTML=h;
+  c.appendChild(div);c.scrollTop=c.scrollHeight;
+}
+
+function selectChatTime(el,time,idx){
+  var s=window._chatDemoState;
+  el.parentElement.querySelectorAll('[onclick^="selectChatTime"]').forEach(function(b){b.dataset.sel='';b.style.background='rgba(124,58,237,.08)';b.style.color='var(--accent)'});
+  el.dataset.sel='1';el.style.background='var(--accent)';el.style.color='#fff';
+  s.time=time;s.step=99;
+  chatDemoAddMsg(s.date+' a las '+time,true);
+  setTimeout(function(){
+    chatDemoAddMsg('Perfecto '+s.name.split(' ')[0]+'. He tomado nota:\n\u2022 Nombre: '+s.name+'\n\u2022 Tel\u00e9fono: '+s.tel+'\n\u2022 Servicio: '+(s.service||'')+'\n\u2022 Fecha: '+s.date+'\n\u2022 Hora: '+s.time+'\n\nNuestro equipo revisar\u00e1 los datos y confirmar\u00e1 la cita por WhatsApp. Si no hubiera disponibilidad, te propondremos la alternativa m\u00e1s cercana. \u00a1Saludos y gracias! \ud83d\ude0a',false);
+  },1000);
 }
 
 // NICHOS
