@@ -1357,23 +1357,84 @@ function sendToDemoPage(c,i){openDemoBuilder(i)}
 function openDemoBuilder(idx){
   var d=prosResults[idx];
   var bc=d.brandColors||{primary:'#7c3aed',bg:'#ffffff',title:'#1a1a2e',text:'#444444'};
+  var biz=d.bizName||d.domain;
+  var svcsText=d.services?d.services.join('\n'):'';
+  var aboutText=d.paragraphs&&d.paragraphs.length?d.paragraphs.slice(0,2).join('\n\n'):'';
+  var sectionsText=d.sections?d.sections.map(function(s){return s.title+(s.content?'\n'+s.content:'')}).join('\n\n'):'';
+  var contactText=(d.phones&&d.phones.length?'Teléfono: '+d.phones[0]+'\n':'')+(d.emails&&d.emails.length?'Email: '+d.emails[0]+'\n':'')+(d.address?'Dirección: '+d.address+'\n':'')+(d.hours?'Horario: '+d.hours:'');
+  // Pre-generate chatbot prompt
+  var chatPrompt=buildCP(d);
+
   var modal=document.createElement('div');
   modal.id='demo-modal';
   modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML='<div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;max-width:700px;width:100%;max-height:90vh;overflow-y:auto;padding:28px"><div class="flex jcb aic mb16"><div style="font-size:1rem;font-weight:700;color:#fff">🎨 Demo Web — '+(d.bizName||d.domain)+'</div><button onclick="document.getElementById(\'demo-modal\').remove()" style="background:none;border:none;color:var(--text2);font-size:1.4rem;cursor:pointer">✕</button></div>'+
-    '<div style="font-size:.72rem;color:var(--muted);margin-bottom:14px;padding:10px;background:var(--bg2);border-radius:8px">Colores detectados del HTML de <b style="color:var(--text)">'+d.domain+'</b>. Modifica lo que quieras y sube fotos para personalizar.</div>'+
-    '<div class="g2 mb12"><div class="field-group"><span class="field-label">Color principal</span><div class="flex gap8 aic"><input type="color" id="dm-color" value="'+bc.primary+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.primary+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-color\').value=this.value"></div></div>'+
-    '<div class="field-group"><span class="field-label">Color de fondo</span><div class="flex gap8 aic"><input type="color" id="dm-bg" value="'+bc.bg+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.bg+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-bg\').value=this.value"></div></div></div>'+
-    '<div class="g2 mb12"><div class="field-group"><span class="field-label">Color títulos</span><div class="flex gap8 aic"><input type="color" id="dm-title" value="'+bc.title+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.title+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-title\').value=this.value"></div></div>'+
-    '<div class="field-group"><span class="field-label">Color texto</span><div class="flex gap8 aic"><input type="color" id="dm-text" value="'+bc.text+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.text+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-text\').value=this.value"></div></div></div>'+
-    '<div class="g2 mb12"><div class="field-group"><span class="field-label">Tipografía</span><select class="select" id="dm-font"><option value="Sora">Sora</option><option value="Inter">Inter</option><option value="Playfair Display">Playfair</option><option value="Montserrat">Montserrat</option><option value="Poppins">Poppins</option><option value="Roboto">Roboto</option></select></div>'+
-    '<div class="field-group"><span class="field-label">Hero</span><select class="select" id="dm-hero"><option value="gradient">Gradiente</option><option value="solid">Color sólido</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></div></div>'+
-    '<div class="field-group mb12"><span class="field-label">Logo + Fotos</span><input type="file" id="dm-files" accept="image/*" multiple style="display:none" onchange="handleDmFiles(this)"><div class="flex gap8 aic"><button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'dm-files\').click()">Subir imágenes</button><span style="font-size:.68rem;color:var(--muted)" id="dm-file-count">0 fotos</span></div><div id="dm-file-preview" class="flex gap8 fwrap" style="margin-top:8px"></div></div>'+
-    '<div class="g2 mb12"><div class="field-group"><span class="field-label">Nombre asistente</span><input class="input" id="dm-bot" value="Lucía"></div>'+
-    '<div class="field-group"><span class="field-label">Botones chat</span><input class="input" id="dm-btns" value="Ver servicios, Pedir cita, Contactar"></div></div>'+
-    '<button class="btn btn-p" onclick="buildDemoFromProspect('+idx+')" style="width:100%;padding:14px">Generar Demo Web + Chatbot</button>'+
+  modal.innerHTML='<div style="background:var(--bg);border:1px solid var(--border);border-radius:16px;max-width:750px;width:100%;max-height:92vh;overflow-y:auto;padding:28px">'+
+    '<div class="flex jcb aic mb16"><div style="font-size:1rem;font-weight:700;color:#fff">🎨 Crear Demo Web + Chatbot — '+biz+'</div><button onclick="document.getElementById(\'demo-modal\').remove()" style="background:none;border:none;color:var(--text2);font-size:1.4rem;cursor:pointer">✕</button></div>'+
+
+    // TABS for sections
+    '<div style="display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap" id="dm-tabs">'+
+      '<button class="tab on" onclick="switchDmTab(this,\'dmt-design\')">🎨 Diseño</button>'+
+      '<button class="tab" onclick="switchDmTab(this,\'dmt-inicio\')">🏠 Inicio</button>'+
+      '<button class="tab" onclick="switchDmTab(this,\'dmt-servicios\')">⚡ Servicios</button>'+
+      '<button class="tab" onclick="switchDmTab(this,\'dmt-about\')">👥 Quiénes somos</button>'+
+      '<button class="tab" onclick="switchDmTab(this,\'dmt-contacto\')">📍 Contacto</button>'+
+      '<button class="tab" onclick="switchDmTab(this,\'dmt-chatbot\')">🤖 Chatbot IA</button>'+
+    '</div>'+
+
+    // TAB: Design
+    '<div id="dmt-design">'+
+      '<div style="font-size:.7rem;color:var(--muted);margin-bottom:10px;padding:8px;background:var(--bg2);border-radius:6px">Colores detectados de <b style="color:var(--text)">'+d.domain+'</b></div>'+
+      '<div class="g2 mb12"><div class="field-group"><span class="field-label">Color principal</span><div class="flex gap8 aic"><input type="color" id="dm-color" value="'+bc.primary+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.primary+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-color\').value=this.value"></div></div>'+
+      '<div class="field-group"><span class="field-label">Color de fondo</span><div class="flex gap8 aic"><input type="color" id="dm-bg" value="'+bc.bg+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.bg+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-bg\').value=this.value"></div></div></div>'+
+      '<div class="g2 mb12"><div class="field-group"><span class="field-label">Color títulos</span><div class="flex gap8 aic"><input type="color" id="dm-title" value="'+bc.title+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.title+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-title\').value=this.value"></div></div>'+
+      '<div class="field-group"><span class="field-label">Color texto</span><div class="flex gap8 aic"><input type="color" id="dm-text" value="'+bc.text+'" style="width:40px;height:34px;border:1px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg2);padding:2px"><input class="input mono" value="'+bc.text+'" style="width:90px;font-size:.72rem" oninput="document.getElementById(\'dm-text\').value=this.value"></div></div></div>'+
+      '<div class="g2 mb12"><div class="field-group"><span class="field-label">Tipografía</span><select class="select" id="dm-font"><option value="Sora">Sora</option><option value="Inter">Inter</option><option value="Playfair Display">Playfair</option><option value="Montserrat">Montserrat</option><option value="Poppins">Poppins</option><option value="Roboto">Roboto</option></select></div>'+
+      '<div class="field-group"><span class="field-label">Hero</span><select class="select" id="dm-hero"><option value="gradient">Gradiente</option><option value="solid">Color sólido</option><option value="light">Claro</option><option value="dark">Oscuro</option></select></div></div>'+
+      '<div class="field-group mb12"><span class="field-label">Logo + Fotos</span><input type="file" id="dm-files" accept="image/*" multiple style="display:none" onchange="handleDmFiles(this)"><div class="flex gap8 aic"><button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'dm-files\').click()">Subir imágenes</button><span style="font-size:.68rem;color:var(--muted)" id="dm-file-count">0 fotos</span></div><div id="dm-file-preview" class="flex gap8 fwrap" style="margin-top:8px"></div></div>'+
+    '</div>'+
+
+    // TAB: Inicio
+    '<div id="dmt-inicio" style="display:none">'+
+      '<div class="field-group mb12"><span class="field-label">Título principal (Hero)</span><input class="input" id="dm-hero-title" value="'+biz.replace(/"/g,'&quot;')+'"></div>'+
+      '<div class="field-group mb12"><span class="field-label">Subtítulo / Eslogan</span><input class="input" id="dm-hero-sub" value="'+(d.description||'').replace(/"/g,'&quot;')+'"></div>'+
+      '<div class="field-group mb12"><span class="field-label">Texto de bienvenida (párrafo intro)</span><textarea class="textarea" id="dm-intro" placeholder="Texto de presentación del negocio..." style="min-height:100px">'+aboutText.replace(/</g,'&lt;')+'</textarea></div>'+
+    '</div>'+
+
+    // TAB: Servicios
+    '<div id="dmt-servicios" style="display:none">'+
+      '<div class="field-group mb12"><span class="field-label">Servicios (uno por línea) — extraídos de la web</span><textarea class="textarea" id="dm-svcs" placeholder="Servicio 1&#10;Servicio 2&#10;Servicio 3" style="min-height:120px">'+svcsText.replace(/</g,'&lt;')+'</textarea></div>'+
+      '<div style="font-size:.68rem;color:var(--muted)">Cada línea se convierte en una tarjeta de servicio en la demo.</div>'+
+    '</div>'+
+
+    // TAB: Quiénes somos
+    '<div id="dmt-about" style="display:none">'+
+      '<div class="field-group mb12"><span class="field-label">Texto "Quiénes somos" — extraído de la web</span><textarea class="textarea" id="dm-about" placeholder="Historia, misión, valores del negocio..." style="min-height:120px">'+sectionsText.replace(/</g,'&lt;')+'</textarea></div>'+
+    '</div>'+
+
+    // TAB: Contacto
+    '<div id="dmt-contacto" style="display:none">'+
+      '<div class="field-group mb12"><span class="field-label">Datos de contacto — extraídos de la web</span><textarea class="textarea" id="dm-contact" style="min-height:100px">'+contactText.replace(/</g,'&lt;')+'</textarea></div>'+
+    '</div>'+
+
+    // TAB: Chatbot IA
+    '<div id="dmt-chatbot" style="display:none">'+
+      '<div class="g2 mb12"><div class="field-group"><span class="field-label">Nombre del asistente</span><input class="input" id="dm-bot" value="Lucía"></div>'+
+      '<div class="field-group"><span class="field-label">Botones rápidos del chat</span><input class="input" id="dm-btns" value="Ver servicios, Pedir cita, Contactar"></div></div>'+
+      '<div class="field-group mb12"><span class="field-label">Prompt del Chatbot IA (directrices para programar)</span><div style="font-size:.68rem;color:var(--muted);margin-bottom:4px">Este prompt se genera automáticamente con los datos del negocio. Cópialo y pégalo en tu plataforma de chatbot.</div><textarea class="textarea" id="dm-chatprompt" style="min-height:200px;font-size:.68rem">'+chatPrompt.replace(/</g,'&lt;')+'</textarea></div>'+
+      '<button class="btn btn-ghost btn-sm" onclick="copyTxt(document.getElementById(\'dm-chatprompt\').value)" style="margin-bottom:8px">Copiar prompt del chatbot</button>'+
+    '</div>'+
+
+    // Generate button
+    '<button class="btn btn-p" onclick="buildDemoFromProspect('+idx+')" style="width:100%;padding:14px;margin-top:8px">Generar Demo Web + Chatbot</button>'+
     '<div id="dm-output" style="margin-top:14px"></div></div>';
   document.body.appendChild(modal);
+}
+
+function switchDmTab(el,tid){
+  document.querySelectorAll('#dm-tabs .tab').forEach(function(t){t.classList.remove('on')});
+  el.classList.add('on');
+  ['dmt-design','dmt-inicio','dmt-servicios','dmt-about','dmt-contacto','dmt-chatbot'].forEach(function(id){var e=document.getElementById(id);if(e)e.style.display='none'});
+  document.getElementById(tid).style.display='block';
 }
 
 var dmPhotos=[];
@@ -1394,15 +1455,19 @@ function buildDemoFromProspect(idx){
   var heroStyle=document.getElementById('dm-hero').value;
   var botName=document.getElementById('dm-bot').value||'Asistente';
   var botBtns=(document.getElementById('dm-btns').value||'').split(',').map(function(b){return b.trim()}).filter(Boolean);
-  var biz=d.bizName||d.domain;
-  var svcs=d.services||[];
+
+  // Read from editable content fields
+  var biz=document.getElementById('dm-hero-title').value||d.bizName||d.domain;
+  var desc=document.getElementById('dm-hero-sub').value||d.description||d.sector;
+  var introText=document.getElementById('dm-intro').value||'';
+  var svcsRaw=document.getElementById('dm-svcs').value||'';
+  var svcs=svcsRaw.split('\n').filter(function(s){return s.trim()});
+  var aboutText=document.getElementById('dm-about').value||'';
+  var contactRaw=document.getElementById('dm-contact').value||'';
   var phone=d.phones&&d.phones.length?d.phones[0]:'';
   var addr=d.address||'';
   var hours=d.hours||'';
   var email=d.emails&&d.emails.length?d.emails[0]:'';
-  var desc=d.description||d.sector;
-  var paragraphs=d.paragraphs||[];
-  var sections=d.sections||[];
 
   var rr=parseInt(color.slice(1,3),16),gg=parseInt(color.slice(3,5),16),bb=parseInt(color.slice(5,7),16);
   var light='rgba('+rr+','+gg+','+bb+',.1)',mid='rgba('+rr+','+gg+','+bb+',.25)';
@@ -1423,18 +1488,16 @@ function buildDemoFromProspect(idx){
     svcsHtml+='</div></section>';
   }
 
-  // Sections from original web (about us, etc)
-  var sectionsHtml='';
-  if(sections.length){
-    sections.forEach(function(sec){
-      sectionsHtml+='<section style="padding:40px 5%;max-width:900px;margin:0 auto"><h2 style="font-size:1.4rem;margin-bottom:14px;color:'+titleColor+'">'+sec.title+'</h2>'+(sec.content?'<p style="font-size:.92rem;line-height:1.7;color:'+textColor+'">'+sec.content+'</p>':'')+'</section>';
-    });
+  // Intro section from editable field
+  var aboutHtml='';
+  if(introText){
+    aboutHtml='<section style="padding:40px 5%;max-width:900px;margin:0 auto;text-align:center"><p style="font-size:.95rem;line-height:1.8;color:'+textColor+'">'+introText.replace(/\n/g,'<br>')+'</p></section>';
   }
 
-  // About paragraph from original web
-  var aboutHtml='';
-  if(paragraphs.length){
-    aboutHtml='<section style="padding:40px 5%;max-width:900px;margin:0 auto;text-align:center"><p style="font-size:.95rem;line-height:1.8;color:'+textColor+'">'+paragraphs[0]+'</p></section>';
+  // About section from editable field
+  var aboutSectionHtml='';
+  if(aboutText){
+    aboutSectionHtml='<section style="padding:40px 5%;max-width:900px;margin:0 auto"><h2 style="font-size:1.4rem;margin-bottom:14px;color:'+titleColor+'">Quiénes somos</h2><p style="font-size:.92rem;line-height:1.7;color:'+textColor+'">'+aboutText.replace(/\n/g,'<br>')+'</p></section>';
   }
 
   // Photos gallery
@@ -1454,7 +1517,7 @@ function buildDemoFromProspect(idx){
   pg+='<nav style="display:flex;justify-content:space-between;align-items:center;padding:14px 5%;background:'+bgColor+';border-bottom:1px solid #eee;position:sticky;top:0;z-index:100">'+logoHtml+'<div style="display:flex;gap:18px;font-size:.85rem">'+(svcs.length?'<a href="#sv">Servicios</a>':'')+'<a href="#ct">Contacto</a></div></nav>';
   pg+='<section class="hero"><h1>'+biz+'</h1><p>'+desc+'</p><button class="btn-h" onclick="document.getElementById(\'dcb\').style.display=\'flex\'">💬 Chatea con '+botName+'</button></section>';
   if(phone||addr||hours){pg+='<div class="ib">';if(phone)pg+='<span>📞 <b>'+phone+'</b></span>';if(addr)pg+='<span>📍 <b>'+addr+'</b></span>';if(hours)pg+='<span>🕐 <b>'+hours+'</b></span>';if(email)pg+='<span>📧 <b>'+email+'</b></span>';pg+='</div>'}
-  pg+=aboutHtml+svcsHtml+sectionsHtml+photosHtml;
+  pg+=aboutHtml+svcsHtml+aboutSectionHtml+photosHtml;
   pg+='<section id="ct" style="padding:50px 5%;text-align:center;background:'+light+'"><h2 style="font-size:1.5rem;margin-bottom:12px;color:'+titleColor+'">¿Necesitas más información?</h2><p style="margin-bottom:24px">Nuestro asistente IA está disponible 24/7</p><button class="btn-h" onclick="document.getElementById(\'dcb\').style.display=\'flex\'">💬 Hablar con '+botName+'</button></section>';
   pg+='<footer><p><b>'+biz+'</b> — '+d.sector+'</p><p style="margin-top:12px;font-size:.72rem;color:#667">Chatbot IA por <a href="https://whitemoon.es" target="_blank" style="color:'+color+'">WhiteMoon</a></p></footer>';
   // Chat widget
@@ -1466,7 +1529,7 @@ function buildDemoFromProspect(idx){
   document.getElementById('dm-output').innerHTML='<div style="border:1px solid var(--border);border-radius:10px;overflow:hidden;height:400px;margin-bottom:10px"><iframe srcdoc="'+pg.replace(/"/g,'&quot;')+'" style="width:100%;height:100%;border:none"></iframe></div><div class="flex gap8"><button class="btn btn-p btn-sm" onclick="downloadDm()">Descargar HTML</button><button class="btn btn-ghost btn-sm" onclick="openDmTab()">Abrir en pestaña nueva</button></div>';
 }
 function downloadDm(){if(!window._dmHTML)return;var b=new Blob([window._dmHTML],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=(window._dmBiz||'demo')+'-whitemoon.html';a.click()}
-function openDmTab(){if(!window._dmHTML)return;var w=window.open();w.document.write(window._dmHTML);w.document.close()}
+function openDmTab(){if(!window._dmHTML)return;var b=new Blob([window._dmHTML],{type:'text/html'});window.open(URL.createObjectURL(b),'_blank')}
 
 // NICHOS
 // ═══════════════════════════════════════
