@@ -1369,14 +1369,15 @@ function renderProsResults(){
     }
     // Extracted web content
     if(r.pageContent){
-      html+='<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan);margin-bottom:7px">📄 Contenido extraído de la web</div>';
-      // Nav menu detected
-      if(r.navLinks&&r.navLinks.length){
-        html+='<div style="font-size:.66rem;color:var(--muted);margin-bottom:6px">Menú detectado: '+r.navLinks.map(function(n){return'<span style="color:var(--text);font-weight:600">'+n.text+'</span>'}).join(' · ')+'</div>';
-      }
-      // Content tabs
-      var ctabs='<div class="tabs" style="margin-bottom:6px;flex-wrap:wrap">';
-      var cpanels='';
+      // Build full text for copy-all (structured for pasting into AI)
+      var fullWebText='=== WEB: '+(r.bizName||r.domain)+' ===\nURL: '+r.url+'\nSector: '+r.sector+'\n';
+      if(r.description)fullWebText+='Descripción: '+r.description+'\n';
+      if(r.phones&&r.phones.length)fullWebText+='Teléfono: '+r.phones.join(' / ')+'\n';
+      if(r.emails&&r.emails.length)fullWebText+='Email: '+r.emails.join(' / ')+'\n';
+      if(r.address)fullWebText+='Dirección: '+r.address+'\n';
+      if(r.hours)fullWebText+='Horario: '+r.hours+'\n';
+      if(r.waNumber)fullWebText+='WhatsApp: '+r.waNumber+'\n';
+      fullWebText+='\n';
       var contentSections=[
         {id:'inicio',label:'🏠 Inicio',data:r.pageContent.inicio},
         {id:'quienes',label:'👥 Quiénes somos',data:r.pageContent.quienes},
@@ -1384,11 +1385,34 @@ function renderProsResults(){
         {id:'contacto',label:'📍 Contacto',data:r.pageContent.contacto},
         {id:'otros',label:'📝 Otros',data:r.pageContent.otros}
       ].filter(function(s){return s.data.texts.length>0});
+      contentSections.forEach(function(cs){
+        fullWebText+='--- '+cs.label.replace(/[🏠👥⚡📍📝] /,'')+' ---\n';
+        cs.data.texts.forEach(function(s){
+          fullWebText+=s.title+'\n';
+          if(s.content)fullWebText+=s.content+'\n';
+          fullWebText+='\n';
+        });
+      });
+      if(r.services&&r.services.length)fullWebText+='--- Servicios detectados ---\n'+r.services.join('\n')+'\n';
+      // Store for copy
+      var contentKey='webContent_'+i;
+      window[contentKey]=fullWebText;
+
+      html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px"><div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)">📄 Contenido extraído de la web</div><button class="btn btn-p btn-xs" onclick="copyTxt(window.webContent_'+i+')">Copiar TODO el contenido</button></div>';
+      // Nav menu detected
+      if(r.navLinks&&r.navLinks.length){
+        html+='<div style="font-size:.66rem;color:var(--muted);margin-bottom:6px">Menú: '+r.navLinks.map(function(n){return'<span style="color:var(--text);font-weight:600">'+n.text+'</span>'}).join(' · ')+'</div>';
+      }
+      // Content tabs
+      var ctabs='<div class="tabs" style="margin-bottom:6px;flex-wrap:wrap">';
+      var cpanels='';
       contentSections.forEach(function(cs,ci){
         var on=ci===0;
         ctabs+='<button class="tab'+(on?' on':'')+'" onclick="this.parentElement.querySelectorAll(\'.tab\').forEach(function(t){t.classList.remove(\'on\')});this.classList.add(\'on\');this.closest(\'[id^=pc]\').querySelectorAll(\'[data-ct]\').forEach(function(x){x.style.display=\'none\'});this.closest(\'[id^=pc]\').querySelector(\'[data-ct='+cs.id+']\').style.display=\'block\'">'+cs.label+'</button>';
+        // Build section text for individual copy
+        var secText=cs.data.texts.map(function(s){return s.title+(s.content?'\n'+s.content:'')}).join('\n\n');
         var txt=cs.data.texts.map(function(s){return'<div style="margin-bottom:8px"><div style="font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:3px">'+s.title+'</div>'+(s.content?'<div style="font-size:.7rem;color:var(--text2);line-height:1.6">'+s.content.replace(/\n/g,'<br>')+'</div>':'')+'</div>'}).join('');
-        cpanels+='<div data-ct="'+cs.id+'"'+(on?'':' style="display:none"')+'><div style="max-height:180px;overflow-y:auto;padding:8px;background:var(--bg2);border-radius:6px;margin-bottom:6px">'+txt+'</div><button class="btn btn-ghost btn-xs" onclick="var t=this.previousElementSibling.textContent;copyTxt(t)">Copiar textos</button></div>';
+        cpanels+='<div data-ct="'+cs.id+'"'+(on?'':' style="display:none"')+'><div style="max-height:180px;overflow-y:auto;padding:8px;background:var(--bg2);border-radius:6px;margin-bottom:6px">'+txt+'</div><button class="btn btn-ghost btn-xs" onclick="copyTxt('+JSON.stringify(secText).replace(/'/g,"\\'")+')">Copiar sección</button></div>';
       });
       ctabs+='</div>';
       if(contentSections.length)html+=ctabs+cpanels;
