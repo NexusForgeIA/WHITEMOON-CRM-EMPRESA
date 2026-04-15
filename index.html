@@ -470,11 +470,21 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 <div class="page" id="p-rrss">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Generador de Contenido RRSS</div>
-    <div class="page-sub">Genera prompts de contenido profesionales listos para cualquier IA.</div>
+    <div class="page-sub">Genera contenido real listo para publicar basado en los datos del prospecto analizado. Selecciona un negocio, elige el pack WhiteMoon y genera el calendario de publicaciones.</div>
   </div>
   <div class="rrss-layout">
     <div class="rrss-sidebar">
-      <div class="field-group mb12"><span class="field-label">Sector</span><select class="select" id="r-sector" style="font-size:.76rem"><option value="">Seleccionar...</option><option>Restaurante</option><option>Centro de Belleza</option><option>Clínica Dental</option><option>Inmobiliaria</option><option>Fontanero</option><option>Academia</option><option>Gimnasio</option></select></div>
+      <div class="field-group mb12"><span class="field-label">Negocio analizado</span>
+        <select class="select" id="r-prospect" style="font-size:.76rem" onchange="loadProspectRRSS()"><option value="">— Selecciona prospecto —</option></select>
+      </div>
+      <div id="r-prospect-info" style="display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:9px;margin-bottom:12px;font-size:.68rem;color:var(--text2);line-height:1.6"></div>
+      <div class="field-group mb12"><span class="field-label">Pack WhiteMoon RRSS</span>
+        <select class="select" id="r-pack" style="font-size:.76rem">
+          <option value="launch">LaunchPack — 99€/mes (1 red, 8 posts)</option>
+          <option value="accelerator">AcceleratorPack — 199€/mes (2 redes, 12 posts)</option>
+          <option value="scale">ScalePack — 399€/mes (todas + GMB, 16 posts)</option>
+        </select>
+      </div>
       <div class="field-group mb12"><span class="field-label" style="margin-bottom:7px">Plataformas</span>
         <div class="platform-grid"><div class="plat-btn on" onclick="this.classList.toggle('on')"><span class="p-ico">📘</span>Facebook</div><div class="plat-btn on" onclick="this.classList.toggle('on')"><span class="p-ico">📸</span>Instagram</div><div class="plat-btn" onclick="this.classList.toggle('on')"><span class="p-ico">▶️</span>TikTok</div><div class="plat-btn" onclick="this.classList.toggle('on')"><span class="p-ico">💼</span>LinkedIn</div></div>
       </div>
@@ -485,12 +495,16 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
           <div class="ct-row on" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Testimonio / caso real</span></div>
           <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Reel / Video</span></div>
           <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Behind the scenes</span></div>
+          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Oferta / Promoción</span></div>
+          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">FAQ / Pregunta frecuente</span></div>
         </div>
       </div>
-      <div class="field-group mb12"><span class="field-label">Semanas</span><select class="select" id="r-weeks" style="font-size:.76rem;margin-top:5px"><option>1</option><option selected>2</option><option>4</option></select></div>
-      <button class="btn btn-orange" onclick="generateRRSS()" style="width:100%"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Generar Prompts</button>
+      <div class="field-group mb12"><span class="field-label">Nombre del negocio (manual)</span><input class="input" id="r-biz-manual" placeholder="Si no analizaste HTML..." style="font-size:.76rem"></div>
+      <div class="field-group mb12"><span class="field-label">Sector (manual)</span><select class="select" id="r-sector" style="font-size:.76rem"><option value="">Auto del prospecto</option><option>Restaurante</option><option>Centro de Belleza</option><option>Clínica Dental</option><option>Inmobiliaria</option><option>Fontanero</option><option>Academia</option><option>Gimnasio</option><option>Peluquería</option><option>Gestoría</option><option>Abogado</option><option>Veterinaria</option><option>Taller Mecánico</option></select></div>
+      <button class="btn btn-orange" onclick="generateRRSS()" style="width:100%"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Generar Contenido</button>
+      <div style="margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="generateRRSS();setTimeout(function(){copyAllRRSS()},200)" style="width:100%">Generar + Copiar TODO</button></div>
     </div>
-    <div id="rrss-output"><div class="empty-state" style="padding:36px 20px"><div class="es-icon"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/></svg></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:5px">Configura y genera</div><div style="font-size:.74rem;color:var(--text2);max-width:260px;margin:0 auto;line-height:1.6">Selecciona plataformas y tipos de contenido.</div></div></div>
+    <div id="rrss-output"><div class="empty-state" style="padding:36px 20px"><div class="es-icon"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/></svg></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:5px">Analiza un negocio primero</div><div style="font-size:.74rem;color:var(--text2);max-width:280px;margin:0 auto;line-height:1.6">Ve a "Analizar Negocio", pega el HTML del prospecto, y luego vuelve aquí para generar su contenido RRSS personalizado según el pack contratado.</div></div></div>
   </div>
 </div>
 
@@ -1321,6 +1335,7 @@ function prosAnalyzeHTML(){
   $('pros-html-url').value='';
   $('pros-html-sector').value='';
   showToast('✓ '+data.domain+' analizado — '+data.probs.length+' oportunidades');
+  refreshProspectList();
 }
 
 function exportPros(){
@@ -1841,17 +1856,188 @@ function stopVoiceDemo(){
 }
 
 // ═══════════════════════════════════════
-// RRSS GENERATOR
+// RRSS GENERATOR — Content based on analyzed prospects + WhiteMoon packs
 // ═══════════════════════════════════════
-var CT_MAP={
-'Carrusel educativo':{ico:'📊',gen:function(s,p){return{content:'PROMPT CARRUSEL '+p.toUpperCase()+':\n\nCrea carrusel 7 slides para '+s+'.\n\n📌 SLIDE 1 (Portada):\n"5 errores al elegir '+s.toLowerCase()+'"\nFondo oscuro + título grande.\n\n📌 SLIDES 2-6:\nCada slide = 1 error:\n— Título (máx 6 palabras)\n— Explicación (máx 25 palabras)\n— Solución (máx 20 palabras)\n\n📌 SLIDE 7 (CTA):\n"¿Quieres evitarlos? Escríbenos"\n\nTono educativo. 1080x1080px.',hooks:['El error del 90% al elegir '+s.toLowerCase(),'Lo que nadie cuenta sobre '+s.toLowerCase(),'5 señales de que necesitas cambiar'],caption:'¿Sabías que el 90% comete estos errores? 👆\n\n#'+s.replace(/ /g,'')+'#Consejos'}}},
-'Post de venta':{ico:'🛒',gen:function(s,p){return{content:'PROMPT POST VENTA '+p.toUpperCase()+':\n\nPost persuasivo para '+s+'.\n\n🎯 ESTRUCTURA:\n1. HOOK: Pregunta sobre el problema\n2. PROBLEMA: 2-3 frases directas\n3. SOLUCIÓN: 3 beneficios\n4. OFERTA: Precio + plazo limitado\n5. CTA: Urgente y específico\n6. CONTACTO: WhatsApp + link\n\nMáximo 150 palabras. Directo a beneficios.',hooks:['¿Cuánto te cuesta no tener esto?','Oferta especial esta semana','Si llevas pensándolo, es el momento'],caption:'💥 OFERTA ESPECIAL — solo esta semana 👇\n\n#Oferta#'+s.replace(/ /g,'')}}},
-'Testimonio / caso real':{ico:'⭐',gen:function(s,p){return{content:'PROMPT TESTIMONIO '+p.toUpperCase()+':\n\nPost testimonio para '+s+'.\n\n🎯 ESTRUCTURA:\n1. CONTEXTO: Problema del cliente\n2. PROCESO: Qué hicimos\n3. RESULTADO: Con datos numéricos\n4. QUOTE: Cita directa del cliente\n5. CTA: "¿Quieres un resultado similar?"\n\nCliente ficticio: María G., 34 años.\nSé específico con resultados.',hooks:['Lo que María consiguió en 3 semanas','De "no sé si funciona" a "ojalá lo hubiera hecho antes"'],caption:'"[Quote del cliente]"\n— María G.\n\n#Testimonio#CasoReal'}}},
-'Reel / Video':{ico:'🎬',gen:function(s,p){return{content:'PROMPT REEL '+p.toUpperCase()+':\n\nGuión Reel 30-45s para '+s+'.\n\n🎬 ESTRUCTURA:\n0-3s: Hook visual + texto\n3-8s: Problema (voz en off)\n8-22s: 3 puntos solución\n22-30s: Resultado\n30-45s: CTA + nombre\n\nIncluye:\n— Guión voz en off\n— Texto pantalla\n— Plano visual\n— Música recomendada\n— Caption con hashtags',hooks:['¿Por qué [problema]?','3 cosas que harías diferente','Lo que aprendí en [X años]'],caption:'🎬 Guarda este video.\n\n#Reel#'+s.replace(/ /g,'')}}},
-'Behind the scenes':{ico:'🎥',gen:function(s,p){return{content:'PROMPT BTS '+p.toUpperCase()+':\n\nSerie 5 Stories para '+s+'.\n\nStory 1: "Os enseño un día en [negocio]"\nStory 2-4: Momentos del día\nStory 5: Momento diferenciador\n+ CTA: "¿Reserva aquí 👆"\n\n+ VERSIÓN REEL 45s.\n\nTono auténtico y cercano.',hooks:['Lo que pasa entre bastidores','Un día normal (no es lo que crees)','¿Quieres ver cómo trabajamos?'],caption:'👀 Hoy enseñamos todo, sin filtros.\n\n#BehindTheScenes'}}}
+var PACK_CONFIG={launch:{posts:8,weeks:4,perWeek:2,redes:1,name:'LaunchPack',price:'99€/mes'},accelerator:{posts:12,weeks:4,perWeek:3,redes:2,name:'AcceleratorPack',price:'199€/mes'},scale:{posts:16,weeks:4,perWeek:4,redes:'todas',name:'ScalePack',price:'399€/mes'}};
+var DAYS_ES=['Lunes','Martes','Miércoles','Jueves','Viernes'];
+
+function loadProspectRRSS(){
+  var sel=$('r-prospect');var idx=sel.value;
+  var info=$('r-prospect-info');
+  if(idx===''||!prosResults[idx]){info.style.display='none';return}
+  var d=prosResults[idx];
+  info.style.display='block';
+  info.innerHTML='<b style="color:var(--text)">'+d.sectorIco+' '+(d.bizName||d.domain)+'</b><br>'+d.sector+'<br>'+(d.services&&d.services.length?'Servicios: '+d.services.slice(0,5).join(', ')+'<br>':'')+(d.address||'')+(d.phones&&d.phones.length?'<br>Tel: '+d.phones[0]:'');
+  $('r-biz-manual').value=d.bizName||d.domain;
+}
+
+function refreshProspectList(){
+  var sel=$('r-prospect');var cur=sel.value;
+  sel.innerHTML='<option value="">— Selecciona prospecto —</option>';
+  prosResults.forEach(function(r,i){
+    var opt=document.createElement('option');opt.value=i;opt.textContent=r.sectorIco+' '+(r.bizName||r.domain)+' ('+r.sector+')';sel.appendChild(opt);
+  });
+  if(cur)sel.value=cur;
+}
+
+var CT_MAP2={
+'Carrusel educativo':{ico:'📊',gen:function(biz,sector,svcs,desc,plat){
+  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
+  var topics=['5 errores comunes al elegir '+svc,'Lo que deberías saber antes de contratar '+svc,'Guía rápida: '+svc+' explicado fácil','3 mitos sobre '+svc+' que debes conocer'];
+  var topic=topics[rnd(0,topics.length-1)];
+  var slides=[];
+  slides.push('📌 SLIDE 1 (Portada): "'+topic+'" — Logo de '+biz+'. Fondo oscuro, título grande, tipografía bold.');
+  for(var i=2;i<=6;i++){
+    slides.push('📌 SLIDE '+i+': Punto '+(i-1)+' — Título corto (máx 6 palabras) + explicación (máx 25 palabras) + icono visual.');
+  }
+  slides.push('📌 SLIDE 7 (CTA): "¿Quieres saber más? Escríbenos" — Logo '+biz+' + teléfono/WhatsApp.');
+  return{
+    content:'CARRUSEL EDUCATIVO — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\nTema: '+topic+'\n\n'+slides.join('\n\n')+'\n\nFormato: 1080x1080px. Tono educativo, visual y profesional.\nColores de marca del negocio.',
+    caption:'¿Sabías esto sobre '+svc+'? 👆 Desliza y aprende algo nuevo hoy.\n\n'+biz+' — Tu '+sector.toLowerCase()+' de confianza\n\n#'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #'+sector.replace(/ /g,'')+'  #'+svc.replace(/ /g,'')+'  #Consejos  #Educación',
+    hooks:[topic,'¿Cuánto sabes realmente sobre '+svc+'?','Lo que el 90% no sabe sobre '+svc]
+  }
+}},
+'Post de venta':{ico:'🛒',gen:function(biz,sector,svcs,desc,plat){
+  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
+  return{
+    content:'POST DE VENTA — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\nServicio destacado: '+svc+'\n\n📝 TEXTO PARA PUBLICAR:\n\n¿Necesitas '+svc.toLowerCase()+'? En '+biz+' te ofrecemos la mejor solución.\n\n✅ Profesionales con experiencia\n✅ Atención personalizada\n✅ Resultados garantizados\n\n📞 Llámanos o escríbenos por WhatsApp para tu consulta sin compromiso.\n\n🔗 Más info en nuestra web\n\n—\n'+biz+' | Tu '+sector.toLowerCase()+' en [ciudad]',
+    caption:'¿Buscas '+svc.toLowerCase()+'? En '+biz+' estamos para ayudarte 💪\n\nConsulta sin compromiso 👇\n\n#'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #'+svc.replace(/ /g,'')+'  #'+sector.replace(/ /g,''),
+    hooks:['¿Necesitas '+svc.toLowerCase()+'?','Tu solución está aquí','En '+biz+' te lo ponemos fácil']
+  }
+}},
+'Testimonio / caso real':{ico:'⭐',gen:function(biz,sector,svcs,desc,plat){
+  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,2))]:'nuestro servicio';
+  var nombres=['María G.','Carlos R.','Laura M.','Javier P.','Ana S.','Pedro L.'];
+  var nombre=nombres[rnd(0,nombres.length-1)];
+  return{
+    content:'TESTIMONIO / CASO REAL — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\nServicio: '+svc+'\n\n📝 TEXTO PARA PUBLICAR:\n\n"Llevaba tiempo buscando un buen '+sector.toLowerCase()+' y encontré '+biz+'. Desde el primer momento me sentí muy bien atendido/a. El servicio de '+svc.toLowerCase()+' superó mis expectativas."\n— '+nombre+'\n\n⭐⭐⭐⭐⭐\n\n¿Quieres un resultado similar? Contáctanos y descubre por qué nuestros clientes nos recomiendan.\n\n📞 Llámanos o escríbenos\n\n—\n'+biz,
+    caption:'"'+biz+' ha cambiado mi experiencia con '+svc.toLowerCase()+'" — '+nombre+' ⭐⭐⭐⭐⭐\n\n#Testimonio  #'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #ClientesFelices',
+    hooks:['Lo que '+nombre+' dice de nosotros','De la duda a la confianza','5 estrellas no es casualidad']
+  }
+}},
+'Reel / Video':{ico:'🎬',gen:function(biz,sector,svcs,desc,plat){
+  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,2))]:'lo que hacemos';
+  return{
+    content:'GUIÓN REEL — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\nDuración: 30-45 segundos\n\n🎬 GUIÓN:\n\n0-3s: HOOK — Texto en pantalla: "¿Sabías que...?" + plano del local/trabajo\n3-8s: PROBLEMA — Voz en off: "Muchas personas no saben cuándo necesitan '+svc.toLowerCase()+'..."\n8-22s: SOLUCIÓN — 3 puntos rápidos con texto superpuesto:\n  1. [Beneficio 1 del servicio]\n  2. [Beneficio 2]\n  3. [Resultado]\n22-30s: RESULTADO — Antes/después o cliente satisfecho\n30-45s: CTA — "¿Te interesa? Escríbenos por WhatsApp" + logo '+biz+'\n\n🎵 Música: trending, motivacional\n📐 Formato: 9:16 vertical',
+    caption:'🎬 ¿Sabías esto sobre '+svc.toLowerCase()+'? Mira hasta el final 👀\n\n#Reel  #'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #'+sector.replace(/ /g,''),
+    hooks:['Lo que nadie te cuenta sobre '+svc.toLowerCase(),'Mira esto antes de decidir','30 segundos que te van a interesar']
+  }
+}},
+'Behind the scenes':{ico:'🎥',gen:function(biz,sector,svcs,desc,plat){
+  return{
+    content:'BEHIND THE SCENES — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\n\n📝 SERIE DE STORIES / POST:\n\n📸 Story 1: "Os enseñamos un día en '+biz+'" — foto del equipo/local abriendo\n📸 Story 2: Preparando el espacio / materiales — "Todo listo para recibiros"\n📸 Story 3: Momento de trabajo real — "Así trabajamos en '+biz+'"\n📸 Story 4: Detalle especial — "El detalle que nos hace diferentes"\n📸 Story 5: CTA — "¿Quieres vivir la experiencia? Reserva aquí 👆"\n\nTono: auténtico, cercano, humano. Sin filtros perfectos.',
+    caption:'👀 Hoy os enseñamos todo, sin filtros. Un día en '+biz+' ✨\n\n#BehindTheScenes  #'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #DíaADía',
+    hooks:['Lo que pasa cuando no nos veis','Un día normal en '+biz,'¿Quieres ver cómo trabajamos?']
+  }
+}},
+'Oferta / Promoción':{ico:'🔥',gen:function(biz,sector,svcs,desc,plat){
+  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
+  return{
+    content:'POST OFERTA / PROMOCIÓN — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\nServicio: '+svc+'\n\n📝 TEXTO PARA PUBLICAR:\n\n🔥 OFERTA ESPECIAL — Solo esta semana 🔥\n\n'+svc+' con un descuento exclusivo para nuevos clientes.\n\n✅ Primera consulta/sesión GRATIS\n✅ Sin compromiso\n✅ Plazas limitadas\n\n📞 Llámanos o escríbenos por WhatsApp para reservar tu plaza.\n⏰ Oferta válida hasta [fecha]\n\n—\n'+biz+' | '+sector,
+    caption:'🔥 OFERTA esta semana 🔥 '+svc+' con descuento exclusivo.\n\nPlazas limitadas ⏰ Reserva tu plaza 👇\n\n#Oferta  #'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #Promoción',
+    hooks:['Solo esta semana','Plazas limitadas para '+svc.toLowerCase(),'Si estabas esperando, es ahora']
+  }
+}},
+'FAQ / Pregunta frecuente':{ico:'❓',gen:function(biz,sector,svcs,desc,plat){
+  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
+  return{
+    content:'POST FAQ — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\n\n📝 TEXTO PARA PUBLICAR:\n\n❓ PREGUNTA FRECUENTE\n\n"¿Cuánto cuesta '+svc.toLowerCase()+'?"\n\nEn '+biz+' cada caso es diferente, por eso ofrecemos una consulta inicial donde valoramos tu situación y te damos un presupuesto personalizado sin compromiso.\n\n💡 Lo que sí te podemos decir:\n• Precios transparentes, sin sorpresas\n• Facilidades de pago\n• Primera consulta informativa\n\n¿Tienes otra pregunta? Escríbenos 👇\n\n—\n'+biz,
+    caption:'❓ "¿Cuánto cuesta?" — La pregunta que más nos hacéis. Aquí la respuesta 👇\n\n#FAQ  #'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #PreguntasFrecuentes',
+    hooks:['La pregunta que TODOS hacen','¿Cuánto cuesta realmente?','Respondemos tu duda más común']
+  }
+}}
 };
-function generateRRSS(){var sector=$('r-sector').value||'Negocio local';var weeks=parseInt($('r-weeks').value)||2;var platforms=[];document.querySelectorAll('.plat-btn.on').forEach(function(p){platforms.push(p.textContent.trim())});if(!platforms.length)platforms=['Instagram','Facebook'];var types=[];document.querySelectorAll('.ct-row.on .ct-label').forEach(function(e){types.push(e.textContent.trim())});if(!types.length)types=['Carrusel educativo','Post de venta'];var wk=['Sem 1','Sem 2','Sem 3','Sem 4'],wc=['tag-g','tag-o','tag-c','tag-p'],cards=[];for(var w=0;w<weeks;w++)types.forEach(function(type){var tpl=CT_MAP[type];if(!tpl)return;platforms.forEach(function(plat){var d=tpl.gen(sector,plat);cards.push({ico:tpl.ico,type:type,plat:plat,week:wk[w],wc:wc[w],content:d.content,hooks:d.hooks,caption:d.caption})})});cards=cards.slice(0,10);S.prompts+=cards.length;updateCounters();
-$('rrss-output').innerHTML='<div class="prompt-cards">'+cards.map(function(c){return'<div class="prompt-card"><div class="pc-header"><div class="pc-type"><span style="font-size:1rem">'+c.ico+'</span>'+c.type+'</div><div style="display:flex;gap:5px;align-items:center"><span class="tag">'+c.plat+'</span><span class="tag '+c.wc+'">'+c.week+'</span></div></div><div class="pc-content">'+c.content.replace(/\n/g,'<br>')+'</div><div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Hooks:</div><div class="pc-hooks">'+c.hooks.map(function(h){return'<div class="hook-item" onclick="copyTxt(\''+h.replace(/'/g,"\\'")+'\')">'+h+'</div>'}).join('')+'</div><div class="flex gap8"><button class="btn btn-ghost btn-xs" onclick="copyTxt(this.closest(\'.prompt-card\').querySelector(\'.pc-content\').textContent)">Copiar prompt</button><button class="btn btn-ghost btn-xs" onclick="copyTxt('+JSON.stringify(c.caption)+')">Copiar caption</button></div></div>'}).join('')+'</div>';showToast(cards.length+' prompts generados')}
+
+function generateRRSS(){
+  var prospectIdx=$('r-prospect').value;
+  var d=prospectIdx!==''?prosResults[prospectIdx]:null;
+  var biz=d?(d.bizName||d.domain):($('r-biz-manual').value||'Negocio');
+  var sector=d?d.sector:($('r-sector').value||'Negocio local');
+  var svcs=d&&d.services?d.services:[];
+  var desc=d?d.description:'';
+  var pack=$('r-pack').value;
+  var pc=PACK_CONFIG[pack];
+  var totalPosts=pc.posts;
+
+  var platforms=[];
+  document.querySelectorAll('.plat-btn.on').forEach(function(p){platforms.push(p.textContent.trim())});
+  if(!platforms.length)platforms=['Instagram','Facebook'];
+
+  var types=[];
+  document.querySelectorAll('.ct-row.on .ct-label').forEach(function(e){types.push(e.textContent.trim())});
+  if(!types.length)types=['Carrusel educativo','Post de venta','Testimonio / caso real'];
+
+  // Generate calendar
+  var cards=[];
+  var today=new Date();
+  var postNum=0;
+  for(var w=0;w<pc.weeks&&postNum<totalPosts;w++){
+    var weekStart=new Date(today);weekStart.setDate(today.getDate()+(w*7));
+    for(var p=0;p<pc.perWeek&&postNum<totalPosts;p++){
+      var postDate=new Date(weekStart);postDate.setDate(weekStart.getDate()+Math.floor((p/pc.perWeek)*5));
+      var dayName=DAYS_ES[postDate.getDay()===0?4:postDate.getDay()===6?4:postDate.getDay()-1];
+      var dateStr=postDate.getDate()+'/'+(postDate.getMonth()+1);
+      var type=types[postNum%types.length];
+      var plat=platforms[postNum%platforms.length];
+      var tpl=CT_MAP2[type];
+      if(!tpl)continue;
+      var gen=tpl.gen(biz,sector,svcs,desc,plat);
+      cards.push({
+        ico:tpl.ico,type:type,plat:plat,
+        week:'Sem '+(w+1),weekNum:w,
+        wc:['tag-g','tag-o','tag-c','tag-p'][w%4],
+        day:dayName,date:dateStr,
+        postNum:postNum+1,
+        content:gen.content,caption:gen.caption,hooks:gen.hooks
+      });
+      postNum++;
+    }
+  }
+
+  S.prompts+=cards.length;updateCounters();
+
+  // Header
+  var headerHtml='<div class="card mb12" style="border-color:var(--accent-border)"><div class="flex jcb aic"><div><div style="font-size:.88rem;font-weight:800;color:#fff">'+pc.name+' — '+biz+'</div><div style="font-size:.7rem;color:var(--text2);margin-top:3px">'+totalPosts+' publicaciones/mes · '+pc.price+' · '+platforms.join(' + ')+'</div></div><div class="flex gap8"><button class="btn btn-p btn-sm" onclick="copyAllRRSS()">Copiar TODO</button><button class="btn btn-ghost btn-sm" onclick="copyCalendarRRSS()">Copiar Calendario</button></div></div></div>';
+
+  // Calendar summary
+  var calHtml='<div class="card card-sm mb12"><div class="sec-title mb8"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--accent);fill:none;stroke-width:1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg>Calendario de publicaciones</div><div style="display:grid;grid-template-columns:40px 70px 1fr 80px 80px;gap:4px;font-size:.66rem;font-family:\'Space Mono\',monospace">';
+  calHtml+='<div style="font-weight:700;color:var(--muted)">#</div><div style="font-weight:700;color:var(--muted)">Fecha</div><div style="font-weight:700;color:var(--muted)">Tipo</div><div style="font-weight:700;color:var(--muted)">Plataforma</div><div style="font-weight:700;color:var(--muted)">Semana</div>';
+  cards.forEach(function(c){
+    calHtml+='<div style="color:var(--accent)">'+c.postNum+'</div><div style="color:var(--text)">'+c.day+' '+c.date+'</div><div style="color:var(--text2)">'+c.ico+' '+c.type+'</div><div style="color:var(--text2)">'+c.plat+'</div><div><span class="tag '+c.wc+'" style="font-size:.55rem">'+c.week+'</span></div>';
+  });
+  calHtml+='</div></div>';
+
+  // Content cards
+  var contentHtml='<div class="prompt-cards">';
+  cards.forEach(function(c){
+    contentHtml+='<div class="prompt-card" data-rrss-card><div class="pc-header"><div class="pc-type"><span style="font-size:1rem">'+c.ico+'</span>'+c.type+' #'+c.postNum+'</div><div style="display:flex;gap:5px;align-items:center"><span class="tag">'+c.plat+'</span><span class="tag '+c.wc+'">'+c.week+' · '+c.day+' '+c.date+'</span></div></div>';
+    contentHtml+='<div class="pc-content" data-rrss-content>'+c.content.replace(/\n/g,'<br>')+'</div>';
+    contentHtml+='<div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:6px 0 3px">Caption lista para copiar:</div>';
+    contentHtml+='<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:9px;font-size:.72rem;color:var(--text);line-height:1.6;margin-bottom:6px;white-space:pre-wrap" data-rrss-caption>'+c.caption+'</div>';
+    contentHtml+='<div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Hooks alternativos:</div>';
+    contentHtml+='<div class="pc-hooks">'+c.hooks.map(function(h){return'<div class="hook-item" onclick="copyTxt(\''+h.replace(/'/g,"\\'")+'\')">'+h+'</div>'}).join('')+'</div>';
+    contentHtml+='<div class="flex gap8" style="margin-top:6px"><button class="btn btn-p btn-xs" onclick="copyTxt(this.closest(\'.prompt-card\').querySelector(\'[data-rrss-content]\').textContent+\'\\n\\nCAPTION:\\n\'+this.closest(\'.prompt-card\').querySelector(\'[data-rrss-caption]\').textContent)">Copiar post completo</button><button class="btn btn-ghost btn-xs" onclick="copyTxt(this.closest(\'.prompt-card\').querySelector(\'[data-rrss-caption]\').textContent)">Copiar solo caption</button></div>';
+    contentHtml+='</div>';
+  });
+  contentHtml+='</div>';
+
+  $('rrss-output').innerHTML=headerHtml+calHtml+contentHtml;
+  window._lastRRSSCards=cards;
+  showToast(cards.length+' contenidos generados para '+biz);
+}
+
+function copyAllRRSS(){
+  if(!window._lastRRSSCards||!window._lastRRSSCards.length){showToast('Genera contenido primero');return}
+  var all=window._lastRRSSCards.map(function(c){return'═══ POST #'+c.postNum+' — '+c.week+' · '+c.day+' '+c.date+' ═══\nPlataforma: '+c.plat+'\nTipo: '+c.type+'\n\n'+c.content+'\n\nCAPTION:\n'+c.caption+'\n'}).join('\n\n');
+  copyTxt(all);
+}
+
+function copyCalendarRRSS(){
+  if(!window._lastRRSSCards||!window._lastRRSSCards.length){showToast('Genera contenido primero');return}
+  var cal='CALENDARIO DE PUBLICACIONES RRSS\n================================\n\n';
+  cal+=window._lastRRSSCards.map(function(c){return'#'+c.postNum+' | '+c.day+' '+c.date+' | '+c.type+' | '+c.plat+' | '+c.week}).join('\n');
+  copyTxt(cal);
+}
 
 // INIT
 updateVoice();
