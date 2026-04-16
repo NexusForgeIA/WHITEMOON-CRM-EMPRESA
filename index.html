@@ -307,7 +307,42 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 .toast svg{width:12px;height:12px;stroke:var(--accent);fill:none;stroke-width:2;flex-shrink:0}
 
 @media(max-width:960px){.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.voice-layout{grid-template-columns:1fr}.rrss-layout{grid-template-columns:1fr}.niche-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:700px){.sidebar{display:none}.main{margin-left:0}.page{padding:14px}.prob-grid{grid-template-columns:1fr 1fr}.rrss-grid{grid-template-columns:1fr 1fr}.niche-grid{grid-template-columns:1fr}.filter-row{grid-template-columns:1fr 1fr}}
+/* ═══ NICHOS MODERN CARDS ═══ */
+.niche-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.niche-card{position:relative;background:linear-gradient(165deg,#15152a 0%,#0d0d1a 100%);border:1px solid rgba(124,58,237,.15);border-radius:14px;padding:20px 18px;cursor:pointer;transition:all .35s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.niche-card::before{content:'';position:absolute;inset:0;border-radius:14px;padding:1px;background:linear-gradient(135deg,rgba(124,58,237,.4) 0%,rgba(192,132,252,.1) 50%,rgba(124,58,237,0) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .3s}
+.niche-card::after{content:'';position:absolute;top:0;left:-50%;width:200%;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.8),transparent);opacity:0;transition:opacity .3s}
+.niche-card:hover{transform:translateY(-3px);border-color:rgba(124,58,237,.4);background:linear-gradient(165deg,#1a1a30 0%,#10101c 100%);box-shadow:0 12px 40px rgba(124,58,237,.15),0 0 0 1px rgba(124,58,237,.1)}
+.niche-card:hover::before,.niche-card:hover::after{opacity:1}
+.niche-card.selected{border-color:var(--accent);background:linear-gradient(165deg,rgba(124,58,237,.12) 0%,#10101c 100%);box-shadow:0 12px 40px rgba(124,58,237,.25)}
+.niche-card.selected::before{opacity:1}
+.nc-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.nc-icon-box{width:46px;height:46px;border-radius:11px;background:linear-gradient(135deg,rgba(124,58,237,.18) 0%,rgba(124,58,237,.05) 100%);border:1px solid rgba(124,58,237,.25);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s}
+.niche-card:hover .nc-icon-box{background:linear-gradient(135deg,rgba(124,58,237,.3) 0%,rgba(124,58,237,.1) 100%);border-color:rgba(124,58,237,.5);box-shadow:0 0 20px rgba(124,58,237,.2)}
+.nc-icon-box svg{width:22px;height:22px;stroke:var(--accent2);fill:none;stroke-width:1.6;transition:stroke .3s}
+.niche-card:hover .nc-icon-box svg{stroke:var(--accent)}
+.nc-score-box{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end}
+.nc-score{font-family:'Space Mono',monospace;font-size:1.15rem;font-weight:700;color:var(--gold2);line-height:1}
+.nc-score-label{font-size:.52rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.nc-name{font-size:.95rem;font-weight:700;color:#fff;letter-spacing:-.01em;margin-bottom:6px}
+.nc-desc{font-size:.72rem;color:var(--text2);line-height:1.55;margin-bottom:12px;min-height:32px}
+.nc-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.nc-tag{font-size:.58rem;font-weight:600;letter-spacing:.04em;padding:3px 9px;border-radius:5px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:var(--accent2);font-family:'Space Mono',monospace}
+.nc-footer{display:flex;align-items:center;justify-content:space-between;padding-top:11px;border-top:1px solid rgba(124,58,237,.1)}
+.nc-stats{display:flex;gap:10px}
+.nc-stat{display:flex;align-items:center;gap:4px;font-size:.64rem;color:var(--muted)}
+.nc-stat b{color:var(--text);font-weight:700;font-family:'Space Mono',monospace}
+.nc-action{font-size:.66rem;color:var(--accent2);font-weight:600;display:flex;align-items:center;gap:4px;transition:gap .25s}
+.nc-action svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+.niche-card:hover .nc-action{gap:8px}
+.niche-card:hover .nc-action{color:var(--green2)}
+
+/* Niche detail panel modern */
+.niche-detail{background:linear-gradient(165deg,#15152a 0%,#0d0d1a 100%);border:1px solid rgba(124,58,237,.2);border-radius:14px;padding:22px;display:none;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.nd-header{display:flex;align-items:center;gap:14px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid rgba(124,58,237,.12)}
+.nd-iconbox{width:54px;height:54px;border-radius:13px;background:linear-gradient(135deg,rgba(124,58,237,.25) 0%,rgba(124,58,237,.08) 100%);border:1px solid rgba(124,58,237,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nd-iconbox svg{width:26px;height:26px;stroke:var(--accent);fill:none;stroke-width:1.6}
+
 </style>
 </head>
 <body>
@@ -1736,8 +1771,68 @@ var NICHOS=[
 {id:'servicio-tecnico',name:'Servicio Técnico / SAT',ico:'🔧',score:'74',desc:'Averías, citas técnicas y seguimiento.',tags:['reparaciones','SAT','asistencia'],probs:['Averías sin atender fuera horario','Sin sistema de tickets','Clientes sin saber estado reparación','Sin captación online','Técnicos sin agenda digital','Sin FAQ automático'],svcs:[{n:'Agente Voz IA Averías',d:'Recoge tipo de avería, datos y urgencia. Deriva al técnico adecuado.',p:'Desde 149€/mes'},{n:'Chatbot IA Seguimiento',d:'El cliente consulta estado de su reparación 24h.',p:'Desde 99€/mes'},{n:'Bot WhatsApp Técnicos',d:'Notifica al técnico la siguiente visita con datos del cliente.',p:'Incluido en Pack Advance'},{n:'Web + GMB',d:'Web profesional con formulario inteligente + ficha Google.',p:'Pack Pyme: 1.800€'}],objs:[{q:'Cada avería es distinta',a:'El bot clasifica por tipo y urgencia. El técnico llega sabiendo qué se va a encontrar.'},{q:'Necesitamos ver la avería',a:'Exacto. El bot agenda la visita del técnico con todos los datos para que no pierda tiempo.'}],script:'Hola [Nombre], vi el servicio técnico en [Ciudad].\n\nCuando un cliente tiene una avería a las 9 de la noche, ¿qué pasa? Llama a quien coja primero.\n\nUn agente de voz recoge los datos de la avería, la urgencia y agenda la visita del técnico. Automáticamente.\n\n¿10 minutos?'}
 ];
 var pathChat='<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>';
-function buildNichos(){$('niche-grid').innerHTML=NICHOS.map(function(n){return'<div class="niche-card" onclick="selectNiche(\''+n.id+'\',this)"><div class="n-score">'+n.score+'/100</div><div class="n-ico">'+n.ico+'</div><div class="n-name">'+n.name+'</div><div class="n-desc">'+n.desc+'</div><div style="display:flex;flex-wrap:wrap;gap:3px">'+n.tags.map(function(t){return'<span class="tag tag-g">'+t+'</span>'}).join('')+'</div></div>'}).join('')}
-function selectNiche(id,el){document.querySelectorAll('.niche-card').forEach(function(c){c.classList.remove('selected')});el.classList.add('selected');var n=NICHOS.find(function(x){return x.id===id});if(!n)return;var det=$('niche-detail');det.classList.add('show');det.innerHTML='<div class="flex aic gap12 mb14"><div style="font-size:1.8rem">'+n.ico+'</div><div><div style="font-size:1rem;font-weight:800;color:#fff">'+n.name+'</div><div style="font-size:.72rem;color:var(--text2);margin-top:2px">'+n.desc+'</div></div><div style="margin-left:auto"><button class="btn btn-p btn-sm" onclick="loadVoiceFromNiche(\''+n.id+'\')">Crear Agente Voz</button></div></div><div class="nd-tabs"><button class="nd-tab active" onclick="switchNTab(this,\'nt-svcs\')">Servicios</button><button class="nd-tab" onclick="switchNTab(this,\'nt-probs\')">Problemas</button><button class="nd-tab" onclick="switchNTab(this,\'nt-objs\')">Objeciones</button><button class="nd-tab" onclick="switchNTab(this,\'nt-script\')">Script</button></div><div id="nt-svcs" class="nd-panel active">'+n.svcs.map(function(s){return'<div class="svc-row"><div class="svc-dot si-g"><svg viewBox="0 0 24 24">'+pathChat+'</svg></div><div><div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px">'+s.n+'</div><div style="font-size:.7rem;color:var(--text2);margin-bottom:2px">'+s.d+'</div><div style="font-size:.68rem;font-weight:600;color:var(--orange2);font-family:\'Space Mono\',monospace">'+s.p+'</div></div></div>'}).join('')+'</div><div id="nt-probs" class="nd-panel"><div style="display:flex;flex-wrap:wrap;gap:6px">'+n.probs.map(function(p){return'<span class="tag tag-o">'+p+'</span>'}).join('')+'</div></div><div id="nt-objs" class="nd-panel">'+n.objs.map(function(o){return'<div class="objection"><div class="obj-q">"'+o.q+'"</div><div class="obj-a">'+o.a+'</div></div>'}).join('')+'</div><div id="nt-script" class="nd-panel"><div class="flex jcb aic mb8"><span style="font-size:.7rem;color:var(--text2)">Script de venta</span><button class="btn btn-ghost btn-xs" onclick="copyTxt('+JSON.stringify(n.script)+')">Copiar</button></div><div class="script-box">'+n.script.replace(/\n/g,'<br>')+'</div></div>';setTimeout(function(){det.scrollIntoView({behavior:'smooth',block:'nearest'})},80)}
+
+// SVG icons for each niche (no emojis)
+var NICHE_ICONS={
+  dental:'<path d="M12 5.5c-1.5-2-4-2.5-5.5-1-2 2-1.5 5 0 8s2 5 3 6 2 0 2-2 .5-3 .5-3 .5 3 .5 3 1 3 2 2 1.5-3 3-6 2-6 0-8c-1.5-1.5-4-1-5.5 1z"/>',
+  restaurante:'<path d="M3 2v7c0 1.1.9 2 2 2h0c1.1 0 2-.9 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>',
+  belleza:'<path d="M10 2v8"/><path d="M14 2v8"/><path d="M10 2h4l1 10a3 3 0 01-6 0z"/><path d="M12 12v10"/><path d="M7 22h10"/>',
+  fontanero:'<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>',
+  inmobiliaria:'<path d="M3 9.5L12 2l9 7.5"/><path d="M5 9v11a2 2 0 002 2h10a2 2 0 002-2V9"/><path d="M9 22V12h6v10"/>',
+  academia:'<path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>',
+  taller:'<circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M5 17H3v-6l2-5h9l4 5h3v6h-2M5 17h12"/>',
+  gimnasio:'<path d="M6.5 6.5l11 11M21 21l-1-1M3 3l1 1M18 22l4-4M2 6l4-4M3 10l7-7M14 21l7-7"/>',
+  abogado:'<path d="M12 3v18M3 7h18M5 7l3 10h6M19 7l-3 10h-6"/>',
+  peluqueria:'<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4L8.12 15.88M14.47 14.48L20 20M8.12 8.12L12 12"/>',
+  veterinaria:'<path d="M4.5 12.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM19 5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM24.5 12.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" transform="translate(-0.5 1)"/><path d="M16.5 15c-1.5-2-3.5-2-4.5-2s-3 0-4.5 2c-1.7 2.3-3.5 3.5-3.5 6 0 1.7 1.3 3 3 3 1.5 0 2.5-1 5-1s3.5 1 5 1 3-1.3 3-3c0-2.5-1.8-3.7-3.5-6z"/>',
+  farmacia:'<path d="M10.5 20.5l10-10a4.95 4.95 0 10-7-7l-10 10a4.95 4.95 0 107 7zM8.5 8.5l7 7"/>',
+  gestoria:'<path d="M3 3v18h18"/><path d="M7 16l4-4 4 4 5-5"/>',
+  consultora:'<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>',
+  rrhh:'<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>',
+  logistica:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+  hosteleria:'<path d="M8 21h8M12 17v4M7 4h10l-1 6a4 4 0 01-8 0z"/><path d="M5 4h14M9 12h6"/>',
+  'servicio-tecnico':'<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/><circle cx="12" cy="12" r="1"/>'
+};
+
+function getNicheIcon(id){return NICHE_ICONS[id]||'<circle cx="12" cy="12" r="9"/>'}
+
+function buildNichos(){
+  $('niche-grid').innerHTML=NICHOS.map(function(n){
+    var svcsCount=n.svcs.length;
+    var probsCount=n.probs.length;
+    return '<div class="niche-card" onclick="selectNiche(\''+n.id+'\',this)">'+
+      '<div class="nc-head">'+
+        '<div class="nc-icon-box"><svg viewBox="0 0 24 24">'+getNicheIcon(n.id)+'</svg></div>'+
+        '<div class="nc-score-box"><div class="nc-score">'+n.score+'</div><div class="nc-score-label">Score IA</div></div>'+
+      '</div>'+
+      '<div class="nc-name">'+n.name+'</div>'+
+      '<div class="nc-desc">'+n.desc+'</div>'+
+      '<div class="nc-tags">'+n.tags.map(function(t){return'<span class="nc-tag">'+t+'</span>'}).join('')+'</div>'+
+      '<div class="nc-footer">'+
+        '<div class="nc-stats"><span class="nc-stat"><b>'+svcsCount+'</b> servicios</span><span class="nc-stat"><b>'+probsCount+'</b> oportunidades</span></div>'+
+        '<span class="nc-action">Ver detalle<svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>'+
+      '</div>'+
+    '</div>';
+  }).join('')
+}
+
+function selectNiche(id,el){
+  document.querySelectorAll('.niche-card').forEach(function(c){c.classList.remove('selected')});
+  el.classList.add('selected');
+  var n=NICHOS.find(function(x){return x.id===id});if(!n)return;
+  var det=$('niche-detail');det.classList.add('show');
+  det.innerHTML='<div class="nd-header">'+
+    '<div class="nd-iconbox"><svg viewBox="0 0 24 24">'+getNicheIcon(n.id)+'</svg></div>'+
+    '<div style="flex:1"><div style="font-size:1.1rem;font-weight:800;color:#fff;letter-spacing:-.01em">'+n.name+'</div><div style="font-size:.74rem;color:var(--text2);margin-top:3px">'+n.desc+'</div></div>'+
+    '<div style="display:flex;gap:8px"><button class="btn btn-ghost btn-sm" onclick="copyTxt('+JSON.stringify(n.script)+')">Copiar script</button><button class="btn btn-p btn-sm" onclick="loadVoiceFromNiche(\''+n.id+'\')"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg>Crear Agente Voz</button></div>'+
+    '</div>'+
+    '<div class="nd-tabs"><button class="nd-tab active" onclick="switchNTab(this,\'nt-svcs\')">Servicios</button><button class="nd-tab" onclick="switchNTab(this,\'nt-probs\')">Problemas</button><button class="nd-tab" onclick="switchNTab(this,\'nt-objs\')">Objeciones</button><button class="nd-tab" onclick="switchNTab(this,\'nt-script\')">Script</button></div>'+
+    '<div id="nt-svcs" class="nd-panel active">'+n.svcs.map(function(s){return'<div class="svc-row"><div class="svc-dot si-g"><svg viewBox="0 0 24 24">'+pathChat+'</svg></div><div style="flex:1"><div style="font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:2px">'+s.n+'</div><div style="font-size:.7rem;color:var(--text2);margin-bottom:2px">'+s.d+'</div><div style="font-size:.68rem;font-weight:600;color:var(--orange2);font-family:\'Space Mono\',monospace">'+s.p+'</div></div></div>'}).join('')+'</div>'+
+    '<div id="nt-probs" class="nd-panel"><div style="display:flex;flex-wrap:wrap;gap:6px">'+n.probs.map(function(p){return'<span class="tag tag-o">'+p+'</span>'}).join('')+'</div></div>'+
+    '<div id="nt-objs" class="nd-panel">'+n.objs.map(function(o){return'<div class="objection"><div class="obj-q">"'+o.q+'"</div><div class="obj-a">'+o.a+'</div></div>'}).join('')+'</div>'+
+    '<div id="nt-script" class="nd-panel"><div class="flex jcb aic mb8"><span style="font-size:.7rem;color:var(--text2)">Script de venta</span><button class="btn btn-ghost btn-xs" onclick="copyTxt('+JSON.stringify(n.script)+')">Copiar</button></div><div class="script-box">'+n.script.replace(/\n/g,'<br>')+'</div></div>';
+  setTimeout(function(){det.scrollIntoView({behavior:'smooth',block:'nearest'})},80)
+}
 function switchNTab(el,pid){var det=$('niche-detail');det.querySelectorAll('.nd-tab').forEach(function(t){t.classList.remove('active')});el.classList.add('active');det.querySelectorAll('.nd-panel').forEach(function(p){p.classList.remove('active')});$(pid).classList.add('active')}
 function loadVoiceFromNiche(id){var n=NICHOS.find(function(x){return x.id===id});if(n){$('v-sector').value=n.name;$('v-services').value=n.svcs.map(function(s){return s.n}).join('\n')}goPage('p-voice',document.querySelectorAll('.nav-item')[3]);setTimeout(updateVoice,80)}
 
