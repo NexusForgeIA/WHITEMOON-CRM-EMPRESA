@@ -262,10 +262,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   </div>
   <div class="sb-section">
     <div class="sb-label">Herramientas IA</div>
-    <button class="nav-item" onclick="goPage('p-rrss',this)">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
-      Contenido RRSS
-    </button>
+
     <button class="nav-item" onclick="goPage('p-proposals',this)">
       <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
       Propuestas
@@ -841,7 +838,7 @@ function renderProsResults(){
     // Flags
     html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+(r.needsWebRedesign?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>SEO '+r.seoGrade+'</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>SEO '+r.seoGrade+'</span>')+'</div>';
     // Actions
-    html+='<div class="flex gap8 fwrap mb4"><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar web</a><button class="btn btn-ghost btn-xs" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">Servicios + Prompts ▾</button></div>';
+    html+='<div class="flex gap8 fwrap mb4"><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar web</a><button class="btn btn-ghost btn-xs" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">Servicios + Prompts ▾</button><button class="btn btn-cyan btn-xs" onclick="generateWebDemo('+i+')"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>🌐 Generar Web Demo</button></div>';
     // Expandable
     html+='<div id="'+cid+'" style="display:none;border-top:1px solid var(--border2);padding-top:10px;margin-top:6px">';
     // Services
@@ -1020,6 +1017,223 @@ function copyAllRRSS(){
   if(!window._lastRRSSCards||!window._lastRRSSCards.length){showToast('Genera contenido primero');return}
   var all=window._lastRRSSCards.map(function(c){return'═══ POST #'+c.postNum+' — '+c.week+' · '+c.day+' '+c.date+' ═══\nPlataforma: '+c.plat+'\n\n'+c.content+'\n\nCAPTION:\n'+c.caption+'\n'}).join('\n\n');
   copyTxt(all);
+}
+
+// ═══════════════════════════════════════
+// WEB DEMO GENERATOR — API Claude
+// ═══════════════════════════════════════
+
+var SECTOR_THEMES={
+  dental:{primary:'#0ea5e9',secondary:'#0284c7',accent:'#38bdf8',bg:'#f0f9ff',dark:'#0c4a6e',style:'clínico y moderno',emoji:'🦷'},
+  restaurante:{primary:'#dc2626',secondary:'#b91c1c',accent:'#f97316',bg:'#fff7ed',dark:'#431407',style:'cálido y apetecible',emoji:'🍽️'},
+  belleza:{primary:'#db2777',secondary:'#be185d',accent:'#f472b6',bg:'#fdf2f8',dark:'#500724',style:'elegante y femenino',emoji:'💅'},
+  peluqueria:{primary:'#7c3aed',secondary:'#6d28d9',accent:'#a78bfa',bg:'#f5f3ff',dark:'#2e1065',style:'moderno y creativo',emoji:'✂️'},
+  taller:{primary:'#d97706',secondary:'#b45309',accent:'#fbbf24',bg:'#fffbeb',dark:'#451a03',style:'industrial y confiable',emoji:'🔧'},
+  abogado:{primary:'#1e3a5f',secondary:'#1e40af',accent:'#3b82f6',bg:'#eff6ff',dark:'#1e3a5f',style:'serio y profesional',emoji:'⚖️'},
+  gestoria:{primary:'#065f46',secondary:'#047857',accent:'#10b981',bg:'#ecfdf5',dark:'#022c22',style:'profesional y ordenado',emoji:'📊'},
+  veterinaria:{primary:'#16a34a',secondary:'#15803d',accent:'#4ade80',bg:'#f0fdf4',dark:'#14532d',style:'cálido y confiable',emoji:'🐾'},
+  fisioterapia:{primary:'#0891b2',secondary:'#0e7490',accent:'#22d3ee',bg:'#ecfeff',dark:'#164e63',style:'salud y bienestar',emoji:'🦴'},
+  inmobiliaria:{primary:'#92400e',secondary:'#78350f',accent:'#f59e0b',bg:'#fffbeb',dark:'#451a03',style:'premium y de confianza',emoji:'🏠'},
+  academia:{primary:'#4f46e5',secondary:'#4338ca',accent:'#818cf8',bg:'#eef2ff',dark:'#1e1b4b',style:'educativo y dinámico',emoji:'📚'},
+  gimnasio:{primary:'#111827',secondary:'#1f2937',accent:'#ef4444',bg:'#fef2f2',dark:'#111827',style:'energético y motivador',emoji:'💪'},
+  psicologia:{primary:'#7c3aed',secondary:'#6d28d9',accent:'#c4b5fd',bg:'#f5f3ff',dark:'#2e1065',style:'tranquilo y empático',emoji:'🧠'},
+  farmacia:{primary:'#16a34a',secondary:'#15803d',accent:'#86efac',bg:'#f0fdf4',dark:'#14532d',style:'saludable y confiable',emoji:'💊'},
+  hotel:{primary:'#92400e',secondary:'#78350f',accent:'#fbbf24',bg:'#fefce8',dark:'#451a03',style:'lujoso y acogedor',emoji:'🏨'},
+  optica:{primary:'#0ea5e9',secondary:'#0284c7',accent:'#7dd3fc',bg:'#f0f9ff',dark:'#0c4a6e',style:'moderno y claro',emoji:'👓'},
+  fontanero:{primary:'#1d4ed8',secondary:'#1e40af',accent:'#60a5fa',bg:'#eff6ff',dark:'#1e3a5f',style:'confiable y eficiente',emoji:'🔧'},
+  generic:{primary:'#7c3aed',secondary:'#6d28d9',accent:'#a78bfa',bg:'#f5f3ff',dark:'#2e1065',style:'profesional y moderno',emoji:'🏪'}
+};
+
+function getSectorTheme(nicho){return SECTOR_THEMES[nicho]||SECTOR_THEMES.generic}
+
+function showDemoModal(biz){
+  var existing=document.getElementById('demo-gen-modal');
+  if(existing)existing.remove();
+  var modal=document.createElement('div');
+  modal.id='demo-gen-modal';
+  modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
+  modal.innerHTML='<div style="background:#0c0c16;border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center">'
+    +'<div style="width:56px;height:56px;border:2px solid rgba(124,58,237,.3);border-top-color:#9d5fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px"></div>'
+    +'<div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px">Generando web demo</div>'
+    +'<div style="font-size:.78rem;color:#9090b0;margin-bottom:20px" id="demo-gen-status">Analizando datos de <b style="color:#e0e0f4">'+biz+'</b>...</div>'
+    +'<div style="display:flex;flex-direction:column;gap:7px" id="demo-gen-steps">'
+    +'<div id="dgs-1" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Preparando estructura y contenido</div>'
+    +'<div id="dgs-2" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Generando diseño con IA</div>'
+    +'<div id="dgs-3" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Integrando chatbot y datos reales</div>'
+    +'<div id="dgs-4" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Optimizando para móvil</div>'
+    +'</div>'
+    +'<button onclick="document.getElementById(\'demo-gen-modal\').remove()" style="margin-top:20px;background:transparent;border:1px solid rgba(124,58,237,.3);color:#9090b0;border-radius:8px;padding:7px 16px;font-size:.72rem;cursor:pointer;font-family:\'Sora\',sans-serif">Cancelar</button>'
+    +'</div>';
+  document.body.appendChild(modal);
+  return modal;
+}
+
+function stepDone(n){
+  var el=document.getElementById('dgs-'+n);
+  if(!el)return;
+  el.style.color='#22c55e';
+  el.querySelector('span').style.cssText='width:14px;height:14px;border-radius:50%;background:#22c55e;border:1px solid #22c55e;flex-shrink:0;display:flex;align-items:center;justify-content:center';
+  el.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" style="width:8px;height:8px;stroke:#000;fill:none;stroke-width:3"><polyline points="20 6 9 17 4 12"/></svg>';
+}
+
+function stepActive(n,txt){
+  var el=document.getElementById('dgs-'+n);
+  if(!el)return;
+  el.style.color='#9d5fff';
+  el.querySelector('span').style.cssText='width:14px;height:14px;border-radius:50%;border:2px solid #9d5fff;border-top-color:transparent;animation:spin .7s linear infinite;flex-shrink:0';
+  var s=document.getElementById('demo-gen-status');if(s&&txt)s.textContent=txt;
+}
+
+async function generateWebDemo(idx){
+  var d=prosResults[idx];
+  if(!d){showToast('Prospecto no encontrado');return}
+
+  var biz=d.bizName||d.domain;
+  var theme=getSectorTheme(d.nicho);
+  var modal=showDemoModal(biz);
+
+  // Step 1
+  stepActive(1,'Preparando datos del negocio...');
+  await new Promise(function(r){setTimeout(r,600)});
+  stepDone(1);
+
+  // Build context for Claude
+  var ph=d.phones&&d.phones.length?d.phones[0]:'';
+  var em=d.emails&&d.emails.length?d.emails[0]:'';
+  var addr=d.address||'';
+  var waNum=d.waNumber||ph.replace(/\D/g,'')||'';
+  var svcs=d.services&&d.services.length?d.services.slice(0,10):['Consulta nuestros servicios'];
+  var hrs=d.hours||'Lun-Vie 9:00-20:00, Sáb 9:00-14:00';
+  var desc=d.description||'Especialistas en '+d.sector.toLowerCase()+' con años de experiencia.';
+
+  // Step 2
+  stepActive(2,'Generando diseño personalizado con IA...');
+
+  var prompt='Genera una página web HTML completa, moderna y profesional para el siguiente negocio. Devuelve SOLO el código HTML, sin explicaciones, sin markdown, sin bloques de código.\n\n'
+    +'NEGOCIO: '+biz+'\n'
+    +'SECTOR: '+d.sector+'\n'
+    +'DESCRIPCIÓN: '+desc+'\n'
+    +'SERVICIOS: '+svcs.join(', ')+'\n'
+    +(ph?'TELÉFONO: '+ph+'\n':'')
+    +(em?'EMAIL: '+em+'\n':'')
+    +(addr?'DIRECCIÓN: '+addr+'\n':'')
+    +(waNum?'WHATSAPP: '+waNum+'\n':'')
+    +'HORARIO: '+hrs+'\n'
+    +'URL ORIGINAL: '+d.url+'\n\n'
+    +'ESTILO VISUAL: '+theme.style+'\n'
+    +'COLOR PRIMARIO: '+theme.primary+'\n'
+    +'COLOR SECUNDARIO: '+theme.secondary+'\n'
+    +'COLOR ACENTO: '+theme.accent+'\n'
+    +'COLOR FONDO: '+theme.bg+'\n\n'
+    +'REQUISITOS OBLIGATORIOS:\n'
+    +'1. HTML autocontenido completo con CSS y JS embebidos\n'
+    +'2. Navbar fijo con logo (nombre del negocio) y links de navegación\n'
+    +'3. Hero section con título impactante, subtítulo, CTA "Pedir cita" y stats (años experiencia, clientes, satisfacción)\n'
+    +'4. Sección de servicios en grid (cards para cada servicio detectado)\n'
+    +'5. Sección "Quiénes somos" con valores y equipo (3 fichas ficticias creíbles)\n'
+    +'6. Footer con datos de contacto reales\n'
+    +'7. CHATBOT FLOTANTE: widget en esquina inferior derecha con:\n'
+    +'   - Botón circular con animación pulse\n'
+    +'   - Modal 360px con header del color primario\n'
+    +'   - Mensaje bienvenida con nombre del negocio\n'
+    +'   - Botones rápidos con los primeros 3-4 servicios + "Pedir cita"\n'
+    +'   - Flujo: pregunta servicio → pide nombre → pide teléfono → resumen → botón WhatsApp\n'
+    +'   - Botón WhatsApp final abre: https://wa.me/'+(waNum||'34600000000')+'?text=Hola%2C+vengo+de+la+web\n'
+    +'   - Typing animation (3 puntos)\n'
+    +'   - Normalize function para tildes en keywords\n'
+    +'8. Totalmente responsive (mobile first)\n'
+    +'9. Imágenes: usar únicamente URLs de Unsplash (https://images.unsplash.com/photo-XXXXX?w=800&q=80) relevantes para el sector\n'
+    +'10. Sin precios hardcoded en ningún sitio\n'
+    +'11. Diseño que muestre claramente el valor de una web profesional vs la web actual\n'
+    +'12. Añadir al final del head este comentario: <!-- WhiteMoon Demo · whitemoon.es -->\n\n'
+    +'IMPORTANTE: El código debe funcionar abriendo el HTML directamente en el navegador, sin dependencias externas salvo Google Fonts y Unsplash.';
+
+  try{
+    var response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:8000,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+
+    if(!response.ok){
+      var err=await response.json();
+      throw new Error(err.error&&err.error.message?err.error.message:'API error '+response.status);
+    }
+
+    var data=await response.json();
+    var htmlContent=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:'';
+
+    // Clean: remove markdown code blocks if present
+    htmlContent=htmlContent.replace(/^```html\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
+
+    if(!htmlContent||htmlContent.length<500){throw new Error('Respuesta vacía o demasiado corta')}
+
+    stepDone(2);
+
+    // Step 3
+    stepActive(3,'Integrando datos reales...');
+    await new Promise(function(r){setTimeout(r,500)});
+    stepDone(3);
+
+    // Step 4
+    stepActive(4,'Optimizando para móvil...');
+    await new Promise(function(r){setTimeout(r,400)});
+    stepDone(4);
+
+    // Update modal to success
+    var modalInner=modal.querySelector('div');
+    if(modalInner){
+      modalInner.innerHTML='<div style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid #22c55e;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">'
+        +'<svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#22c55e;fill:none;stroke-width:2.5"><polyline points="20 6 9 17 4 12"/></svg></div>'
+        +'<div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px">¡Web demo lista!</div>'
+        +'<div style="font-size:.78rem;color:#9090b0;margin-bottom:20px">'+biz+' · '+d.sector+'</div>'
+        +'<div style="display:flex;flex-direction:column;gap:8px">'
+        +'<button onclick="downloadWebDemo()" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:\'Sora\',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar HTML</button>'
+        +'<button onclick="previewWebDemo()" style="background:transparent;border:1px solid rgba(124,58,237,.4);color:#c084fc;border-radius:9px;padding:10px 20px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:\'Sora\',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Vista previa</button>'
+        +'<button onclick="document.getElementById(\'demo-gen-modal\').remove()" style="background:transparent;border:1px solid rgba(255,255,255,.08);color:#505070;border-radius:9px;padding:8px 20px;font-size:.72rem;cursor:pointer;font-family:\'Sora\',sans-serif">Cerrar</button>'
+        +'</div>';
+    }
+
+    // Store generated HTML
+    window._lastGeneratedDemo={html:htmlContent,biz:biz,domain:d.domain,sector:d.sector};
+    showToast('✓ Web demo generada para '+biz);
+
+  }catch(err){
+    console.error('Demo gen error:',err);
+    var modalInner2=modal.querySelector('div');
+    if(modalInner2){
+      modalInner2.innerHTML='<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,77,106,.1);border:2px solid #ff4d6a;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">'
+        +'<svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#ff4d6a;fill:none;stroke-width:2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>'
+        +'<div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px">Error al generar</div>'
+        +'<div style="font-size:.74rem;color:#ff8da0;margin-bottom:16px;font-family:\'Space Mono\',monospace">'+err.message+'</div>'
+        +'<button onclick="document.getElementById(\'demo-gen-modal\').remove()" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:\'Sora\',sans-serif">Cerrar</button>';
+    }
+  }
+}
+
+function downloadWebDemo(){
+  var d=window._lastGeneratedDemo;
+  if(!d){showToast('No hay demo generada');return}
+  var blob=new Blob([d.html],{type:'text/html;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url;
+  a.download='demo-'+d.domain.replace(/[^a-z0-9]/gi,'-')+'.html';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('✓ Descargando '+a.download);
+}
+
+function previewWebDemo(){
+  var d=window._lastGeneratedDemo;
+  if(!d){showToast('No hay demo generada');return}
+  var blob=new Blob([d.html],{type:'text/html'});
+  var url=URL.createObjectURL(blob);
+  window.open(url,'_blank');
 }
 </script>
 </body>
