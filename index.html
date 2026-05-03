@@ -243,6 +243,20 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
     <div class="stat-pill">Propuestas: <b id="hc-pp">0</b></div>
   </div>
   <div class="header-right">
+    <div style="display:flex;align-items:center;gap:6px">
+      <input id="anthropic-key" type="password"
+        placeholder="sk-ant-..."
+        style="background:var(--bg2);border:1px solid var(--border);
+        border-radius:7px;padding:5px 10px;font-size:.65rem;
+        color:var(--text);width:160px;outline:none;
+        font-family:'Space Mono',monospace">
+      <button onclick="saveKey()"
+        style="background:var(--accent-dim);border:1px solid var(--accent-border);
+        color:var(--green2);border-radius:7px;padding:5px 10px;
+        font-size:.65rem;cursor:pointer;font-family:'Sora',sans-serif">
+        Guardar
+      </button>
+    </div>
     <div class="h-badge">WhiteMoon &middot; Agencia IA</div>
   </div>
 </header>
@@ -495,6 +509,18 @@ function $(id){return document.getElementById(id)}
 function rnd(a,b){return Math.floor(Math.random()*(b-a+1))+a}
 function showToast(m){$('toast-msg').textContent=m;$('toast').classList.add('show');setTimeout(function(){$('toast').classList.remove('show')},2500)}
 function copyTxt(t){navigator.clipboard.writeText(t).then(function(){showToast('Copiado al portapapeles')})}
+function saveKey(){
+  var k=$('anthropic-key').value.trim();
+  if(!k){showToast('Introduce tu API key');return}
+  localStorage.setItem('wm_api_key',k);
+  $('anthropic-key').value='';
+  $('anthropic-key').placeholder='API key guardada ✓';
+  showToast('API key guardada');
+}
+document.addEventListener('DOMContentLoaded',function(){
+  if(localStorage.getItem('wm_api_key'))
+    $('anthropic-key').placeholder='API key guardada ✓';
+});
 function goPage(id,el){
   document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
   $(id).classList.add('active');
@@ -1088,6 +1114,12 @@ async function generateWebDemo(idx){
   var d=prosResults[idx];
   if(!d){showToast('Prospecto no encontrado');return}
 
+  var apiKey=localStorage.getItem('wm_api_key')||'';
+  if(!apiKey){
+    showToast('Introduce tu API key de Anthropic primero');
+    return;
+  }
+
   var biz=d.bizName||d.domain;
   var theme=getSectorTheme(d.nicho);
   var modal=showDemoModal(biz);
@@ -1151,7 +1183,12 @@ async function generateWebDemo(idx){
   try{
     var response=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:8000,
