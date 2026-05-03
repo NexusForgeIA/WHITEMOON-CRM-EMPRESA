@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WhiteMoon Scout — Panel de Agencia IA</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8d8f0;-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -358,6 +359,21 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div id="login-screen" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:9000;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--card);border:1px solid var(--accent-border);border-radius:14px;padding:32px;max-width:380px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.5)">
+    <div style="width:60px;height:60px;border-radius:14px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 32 32" style="width:60px;height:60px"><defs><linearGradient id="lg-login" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#9d5fff"/><stop offset="100%" style="stop-color:#e91e8c"/></linearGradient></defs><rect width="32" height="32" rx="8" fill="url(#lg-login)"/><path d="M8 22 L16 10 L24 22" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="10" r="2" fill="#fff"/></svg>
+    </div>
+    <div style="font-size:1.3rem;font-weight:800;color:#fff;text-align:center;margin-bottom:4px;letter-spacing:-.02em">WhiteMoon Scout</div>
+    <div style="font-size:.78rem;color:var(--text2);text-align:center;margin-bottom:24px">Panel de Agencia IA</div>
+    <input id="login-email" type="email" class="input" placeholder="email" autocomplete="username" style="margin-bottom:10px" onkeydown="if(event.key==='Enter')document.getElementById('login-pass').focus()">
+    <input id="login-pass" type="password" class="input" placeholder="contraseña" autocomplete="current-password" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')login()">
+    <button id="login-btn" class="btn btn-p" onclick="login()" style="width:100%;background:linear-gradient(135deg,#7c3aed,#5b21b6);justify-content:center">Entrar</button>
+    <div style="font-size:.66rem;color:var(--muted);text-align:center;margin-top:14px">¿Problemas? contacta <a href="mailto:cris@whitemoon.es" style="color:var(--accent);text-decoration:none">cris@whitemoon.es</a></div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header class="header">
   <div class="header-left">
@@ -373,6 +389,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
     <div class="stat-pill pill-goal">Meta: <b id="hc-goal">0%</b></div>
   </div>
   <div class="header-right">
+    <span id="hc-user" class="hc-user" style="font-size:.7rem;color:var(--text2);font-weight:500;margin-right:4px"></span>
+    <button onclick="logout()" class="hc-logout" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:4px 10px;font-size:.65rem;cursor:pointer;font-family:'Sora',sans-serif" title="Cerrar sesión">Salir</button>
     <div class="h-badge">WhiteMoon &middot; Agencia IA</div>
     <button class="hamburger" onclick="toggleSidebar()" aria-label="Abrir menú">
       <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -942,6 +960,7 @@ function prosAnalyzeHTML(){
   // Seed pipeline meta if first time
   var _seed=getProspectMeta(data.domain);
   if(!_seed.sector){var _pack=getRecommendedPack(data);_seed.sector=data.sector;_seed.name=data.bizName||data.domain;_seed.mrr=_pack.mrr;saveProspectMeta(data.domain,_seed)}
+  if(typeof saveProspectToBD==='function')saveProspectToBD(data);
   S.analyzed++;updateCounters();
   renderProsResults();
   $('pros-html-paste').value='';$('pros-html-url').value='';$('pros-html-sector').value='';
@@ -1318,6 +1337,7 @@ function updateProspectStatus(domain,newStatus,idx){
     meta.name=d.bizName||d.domain;
   }
   saveProspectMeta(domain,meta);
+  if(typeof _syncProspectStatus==='function')_syncProspectStatus(domain,newStatus,meta.notes,new Date().toISOString());
   showToast('Estado: '+getPipelineState(newStatus).label);
   if(idx!=null) renderProsResults();
   renderPipeline();
@@ -1327,6 +1347,7 @@ function updateProspectNotes(domain,notes){
   var meta=getProspectMeta(domain);
   meta.notes=(notes||'').substring(0,200);
   saveProspectMeta(domain,meta);
+  if(typeof _syncProspectStatus==='function')_syncProspectStatus(domain,null,meta.notes,null);
   showToast('Notas guardadas');
 }
 
@@ -1773,29 +1794,33 @@ function saveClients(a){try{localStorage.setItem('wm_clients',JSON.stringify(a))
 function getMRR(){return getClients().filter(function(c){return c.status==='active'}).reduce(function(s,c){return s+(+c.mrr||0)},0)}
 function getActiveClientCount(){return getClients().filter(function(c){return c.status==='active'}).length}
 function getMRRGoal(){return parseInt(localStorage.getItem('wm_mrr_goal')||'2000',10)}
-function setMRRGoal(g){localStorage.setItem('wm_mrr_goal',String(parseInt(g,10)||0));refreshClientsPage();updateHeaderMRR()}
+function setMRRGoal(g){localStorage.setItem('wm_mrr_goal',String(parseInt(g,10)||0));refreshClientsPage();updateHeaderMRR();if(typeof _syncSettings==='function')_syncSettings()}
 function getMRRHistory(){try{return JSON.parse(localStorage.getItem('wm_mrr_history')||'{}')}catch(e){return {}}}
 function setMRRHistory(h){try{localStorage.setItem('wm_mrr_history',JSON.stringify(h))}catch(e){}}
 function getCommissionConfig(){try{var c=JSON.parse(localStorage.getItem('wm_commission_config')||'{}');return {pctSetup:c.pctSetup!=null?c.pctSetup:20,pctMonthly:c.pctMonthly!=null?c.pctMonthly:10,salesName:c.salesName||''}}catch(e){return {pctSetup:20,pctMonthly:10,salesName:''}}}
-function saveCommissionConfig(c){try{localStorage.setItem('wm_commission_config',JSON.stringify(c))}catch(e){}}
+function saveCommissionConfig(c){try{localStorage.setItem('wm_commission_config',JSON.stringify(c))}catch(e){}if(typeof _syncSettings==='function')_syncSettings()}
 
 function addClient(c){
   var arr=getClients();
   c.id='c_'+Date.now()+'_'+Math.random().toString(36).substring(2,7);
   arr.push(c);saveClients(arr);refreshClientsPage();updateHeaderMRR();
+  if(typeof _syncClientUpsert==='function')_syncClientUpsert(c);
   return c.id;
 }
 
 function updateClient(id,patch){
   var arr=getClients();
-  for(var i=0;i<arr.length;i++)if(arr[i].id===id){for(var k in patch)arr[i][k]=patch[k];break}
+  var updated=null;
+  for(var i=0;i<arr.length;i++)if(arr[i].id===id){for(var k in patch)arr[i][k]=patch[k];updated=arr[i];break}
   saveClients(arr);refreshClientsPage();updateHeaderMRR();
+  if(updated&&typeof _syncClientUpsert==='function')_syncClientUpsert(updated);
 }
 
 function deleteClient(id){
   if(!confirm('¿Eliminar este cliente? No se puede deshacer.'))return;
   saveClients(getClients().filter(function(c){return c.id!==id}));
   refreshClientsPage();updateHeaderMRR();
+  if(typeof _syncClientDelete==='function')_syncClientDelete(id);
 }
 
 function clientById(id){var a=getClients();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return null}
@@ -2006,6 +2031,254 @@ function updateHeaderMRR(){
 document.addEventListener('DOMContentLoaded',function(){
   updateHeaderMRR();
   renderPipeline();
+});
+
+// ═══════════════════════════════════════
+// SUPABASE — Auth + persistencia BD
+// ═══════════════════════════════════════
+var SUPABASE_URL='https://mlaqtniujnvfxcvcourm.supabase.co';
+var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sYXF0bml1am52ZnhjdmNvdXJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MzUyMzIsImV4cCI6MjA5MzQxMTIzMn0.Neh7VUS8ADsxf0DPab0JoJyGXOAXnLIaXzXbKzj2BGs';
+var sb=null;
+var currentUser=null;
+
+function _initSb(){
+  if(!sb && window.supabase) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  return sb;
+}
+function _parseJSON(s){try{return JSON.parse(s||'[]')}catch(e){return []}}
+
+function getSectorIco(nicho){
+  var map={dental:'🦷',restaurante:'🍽️',belleza:'💅',peluqueria:'✂️',taller:'🚗',abogado:'⚖️',gestoria:'📊',veterinaria:'🐾',fisioterapia:'🦴',inmobiliaria:'🏠',academia:'📚',gimnasio:'💪',psicologia:'🧠',farmacia:'💊',hotel:'🏨',optica:'👓',fontanero:'🔧',marketing:'📱',consultoria:'💼',transporte:'🚛',limpieza:'🧹',seguros:'🛡️'};
+  return map[nicho]||'🏪';
+}
+
+function showLogin(){
+  var ls=$('login-screen');if(ls)ls.style.display='flex';
+  var l=document.querySelector('.layout');if(l)l.style.display='none';
+  var h=document.querySelector('.header');if(h)h.style.display='none';
+}
+
+function showApp(){
+  var ls=$('login-screen');if(ls)ls.style.display='none';
+  var l=document.querySelector('.layout');if(l)l.style.display='flex';
+  var h=document.querySelector('.header');if(h)h.style.display='flex';
+  if(currentUser){
+    var n=currentUser.name||currentUser.email||'';
+    var hu=$('hc-user');if(hu)hu.textContent='Hola, '+n;
+  }
+}
+
+async function login(){
+  var email=$('login-email').value.trim();
+  var pass=$('login-pass').value.trim();
+  if(!email||!pass){showToast('Introduce email y contraseña');return}
+  var s=_initSb();if(!s){showToast('Supabase no cargó');return}
+  var btn=$('login-btn');if(btn){btn.disabled=true;btn.textContent='Entrando...'}
+  try{
+    var resp=await s.from('users').select('*').eq('email',email).eq('password_hash',pass).eq('active',true).single();
+    if(resp.error||!resp.data){showToast('Email o contraseña incorrectos');return}
+    currentUser=resp.data;
+    sessionStorage.setItem('wm_user',JSON.stringify(resp.data));
+    showApp();
+    await Promise.all([loadProspectsFromBD(),loadClientsFromBD(),loadSettingsFromBD()]);
+    renderProsResults();
+    refreshClientsPage();
+    updateHeaderMRR();
+    updateCounters();
+    renderPipeline();
+    showToast('Bienvenido/a, '+(currentUser.name||currentUser.email));
+  }catch(e){showToast('Error al conectar')}
+  finally{if(btn){btn.disabled=false;btn.textContent='Entrar'}}
+}
+
+function logout(){
+  sessionStorage.removeItem('wm_user');
+  currentUser=null;
+  prosResults=[];
+  S={analyzed:0,prompts:0,proposals:0};
+  if($('pros-results-list'))$('pros-results-list').innerHTML='';
+  if($('pros-counter'))$('pros-counter').style.display='none';
+  showLogin();
+  if($('login-email'))$('login-email').value='';
+  if($('login-pass'))$('login-pass').value='';
+}
+
+// ═══ Prospect sync ═══
+async function saveProspectToBD(d){
+  if(!currentUser)return;
+  var s=_initSb();if(!s)return;
+  try{
+    await s.from('prospects').upsert({
+      user_id:currentUser.id,
+      domain:d.domain,
+      biz_name:d.bizName||'',
+      sector:d.sector,
+      nicho:d.nicho,
+      score:d.score,
+      url:d.url,
+      phones:JSON.stringify(d.phones||[]),
+      emails:JSON.stringify(d.emails||[]),
+      address:d.address||'',
+      services:JSON.stringify(d.services||[]),
+      hours:d.hours||'',
+      wa_number:d.waNumber||'',
+      description:d.description||'',
+      probs:JSON.stringify(d.probs||[]),
+      cms:d.cms||'',
+      ssl:!!d.ssl,
+      chat:!!d.chat,
+      wa:!!d.wa,
+      gmb:!!d.gmb,
+      seo:d.seo||0,
+      seo_grade:d.seoGrade||'',
+      status:'pending'
+    },{onConflict:'user_id,domain'});
+  }catch(e){console.warn('saveProspect:',e)}
+}
+
+async function loadProspectsFromBD(){
+  if(!currentUser)return;
+  var s=_initSb();if(!s)return;
+  try{
+    var resp=await s.from('prospects').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+    if(resp.error||!resp.data)return;
+    prosResults=resp.data.map(function(r){
+      return {
+        domain:r.domain,bizName:r.biz_name,sector:r.sector,nicho:r.nicho,score:r.score,url:r.url,
+        phones:_parseJSON(r.phones),emails:_parseJSON(r.emails),address:r.address||'',
+        services:_parseJSON(r.services),hours:r.hours||'',waNumber:r.wa_number||'',description:r.description||'',
+        probs:_parseJSON(r.probs),cms:r.cms||'',ssl:!!r.ssl,chat:!!r.chat,wa:!!r.wa,gmb:!!r.gmb,
+        seo:r.seo||0,seoGrade:r.seo_grade||'',sectorIco:getSectorIco(r.nicho),
+        rrss:{facebook:{ok:false},instagram:{ok:false},tiktok:{ok:false},linkedin:{ok:false},youtube:{ok:false},whatsapp:{ok:!!r.wa}},
+        needsWebRedesign:(r.seo||0)<60,seoIssues:[],
+        analytics:false,mobile:true,cta:false,booking:false
+      };
+    });
+    // seed local pipeline meta
+    resp.data.forEach(function(r){
+      var meta=getProspectMeta(r.domain);
+      meta.status=r.status||'pending';
+      meta.notes=r.notes||'';
+      meta.lastContact=r.last_contact?String(r.last_contact).substring(0,10):'';
+      meta.sector=r.sector||'';
+      meta.name=r.biz_name||r.domain;
+      var pack=getRecommendedPack({score:r.score||0});
+      meta.mrr=pack.mrr;
+      saveProspectMeta(r.domain,meta);
+    });
+    S.analyzed=prosResults.length;
+  }catch(e){console.warn('loadProspects:',e)}
+}
+
+async function _syncProspectStatus(domain,status,notes,lastContact){
+  if(!currentUser)return;
+  var s=_initSb();if(!s)return;
+  try{
+    var patch={};
+    if(status!=null)patch.status=status;
+    if(notes!=null)patch.notes=notes;
+    if(lastContact!=null)patch.last_contact=lastContact;
+    await s.from('prospects').update(patch).eq('user_id',currentUser.id).eq('domain',domain);
+  }catch(e){console.warn('syncProspectStatus:',e)}
+}
+
+// ═══ Client sync ═══
+async function loadClientsFromBD(){
+  if(!currentUser)return;
+  var s=_initSb();if(!s)return;
+  try{
+    var resp=await s.from('clients').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
+    if(resp.error||!resp.data)return;
+    var local=resp.data.map(function(r){
+      return {
+        id:r.id,name:r.name,sector:r.sector||'',pack:r.pack||'advance',
+        mrr:r.mrr||0,setupOnce:r.setup_once||0,startDate:r.start_date||'',
+        phone:r.phone||'',notes:r.notes||'',status:r.status||'active',commissionPaid:!!r.commission_paid
+      };
+    });
+    saveClients(local);
+  }catch(e){console.warn('loadClients:',e)}
+}
+
+async function _syncClientUpsert(c){
+  if(!currentUser)return;
+  var s=_initSb();if(!s)return;
+  try{
+    var rec={
+      user_id:currentUser.id,name:c.name,sector:c.sector||'',pack:c.pack||'advance',
+      mrr:c.mrr||0,setup_once:c.setupOnce||0,start_date:c.startDate||null,
+      phone:c.phone||'',notes:c.notes||'',status:c.status||'active',commission_paid:!!c.commissionPaid
+    };
+    var localId=c.id;
+    if(localId&&typeof localId==='string'&&localId.indexOf('c_')===0){
+      // local-only id; insert and replace
+      var ins=await s.from('clients').insert(rec).select().single();
+      if(ins.data&&ins.data.id){
+        var arr=getClients();
+        for(var i=0;i<arr.length;i++)if(arr[i].id===localId){arr[i].id=ins.data.id;break}
+        saveClients(arr);
+      }
+    }else if(localId){
+      rec.id=localId;
+      await s.from('clients').upsert(rec);
+    }
+  }catch(e){console.warn('syncClient:',e)}
+}
+
+async function _syncClientDelete(id){
+  if(!currentUser||!id||(typeof id==='string'&&id.indexOf('c_')===0))return;
+  var s=_initSb();if(!s)return;
+  try{await s.from('clients').delete().eq('id',id)}catch(e){console.warn('deleteClient:',e)}
+}
+
+// ═══ Settings sync ═══
+async function loadSettingsFromBD(){
+  if(!currentUser)return;
+  var s=_initSb();if(!s)return;
+  try{
+    var resp=await s.from('settings').select('*').eq('user_id',currentUser.id).maybeSingle();
+    if(resp&&resp.data){
+      localStorage.setItem('wm_mrr_goal',String(resp.data.mrr_goal||2000));
+      localStorage.setItem('wm_commission_config',JSON.stringify({
+        pctSetup:resp.data.commission_setup!=null?resp.data.commission_setup:20,
+        pctMonthly:resp.data.commission_monthly!=null?resp.data.commission_monthly:10,
+        salesName:resp.data.agent_name||''
+      }));
+    }
+  }catch(e){console.warn('loadSettings:',e)}
+}
+
+async function _syncSettings(){
+  if(!currentUser)return;
+  var s=_initSb();if(!s)return;
+  var cfg=getCommissionConfig();
+  try{
+    await s.from('settings').upsert({
+      user_id:currentUser.id,
+      mrr_goal:getMRRGoal(),
+      commission_setup:cfg.pctSetup,
+      commission_monthly:cfg.pctMonthly,
+      agent_name:cfg.salesName||''
+    },{onConflict:'user_id'});
+  }catch(e){console.warn('syncSettings:',e)}
+}
+
+// ═══ Init ═══
+document.addEventListener('DOMContentLoaded',async function(){
+  // Hide layout/header until auth check completes
+  var stored=sessionStorage.getItem('wm_user');
+  if(stored){try{currentUser=JSON.parse(stored)}catch(e){currentUser=null}}
+  if(currentUser){
+    showApp();
+    await Promise.all([loadProspectsFromBD(),loadClientsFromBD(),loadSettingsFromBD()]);
+    renderProsResults();
+    refreshClientsPage();
+    updateHeaderMRR();
+    updateCounters();
+    renderPipeline();
+  }else{
+    showLogin();
+  }
 });
 
 // ═══════════════════════════════════════
