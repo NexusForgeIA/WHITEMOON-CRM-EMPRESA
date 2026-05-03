@@ -265,6 +265,36 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 .cmp-no{background:rgba(255,77,106,.18);color:var(--red2)}
 .cmp-yes{background:rgba(34,197,94,.18);color:var(--green2)}
 @media(max-width:600px){.cmp-grid{grid-template-columns:1fr}}
+/* Clients page */
+.cl-table{display:flex;flex-direction:column;gap:0;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2)}
+.cl-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1.2fr;gap:12px;padding:11px 14px;align-items:center;border-bottom:1px solid var(--border2);font-size:.78rem}
+.cl-row:last-child{border-bottom:none}
+.cl-row.cl-head{background:var(--bg3);font-size:.62rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cl-row.cl-dim{opacity:.55}
+.cl-name{font-weight:700;color:var(--text)}
+.cl-meta{font-size:.66rem;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace}
+.cl-pack{display:inline-block;font-size:.68rem;font-weight:600;padding:3px 9px;border-radius:5px;background:var(--bg3);border:1px solid var(--border2);color:var(--text)}
+.cl-badge{display:inline-block;font-size:.62rem;font-weight:700;padding:3px 9px;border-radius:10px;letter-spacing:.04em}
+.cl-active{background:rgba(34,197,94,.15);color:var(--green2)}
+.cl-paused{background:rgba(234,179,8,.15);color:var(--gold2)}
+.cl-cancelled{background:rgba(239,68,68,.15);color:var(--red2)}
+.cl-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+.cl-notes{padding:8px 14px 12px;border-bottom:1px solid var(--border2);background:var(--bg1);font-size:.7rem;color:var(--text2);font-style:italic}
+.cl-cmt-table .cl-row{grid-template-columns:2fr 1fr 1fr 1fr 1.2fr}
+@media(max-width:700px){.cl-row{grid-template-columns:1fr;gap:5px;padding:10px 12px}.cl-row.cl-head{display:none}.cl-actions{justify-content:flex-start}.cl-cmt-table .cl-row{grid-template-columns:1fr}}
+/* MRR chart */
+.mrr-chart{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:14px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;height:180px}
+.mrr-bar-col{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
+.mrr-bar-val{font-family:'Space Mono',monospace;font-size:.66rem;color:var(--text2);font-weight:600}
+.mrr-bar-track{flex:1;width:100%;background:var(--bg2);border-radius:4px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;border:1px solid var(--border2)}
+.mrr-bar-fill{width:100%;background:linear-gradient(180deg,var(--accent2),var(--accent));border-radius:0;transition:height .4s ease;min-height:2px}
+.mrr-bar-now{background:linear-gradient(180deg,var(--green2),var(--green))}
+.mrr-bar-label{font-size:.6rem;color:var(--muted);font-weight:600;letter-spacing:.04em}
+.mrr-bar-edit{width:100%;background:transparent;border:1px solid transparent;color:var(--text2);font-family:'Space Mono',monospace;font-size:.6rem;text-align:center;padding:1px 2px;border-radius:3px;outline:none}
+.mrr-bar-edit:focus{border-color:var(--accent);background:var(--bg1)}
+@media(max-width:700px){.mrr-chart{height:140px;gap:5px;padding:8px}.mrr-bar-val{font-size:.58rem}.mrr-bar-label{font-size:.56rem}}
+.stat-pill.pill-mrr{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2);color:var(--green2)}
+.stat-pill.pill-goal{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
 </style>
 </head>
 <body>
@@ -279,8 +309,9 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   </div>
   <div class="header-center">
     <div class="stat-pill"><div class="stat-dot"></div>Activo &middot; <b id="hc-an">0</b> analizados</div>
-    <div class="stat-pill">Prompts: <b id="hc-pr">0</b></div>
     <div class="stat-pill">Propuestas: <b id="hc-pp">0</b></div>
+    <div class="stat-pill pill-mrr">MRR: <b id="hc-mrr">0€</b></div>
+    <div class="stat-pill pill-goal">Meta: <b id="hc-goal">0%</b></div>
   </div>
   <div class="header-right">
     <div class="h-badge">WhiteMoon &middot; Agencia IA</div>
@@ -308,15 +339,23 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       Propuestas
       <span class="nav-badge nb-g" id="sb-pp">0</span>
     </button>
-    <button class="nav-item" onclick="goPage('p-pipeline',this);renderPipeline()">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg></div>
-      Pipeline
-      <span class="nav-badge nb-p" id="sb-pipe">0</span>
+    <button class="nav-item" onclick="goPage('p-clients',this);refreshClientsPage()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg></div>
+      Clientes
+      <span class="nav-badge nb-g" id="sb-clients">0</span>
     </button>
     <button class="nav-item" onclick="goPage('p-pricing',this)">
       <div class="nav-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
       Mis Tarifas
       <span class="nav-badge nb-c">€</span>
+    </button>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Pipeline</div>
+    <button class="nav-item" onclick="goPage('p-pipeline',this);renderPipeline()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg></div>
+      Estados de prospectos
+      <span class="nav-badge nb-p" id="sb-pipe">0</span>
     </button>
   </div>
   <div class="sb-recents">
@@ -435,6 +474,23 @@ Todos los planes: Sin permanencia · Activación 48h · IVA no incluido
   </div>
 </div>
 
+<!-- CLIENTES -->
+<div class="page" id="p-clients">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes</div>
+    <div class="page-sub">Historial de clientes cerrados, MRR y comisiones. Datos guardados en tu navegador (localStorage).</div>
+  </div>
+  <div class="g4 mb16" id="cl-summary"></div>
+  <div class="card mb16" id="cl-mrr-dashboard"></div>
+  <div class="card mb16">
+    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes registrados</div>
+      <button class="btn btn-p btn-sm" onclick="openClientModal()">➕ Añadir cliente</button>
+    </div>
+    <div id="cl-list"></div>
+  </div>
+  <div class="card" id="cl-commissions"></div>
+</div>
+
 <!-- PIPELINE -->
 <div class="page" id="p-pipeline">
   <div class="page-head">
@@ -468,7 +524,7 @@ function goPage(id,el){
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
   if(el)el.classList.add('active');
 }
-function updateCounters(){$('hc-an').textContent=S.analyzed;$('hc-pr').textContent=S.prompts;$('hc-pp').textContent=S.proposals;$('sb-pp').textContent=S.proposals;var sbp=$('sb-pipe');if(sbp&&typeof _allProspectMeta==='function')sbp.textContent=_allProspectMeta().length}
+function updateCounters(){$('hc-an').textContent=(typeof prosResults!=='undefined'?prosResults.length:S.analyzed);$('hc-pp').textContent=S.proposals;$('sb-pp').textContent=S.proposals;var sbp=$('sb-pipe');if(sbp&&typeof _allProspectMeta==='function')sbp.textContent=_allProspectMeta().length;if(typeof updateHeaderMRR==='function')updateHeaderMRR()}
 
 // SECTOR DETECT
 var SECTORS=[
@@ -1629,6 +1685,250 @@ function _openInGmail(idx){
 }
 
 function closeModalById(id){var m=$(id);if(m)m.remove()}
+
+// ═══════════════════════════════════════
+// NIVEL 3 — Clientes · MRR Dashboard · Comisiones
+// ═══════════════════════════════════════
+
+function getClients(){try{return JSON.parse(localStorage.getItem('wm_clients')||'[]')}catch(e){return []}}
+function saveClients(a){try{localStorage.setItem('wm_clients',JSON.stringify(a))}catch(e){}}
+function getMRR(){return getClients().filter(function(c){return c.status==='active'}).reduce(function(s,c){return s+(+c.mrr||0)},0)}
+function getActiveClientCount(){return getClients().filter(function(c){return c.status==='active'}).length}
+function getMRRGoal(){return parseInt(localStorage.getItem('wm_mrr_goal')||'2000',10)}
+function setMRRGoal(g){localStorage.setItem('wm_mrr_goal',String(parseInt(g,10)||0));refreshClientsPage();updateHeaderMRR()}
+function getMRRHistory(){try{return JSON.parse(localStorage.getItem('wm_mrr_history')||'{}')}catch(e){return {}}}
+function setMRRHistory(h){try{localStorage.setItem('wm_mrr_history',JSON.stringify(h))}catch(e){}}
+function getCommissionConfig(){try{var c=JSON.parse(localStorage.getItem('wm_commission_config')||'{}');return {pctSetup:c.pctSetup!=null?c.pctSetup:20,pctMonthly:c.pctMonthly!=null?c.pctMonthly:10,salesName:c.salesName||''}}catch(e){return {pctSetup:20,pctMonthly:10,salesName:''}}}
+function saveCommissionConfig(c){try{localStorage.setItem('wm_commission_config',JSON.stringify(c))}catch(e){}}
+
+function addClient(c){
+  var arr=getClients();
+  c.id='c_'+Date.now()+'_'+Math.random().toString(36).substring(2,7);
+  arr.push(c);saveClients(arr);refreshClientsPage();updateHeaderMRR();
+  return c.id;
+}
+
+function updateClient(id,patch){
+  var arr=getClients();
+  for(var i=0;i<arr.length;i++)if(arr[i].id===id){for(var k in patch)arr[i][k]=patch[k];break}
+  saveClients(arr);refreshClientsPage();updateHeaderMRR();
+}
+
+function deleteClient(id){
+  if(!confirm('¿Eliminar este cliente? No se puede deshacer.'))return;
+  saveClients(getClients().filter(function(c){return c.id!==id}));
+  refreshClientsPage();updateHeaderMRR();
+}
+
+function clientById(id){var a=getClients();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return null}
+
+// ═══ MODAL CLIENTE ═══
+function openClientModal(existingId){
+  closeModalById('client-modal');
+  var c=existingId?clientById(existingId):null;
+  if(!c)c={name:'',sector:'',pack:'advance',mrr:149,setupOnce:299,startDate:new Date().toISOString().substring(0,10),phone:'',notes:'',status:'active',commissionPaid:false};
+  var sectorOpts=SECTORS.map(function(s){return '<option'+(c.sector===s.s?' selected':'')+'>'+s.s+'</option>'}).join('');
+  var statusOpts=[
+    {id:'active',label:'Activo'},{id:'paused',label:'En pausa'},{id:'cancelled',label:'Cancelado'}
+  ].map(function(s){return '<option value="'+s.id+'"'+(c.status===s.id?' selected':'')+'>'+s.label+'</option>'}).join('');
+  var modal=document.createElement('div');
+  modal.className='modal-overlay';modal.id='client-modal';
+  modal.onclick=function(e){if(e.target===modal)closeModalById('client-modal')};
+  modal.innerHTML='<div class="modal-box" style="max-width:560px"><div class="modal-title">'+(existingId?'✏️ Editar cliente':'➕ Añadir cliente')+'<button class="modal-close" onclick="closeModalById(\'client-modal\')">×</button></div>'
++'<div class="g2 mb12">'
++'<div class="field-group"><span class="field-label">Nombre del negocio</span><input class="input" id="cl-name" value="'+(c.name||'').replace(/"/g,'&quot;')+'"></div>'
++'<div class="field-group"><span class="field-label">Sector</span><select class="select" id="cl-sector"><option value="">— Sin sector —</option>'+sectorOpts+'</select></div>'
++'</div>'
++'<div class="g2 mb12">'
++'<div class="field-group"><span class="field-label">Pack contratado</span><select class="select" id="cl-pack" onchange="_onPackChange()"><option value="advance"'+(c.pack==='advance'?' selected':'')+'>Pack Advance — 149€/mes + 299€ setup</option><option value="pyme"'+(c.pack==='pyme'?' selected':'')+'>Pack Pyme — 1.800€ único</option></select></div>'
++'<div class="field-group"><span class="field-label">Estado</span><select class="select" id="cl-status">'+statusOpts+'</select></div>'
++'</div>'
++'<div class="g2 mb12">'
++'<div class="field-group"><span class="field-label">MRR (€/mes)</span><input class="input mono" type="number" id="cl-mrr" value="'+(c.mrr||0)+'"></div>'
++'<div class="field-group"><span class="field-label">Setup pagado (€)</span><input class="input mono" type="number" id="cl-setup" value="'+(c.setupOnce||0)+'"></div>'
++'</div>'
++'<div class="g2 mb12">'
++'<div class="field-group"><span class="field-label">Fecha de alta</span><input class="input mono" type="date" id="cl-date" value="'+(c.startDate||'')+'"></div>'
++'<div class="field-group"><span class="field-label">Teléfono</span><input class="input mono" id="cl-phone" value="'+(c.phone||'').replace(/"/g,'&quot;')+'"></div>'
++'</div>'
++'<div class="field-group mb12"><span class="field-label">Notas</span><textarea class="textarea" id="cl-notes" style="font-family:Sora,sans-serif;font-size:.78rem;min-height:60px">'+(c.notes||'')+'</textarea></div>'
++'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p btn-sm" onclick="_saveClient('+(existingId?'\''+existingId+'\'':'null')+')">💾 Guardar</button>'+(existingId?'<button class="btn btn-ghost btn-sm" onclick="deleteClient(\''+existingId+'\');closeModalById(\'client-modal\')" style="color:var(--red2)">🗑️ Eliminar</button>':'')+'<button class="btn btn-ghost btn-sm" onclick="closeModalById(\'client-modal\')">Cancelar</button></div>'
++'</div>';
+  document.body.appendChild(modal);
+}
+
+function _onPackChange(){
+  var p=$('cl-pack').value;
+  if(p==='advance'){$('cl-mrr').value=149;$('cl-setup').value=299}
+  else{$('cl-mrr').value=0;$('cl-setup').value=1800}
+}
+
+function _saveClient(id){
+  var c={
+    name:$('cl-name').value.trim()||'Cliente sin nombre',
+    sector:$('cl-sector').value,
+    pack:$('cl-pack').value,
+    status:$('cl-status').value,
+    mrr:parseInt($('cl-mrr').value,10)||0,
+    setupOnce:parseInt($('cl-setup').value,10)||0,
+    startDate:$('cl-date').value,
+    phone:$('cl-phone').value.trim(),
+    notes:$('cl-notes').value.trim()
+  };
+  if(id){updateClient(id,c)}
+  else{c.commissionPaid=false;addClient(c)}
+  showToast(id?'Cliente actualizado':'Cliente añadido');
+  closeModalById('client-modal');
+}
+
+// ═══ RENDER CLIENTES PAGE ═══
+function refreshClientsPage(){
+  if(!$('p-clients'))return;
+  renderClientsSummary();
+  renderMRRDashboard();
+  renderClientsList();
+  renderCommissions();
+}
+
+function renderClientsSummary(){
+  var clients=getClients();
+  var active=clients.filter(function(c){return c.status==='active'}).length;
+  var paused=clients.filter(function(c){return c.status==='paused'}).length;
+  var cancelled=clients.filter(function(c){return c.status==='cancelled'}).length;
+  var mrr=getMRR();
+  var arr=mrr*12;
+  var html=''
++'<div class="card card-sm" style="border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green2);margin-bottom:5px">Activos</div><div class="big-num" style="color:var(--green2)">'+active+'</div></div>'
++'<div class="card card-sm" style="border-color:var(--accent-border);background:var(--accent-dim)"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:5px">MRR total</div><div class="big-num" style="color:var(--accent)">'+mrr+'€</div></div>'
++'<div class="card card-sm" style="border-color:rgba(234,179,8,.3);background:rgba(234,179,8,.04)"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:5px">ARR estimado</div><div class="big-num" style="color:var(--gold2)">'+arr.toLocaleString('es-ES')+'€</div></div>'
++'<div class="card card-sm"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:5px">Pausa / Cancelados</div><div class="big-num" style="color:var(--text2)">'+paused+' / '+cancelled+'</div></div>';
+  $('cl-summary').innerHTML=html;
+}
+
+function renderMRRDashboard(){
+  var clients=getClients().filter(function(c){return c.status==='active'});
+  var mrr=getMRR();
+  var goal=getMRRGoal();
+  var pct=goal>0?Math.min(100,Math.round(mrr*100/goal)):0;
+  var pctReal=goal>0?Math.round(mrr*100/goal):0;
+  var advance=clients.filter(function(c){return c.pack==='advance'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
+  var pyme=clients.filter(function(c){return c.pack==='pyme'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
+  var clientsForGoal=Math.ceil(goal/149);
+
+  // History bars (last 6 months from history + current)
+  var hist=getMRRHistory();
+  var months=[];
+  var now=new Date();
+  for(var i=5;i>=0;i--){
+    var dt=new Date(now.getFullYear(),now.getMonth()-i,1);
+    var key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
+    var label=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][dt.getMonth()];
+    var val=i===0?mrr:(hist[key]||0); // current month auto from clients
+    months.push({key:key,label:label,val:val});
+  }
+  var maxVal=Math.max.apply(null,months.map(function(m){return m.val})).toString();
+  maxVal=Math.max(parseInt(maxVal,10),goal,100);
+  var barsHTML=months.map(function(m,i){
+    var h=Math.max(2,Math.round(m.val*100/maxVal));
+    var isCurrent=i===5;
+    return '<div class="mrr-bar-col"><div class="mrr-bar-val">'+m.val+'€</div><div class="mrr-bar-track"><div class="mrr-bar-fill'+(isCurrent?' mrr-bar-now':'')+'" style="height:'+h+'%"></div></div><div class="mrr-bar-label">'+m.label+(isCurrent?' (act)':'')+'</div>'+(!isCurrent?'<input type="number" class="mrr-bar-edit" value="'+m.val+'" data-key="'+m.key+'" oninput="addMRRMonth(this.dataset.key,parseInt(this.value,10)||0)">':'')+'</div>';
+  }).join('');
+
+  var projection=mrr*12;
+  var html='<div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg>Dashboard MRR</div></div>'
++'<div class="g2 mb12">'
++'<div><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">MRR actual</div><div style="font-family:\'Space Mono\',monospace;font-size:2.4rem;font-weight:800;color:var(--green2);line-height:1">'+mrr+'€<span style="font-size:.9rem;color:var(--text2);font-weight:500">/mes</span></div></div>'
++'<div><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Objetivo mensual</div><div style="display:flex;align-items:center;gap:8px"><input type="number" class="input mono" id="cl-goal" value="'+goal+'" style="width:140px;font-size:1.2rem;font-weight:700;color:var(--accent)" onchange="setMRRGoal(this.value)"><span style="color:var(--muted)">€/mes</span></div></div>'
++'</div>'
++'<div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text2);margin-bottom:5px"><span>Progreso al objetivo</span><span style="color:'+(pctReal>=100?'var(--green2)':'var(--accent)')+';font-weight:700">'+pctReal+'%</span></div>'
++'<div class="progress" style="height:8px;margin-bottom:14px"><div class="pf '+(pctReal>=100?'pf-g':'pf-a')+'" style="width:'+pct+'%"></div></div>'
++'<div style="font-size:.7rem;color:var(--text2);margin-bottom:7px;font-weight:600;letter-spacing:.05em">📊 Últimos 6 meses</div>'
++'<div class="mrr-chart">'+barsHTML+'</div>'
++'<div class="g2" style="margin-top:14px;gap:12px">'
++'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Pack Advance</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--accent)">'+advance+'€/mes</div></div>'
++'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Pack Pyme (mant.)</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--gold2)">'+pyme+'€/mes</div></div>'
++'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Proyección 12m</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--green2)">'+projection.toLocaleString('es-ES')+'€</div></div>'
++'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Pack Advance para meta</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--text)">'+clientsForGoal+' clientes</div></div>'
++'</div>';
+  $('cl-mrr-dashboard').innerHTML=html;
+}
+
+function renderClientsList(){
+  var clients=getClients();
+  if(!clients.length){$('cl-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:.8rem">Sin clientes registrados todavía. Pulsa <b style="color:var(--accent)">➕ Añadir cliente</b> arriba para registrar el primero.</div>';return}
+  // Sort: active first, then paused, then cancelled
+  var orderS={active:0,paused:1,cancelled:2};
+  clients.sort(function(a,b){return (orderS[a.status]||9)-(orderS[b.status]||9)});
+  var html='<div class="cl-table">'
++'<div class="cl-row cl-head"><div>Cliente</div><div>Pack</div><div>MRR</div><div>Alta</div><div>Estado</div><div></div></div>';
+  clients.forEach(function(c){
+    var statusBadge={active:'<span class="cl-badge cl-active">Activo</span>',paused:'<span class="cl-badge cl-paused">En pausa</span>',cancelled:'<span class="cl-badge cl-cancelled">Cancelado</span>'}[c.status]||'';
+    html+='<div class="cl-row'+(c.status==='cancelled'?' cl-dim':'')+'"><div><div class="cl-name">'+c.name+'</div>'+(c.sector?'<div class="cl-meta">'+c.sector+'</div>':'')+(c.phone?'<div class="cl-meta">'+c.phone+'</div>':'')+'</div><div><span class="cl-pack">'+(c.pack==='advance'?'Advance':'Pyme')+'</span></div><div><b>'+(+c.mrr||0)+'€/mes</b>'+(c.setupOnce?'<div class="cl-meta">+'+c.setupOnce+'€ setup</div>':'')+'</div><div class="cl-meta">'+(c.startDate||'—')+'</div><div>'+statusBadge+'</div><div class="cl-actions"><button class="btn btn-ghost btn-xs" onclick="openClientModal(\''+c.id+'\')">Editar</button><button class="btn btn-ghost btn-xs" onclick="deleteClient(\''+c.id+'\')" style="color:var(--red2)">×</button></div></div>';
+    if(c.notes)html+='<div class="cl-notes">📝 '+c.notes+'</div>';
+  });
+  html+='</div>';
+  $('cl-list').innerHTML=html;
+}
+
+function renderCommissions(){
+  var cfg=getCommissionConfig();
+  var clients=getClients();
+  var totalSetupComm=0,paidSetup=0,pendingSetup=0,monthlyComm=0;
+  clients.forEach(function(c){
+    if(c.status==='cancelled')return;
+    var setupC=(+c.setupOnce||0)*cfg.pctSetup/100;
+    if(c.commissionPaid)paidSetup+=setupC;else pendingSetup+=setupC;
+    totalSetupComm+=setupC;
+    if(c.status==='active')monthlyComm+=(+c.mrr||0)*cfg.pctMonthly/100;
+  });
+  var yearComm=monthlyComm*12;
+  var rowsHTML='';
+  clients.forEach(function(c){
+    if(c.status==='cancelled')return;
+    var setupC=Math.round((+c.setupOnce||0)*cfg.pctSetup/100*100)/100;
+    var monthlyC=c.status==='active'?Math.round((+c.mrr||0)*cfg.pctMonthly/100*100)/100:0;
+    rowsHTML+='<div class="cl-row"><div class="cl-name">'+c.name+'</div><div><b>'+setupC+'€</b><div class="cl-meta">setup</div></div><div><b>'+monthlyC+'€</b><div class="cl-meta">/mes</div></div><div>'+(c.commissionPaid?'<span class="cl-badge cl-active">Pagada</span>':'<span class="cl-badge cl-paused">Pendiente</span>')+'</div><div><button class="btn btn-ghost btn-xs" onclick="updateClient(\''+c.id+'\',{commissionPaid:'+(!c.commissionPaid)+'})">'+(c.commissionPaid?'Marcar pendiente':'Marcar pagada')+'</button></div></div>';
+  });
+  if(!rowsHTML)rowsHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:.78rem">Sin clientes activos para calcular comisiones.</div>';
+
+  var html='<div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>💰 Comisiones</div></div>'
++'<div class="g3 mb12">'
++'<div class="field-group"><span class="field-label">% comisión sobre setup</span><input type="number" class="input mono" id="cm-pctSetup" value="'+cfg.pctSetup+'" min="0" max="100" onchange="_saveCmConfig()"></div>'
++'<div class="field-group"><span class="field-label">% comisión sobre mensual</span><input type="number" class="input mono" id="cm-pctMonthly" value="'+cfg.pctMonthly+'" min="0" max="100" onchange="_saveCmConfig()"></div>'
++'<div class="field-group"><span class="field-label">Nombre comercial</span><input class="input" id="cm-salesName" value="'+(cfg.salesName||'').replace(/"/g,'&quot;')+'" placeholder="(opcional)" onchange="_saveCmConfig()"></div>'
++'</div>'
++'<div class="g4 mb12" style="gap:10px">'
++'<div class="card card-sm" style="border-color:rgba(34,197,94,.3)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green2);margin-bottom:4px">Setup pagadas</div><div class="big-num" style="color:var(--green2);font-size:1.4rem">'+paidSetup.toFixed(0)+'€</div></div>'
++'<div class="card card-sm" style="border-color:rgba(255,140,66,.3)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange2);margin-bottom:4px">Setup pendientes</div><div class="big-num" style="color:var(--orange2);font-size:1.4rem">'+pendingSetup.toFixed(0)+'€</div></div>'
++'<div class="card card-sm" style="border-color:var(--accent-border)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:4px">Mensual recurrente</div><div class="big-num" style="color:var(--accent);font-size:1.4rem">'+monthlyComm.toFixed(0)+'€</div></div>'
++'<div class="card card-sm" style="border-color:rgba(234,179,8,.3)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:4px">Año (proy.)</div><div class="big-num" style="color:var(--gold2);font-size:1.4rem">'+yearComm.toFixed(0)+'€</div></div>'
++'</div>'
++'<div class="cl-table cl-cmt-table"><div class="cl-row cl-head"><div>Cliente</div><div>Setup</div><div>Mensual</div><div>Estado</div><div></div></div>'+rowsHTML+'</div>';
+  $('cl-commissions').innerHTML=html;
+}
+
+function _saveCmConfig(){
+  saveCommissionConfig({
+    pctSetup:parseFloat($('cm-pctSetup').value)||0,
+    pctMonthly:parseFloat($('cm-pctMonthly').value)||0,
+    salesName:$('cm-salesName').value.trim()
+  });
+  renderCommissions();
+}
+
+function updateHeaderMRR(){
+  var mrr=getMRR();var goal=getMRRGoal();
+  var pct=goal>0?Math.min(999,Math.round(mrr*100/goal)):0;
+  var el1=$('hc-mrr');if(el1)el1.textContent=(mrr>=1000?(mrr/1000).toFixed(1)+'k':mrr)+'€';
+  var el2=$('hc-goal');if(el2)el2.textContent=pct+'%';
+  var elSb=$('sb-clients');if(elSb)elSb.textContent=getActiveClientCount();
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded',function(){
+  updateHeaderMRR();
+  renderPipeline();
+});
 
 // ═══════════════════════════════════════
 // WEB DEMO GENERATOR — Plantillas por sector (sin API)
