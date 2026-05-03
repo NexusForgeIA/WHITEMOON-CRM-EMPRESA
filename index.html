@@ -505,16 +505,16 @@ function updateCounters(){$('hc-an').textContent=S.analyzed;$('hc-pr').textConte
 
 // SECTOR DETECT
 var SECTORS=[
-{kws:['dental','diente','ortodoncia','implante','clinica dental','sonris','smile','tooth','teeth','odonto','endodoncia','periodoncia','bucal','protesis dental','blanqueamiento dental','higienista'],s:'Clínica Dental',ico:'🦷',n:'dental'},
-{kws:['restaurante','comida','tapas','bar ','cafeteria','pizza','sushi','gastro','paella','asador','marisquer','taberna','bistro','trattoria','burguer','kebab','wok','buffet','catering','food','comer','brunch','lunch','dinner','cocina','chiringuito','mesón','bodega','vinoteca','cerveceria','pub','cantina'],s:'Restaurante / Hostelería',ico:'🍽️',n:'restaurante'},
+{kws:['dental','diente','ortodoncia','implante','clinica dental','sonris','smile','tooth','teeth','odonto','endodoncia','periodoncia','bucal','protesis dental','blanqueamiento dental','higienista','empaste','extraccion','funda dental','carilla','odontologia','higiene dental','revision dental'],s:'Clínica Dental',ico:'🦷',n:'dental'},
+{kws:['restaurante','comida','tapas','cafeteria','pizza','sushi','gastro','paella','asador','marisquer','taberna','bistro','trattoria','burguer','kebab','wok','buffet','catering','food','comer','brunch','lunch','dinner','cocina','chiringuito','mesón','bodega','vinoteca','cerveceria','pub','cantina','carta','menu del dia','reserva mesa','terraza','chef','platos','degustacion','maridaje','bodega restaurante'],s:'Restaurante / Hostelería',ico:'🍽️',n:'restaurante'},
 {kws:['belleza','estetica','manicura','facial','spa','depilacion','beauty','laser','nail','uña','corporal','antiedad','mesoterapia','radiofrecuencia','centro estetica','microblading','pestañ','bronceado','tratamiento facial','body','wellness'],s:'Centro de Belleza / Estética',ico:'💅',n:'belleza'},
 {kws:['fontanero','reforma','pintura','electricista','plumber','instalacion','albanil','calefacc','aire acondicionado','climatiz','cerrajer','reformas','construccion','obra','interiorismo','decoracion','carpinter'],s:'Fontanero / Reformas / Hogar',ico:'🔧',n:'fontanero'},
 {kws:['inmobiliaria','piso','alquiler','propiedad','casa','vivienda','realestate','finca','chalet','apartamento','local comercial','hipoteca','tasacion','real estate','venta pisos','compra venta','arrendamiento','inmueble','promotora'],s:'Inmobiliaria',ico:'🏠',n:'inmobiliaria'},
 {kws:['academia','cursos','formacion','clases','escuela','aprender','training','estudio','enseñanza','tutor','oposicion','idioma','master','educacion','colegio','instituto','docen','pedagog','capacitacion','bootcamp','seminario'],s:'Academia / Formación',ico:'📚',n:'academia'},
-{kws:['taller','mecanico','coche','auto','motor','vehiculo','moto','car','garage','itv','neumatico','freno','suspension','chapa','pintura coche','electromecanica','reparacion vehiculo'],s:'Taller Mecánico / Automoción',ico:'🚗',n:'taller'},
+{kws:['taller','mecanico','coche','auto','motor','vehiculo','moto','car','garage','itv','neumatico','freno','suspension','chapa','pintura coche','electromecanica','reparacion vehiculo','revision coche','cambio aceite','frenos','neumaticos','diagnosis','averia','mecanica'],s:'Taller Mecánico / Automoción',ico:'🚗',n:'taller'},
 {kws:['gimnasio','fitness','crossfit','pilates','yoga','gym','sport','entrenamiento','musculacion','spinning','boxing','artes marciales','padel','squash','entrenador personal','personal trainer','deporte','natacion'],s:'Gimnasio / Fitness',ico:'💪',n:'gimnasio'},
-{kws:['abogado','notario','asesoria','juridico','legal','bufete','lawyer','law','procurador','letrado','mercantil','laboral','fiscal','penal','divorcio','herencia','extranjeria','asesoria legal','compliance','mediacion'],s:'Abogado / Asesoría Legal',ico:'⚖️',n:'abogado'},
-{kws:['peluqueria','barberia','pelo','corte','estilista','hair','barber','salon','tinte','mechas','keratina','alisado','extensiones','salon de belleza','hairdresser','coloracion','balayage','degradado'],s:'Peluquería / Barbería',ico:'✂️',n:'peluqueria'},
+{kws:['abogado','notario','juridico','bufete','lawyer','law','procurador','letrado','mercantil','penal','divorcio','herencia','extranjeria','asesoria legal','compliance','mediacion','litigio','litigios','demanda','juzgado','tribunal','derecho penal','derecho civil','pleito','sentencia','recurso judicial','negligencia','indemnizacion','despido improcedente','clausula','contrato laboral','ley segunda oportunidad','concurso acreedores','reclamacion judicial','asistencia juridica'],s:'Abogado / Asesoría Legal',ico:'⚖️',n:'abogado'},
+{kws:['peluqueria','barberia','pelo','corte','estilista','hair','barber','salon','tinte','mechas','keratina','alisado','extensiones','salon de belleza','hairdresser','coloracion','balayage','degradado','corte pelo','tinte cabello','peinado novia'],s:'Peluquería / Barbería',ico:'✂️',n:'peluqueria'},
 {kws:['veterinario','veterinaria','mascota','perro','gato','animales','pet','vet','clinica animal','vacuna animal','peluqueria canina','adiestramiento'],s:'Clínica Veterinaria',ico:'🐾',n:'veterinaria'},
 {kws:['farmacia','medicamento','parafarmacia','pharmacy','botica','drogueria','herbolario','ortopedia'],s:'Farmacia / Parafarmacia',ico:'💊',n:'farmacia'},
 {kws:['hotel','hostal','alojamiento','booking','habitacion','resort','aparthotel','hostel','pension','albergue','casa rural','turismo rural'],s:'Hotel / Alojamiento',ico:'🏨',n:'hotel'},
@@ -522,15 +522,39 @@ var SECTORS=[
 {kws:['psicolog','terapia','terapeuta','counseling','coaching','coach','psiquiatr','salud mental','ansiedad','depresion','mindfulness','bienestar emocional'],s:'Psicología / Coaching',ico:'🧠',n:'psicologia'},
 {kws:['fisioterapia','fisio','rehabilitacion','osteopat','quiropract','masaje','masajista','kinesio','podolog','podologia'],s:'Fisioterapia / Rehabilitación',ico:'🦴',n:'fisioterapia'},
 {kws:['seguro','asegurador','insurance','poliza','corredor seguros','broker seguros','mutua','cobertura'],s:'Seguros',ico:'🛡️',n:'seguros'},
-{kws:['conta','contable','contabilidad','gestor','gestoria','asesoria fiscal','impuesto','renta','iva','declaracion','nomina','facturacion','auditoria','accounting','tax','hacienda','autonomo'],s:'Gestoría / Contabilidad',ico:'📊',n:'gestoria'},
+{kws:['conta','contable','contabilidad','gestor','gestoria','asesoria fiscal','impuesto','renta','iva','declaracion','nomina','facturacion','auditoria','accounting','tax','hacienda','autonomo','declaracion renta','irpf','autonomos','sociedades','nominas','seguridad social','modelo 303','modelo 130','alta autonomo'],s:'Gestoría / Contabilidad',ico:'📊',n:'gestoria'},
 {kws:['marketing','publicidad','agencia digital','seo','sem','social media','community manager','branding','diseño web','web design','ecommerce','tienda online','desarrollo web','programacion','software','app'],s:'Marketing / Agencia Digital',ico:'📱',n:'marketing'},
 {kws:['asesoria empresas','consultoria','consulting','consultant','business','negocio','emprendimiento','startup'],s:'Consultoría Empresarial',ico:'💼',n:'consultoria'},
 {kws:['mudanza','transporte','logistica','mensajeria','courier','paqueteria','almacen','distribucion','envio','shipping'],s:'Transporte / Logística',ico:'🚛',n:'transporte'},
 {kws:['limpieza','cleaning','servicio limpieza','limpieza oficina','desinfeccion','control plagas','fumigacion','mantenimiento'],s:'Limpieza / Mantenimiento',ico:'🧹',n:'limpieza'},
 ];
 
-function detectSector(text){
-  var u=text.toLowerCase().replace(/[-_\.\/]/g,' ');
+var DOMAIN_HINTS=[
+{n:'abogado',re:/abogad|legal|juridic|bufete|litigio|letrad|procurador|despacho/},
+{n:'dental',re:/dental|diente|ortodoncia|clinicadent|odonto/},
+{n:'restaurante',re:/restauran|comida|tapas|gastro|bistro|cafeter/},
+{n:'peluqueria',re:/peluquer|barber|salon.*pelo|haircut|estilis/},
+{n:'veterinaria',re:/veterinar|clinica.*animal|mascota.*clinica/},
+{n:'taller',re:/taller|mecanico|automocion|talleres/},
+{n:'gestoria',re:/gestor|asesoria|contabilidad|fiscalidad/},
+{n:'gimnasio',re:/gimnasio|gym|fitness|crossfit/},
+{n:'belleza',re:/estetica|belleza|spa.*centro|centro.*spa/},
+{n:'fisioterapia',re:/fisio|rehabilitacion|osteopat/},
+{n:'inmobiliaria',re:/inmobiliar|agencia.*piso|pisos|chalets/},
+{n:'academia',re:/academia|formacion|cursos.*online|escuela/}
+];
+
+function domainHint(url){
+  if(!url)return null;
+  var d=url.replace(/https?:\/\//,'').split('/')[0].toLowerCase();
+  for(var i=0;i<DOMAIN_HINTS.length;i++){
+    if(DOMAIN_HINTS[i].re.test(d))return DOMAIN_HINTS[i].n;
+  }
+  return null;
+}
+
+function scoreText(text){
+  var u=(text||'').toLowerCase().replace(/[-_\.\/]/g,' ');
   var best=null,bestScore=0;
   for(var i=0;i<SECTORS.length;i++){
     var hits=0;
@@ -541,8 +565,20 @@ function detectSector(text){
     }
     if(hits>bestScore){bestScore=hits;best=SECTORS[i]}
   }
-  return bestScore>=1?best:null;
+  return {best:best,bestScore:bestScore};
 }
+
+function detectSector(url,html,titleText){
+  var hint=domainHint(url);
+  if(hint)return getSectorByNicho(hint);
+  var metaScore=scoreText(titleText);
+  if(metaScore.best&&metaScore.bestScore>=2)return metaScore.best;
+  var htmlScore=scoreText((html||'').substring(0,10000));
+  if(htmlScore.best)return htmlScore.best;
+  if(metaScore.best)return metaScore.best;
+  return {s:'Negocio local',ico:'🏪',n:'generic',kws:[]};
+}
+
 function getSectorByNicho(n){
   for(var i=0;i<SECTORS.length;i++) if(SECTORS[i].n===n) return SECTORS[i];
   return SECTORS[0];
@@ -561,11 +597,9 @@ function analyzeHTML(url,html){
   } else {
     var titleText=(doc.querySelector('title')?doc.querySelector('title').textContent:'')
       +' '+(doc.querySelector('meta[name="description"]')?doc.querySelector('meta[name="description"]').getAttribute('content')||'':'')
-      +' '+(doc.querySelector('h1')?doc.querySelector('h1').textContent:'');
-    sec=detectSector(titleText);
-    if(!sec) sec=detectSector(html.substring(0,10000));
-    if(!sec) sec=detectSector(url);
-    if(!sec) sec={s:'Negocio local',ico:'🏪',n:'generic',kws:[]};
+      +' '+(doc.querySelector('h1')?doc.querySelector('h1').textContent:'')
+      +' '+(doc.querySelector('meta[property="og:title"]')?doc.querySelector('meta[property="og:title"]').getAttribute('content')||'':'');
+    sec=detectSector(url,html,titleText);
   }
 
   var ssl=url.startsWith('https');
