@@ -2069,14 +2069,21 @@ function showApp(){
 }
 
 async function login(){
-  var email=$('login-email').value.trim();
+  var email=$('login-email').value.trim().toLowerCase();
   var pass=$('login-pass').value.trim();
   if(!email||!pass){showToast('Introduce email y contraseña');return}
   var s=_initSb();if(!s){showToast('Supabase no cargó');return}
+  console.log('Supabase client:',s);
   var btn=$('login-btn');if(btn){btn.disabled=true;btn.textContent='Entrando...'}
   try{
-    var resp=await s.from('users').select('*').eq('email',email).eq('password_hash',pass).eq('active',true).single();
-    if(resp.error||!resp.data){showToast('Email o contraseña incorrectos');return}
+    var resp=await s.from('users').select('*').eq('email',email).single();
+    console.log('Login result:',resp.data,'Error:',resp.error);
+    if(resp.error||!resp.data){
+      showToast(resp.error&&resp.error.code==='PGRST116'?'Email no encontrado':'Email incorrecto');
+      return;
+    }
+    if(resp.data.password_hash!==pass){showToast('Contraseña incorrecta');return}
+    if(!resp.data.active){showToast('Usuario desactivado — contacta cris@whitemoon.es');return}
     currentUser=resp.data;
     sessionStorage.setItem('wm_user',JSON.stringify(resp.data));
     showApp();
@@ -2087,7 +2094,7 @@ async function login(){
     updateCounters();
     renderPipeline();
     showToast('Bienvenido/a, '+(currentUser.name||currentUser.email));
-  }catch(e){showToast('Error al conectar')}
+  }catch(e){console.error('Login exception:',e);showToast('Error de conexión: '+(e.message||'desconocido'))}
   finally{if(btn){btn.disabled=false;btn.textContent='Entrar'}}
 }
 
