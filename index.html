@@ -1046,231 +1046,631 @@ function copyAllRRSS(){
 }
 
 // ═══════════════════════════════════════
-// WEB DEMO GENERATOR — API Claude
+// WEB DEMO GENERATOR — Plantillas por sector (sin API)
 // ═══════════════════════════════════════
 
-var SECTOR_THEMES={
-  dental:{primary:'#0ea5e9',secondary:'#0284c7',accent:'#38bdf8',bg:'#f0f9ff',dark:'#0c4a6e',style:'clínico y moderno',emoji:'🦷'},
-  restaurante:{primary:'#dc2626',secondary:'#b91c1c',accent:'#f97316',bg:'#fff7ed',dark:'#431407',style:'cálido y apetecible',emoji:'🍽️'},
-  belleza:{primary:'#db2777',secondary:'#be185d',accent:'#f472b6',bg:'#fdf2f8',dark:'#500724',style:'elegante y femenino',emoji:'💅'},
-  peluqueria:{primary:'#7c3aed',secondary:'#6d28d9',accent:'#a78bfa',bg:'#f5f3ff',dark:'#2e1065',style:'moderno y creativo',emoji:'✂️'},
-  taller:{primary:'#d97706',secondary:'#b45309',accent:'#fbbf24',bg:'#fffbeb',dark:'#451a03',style:'industrial y confiable',emoji:'🔧'},
-  abogado:{primary:'#1e3a5f',secondary:'#1e40af',accent:'#3b82f6',bg:'#eff6ff',dark:'#1e3a5f',style:'serio y profesional',emoji:'⚖️'},
-  gestoria:{primary:'#065f46',secondary:'#047857',accent:'#10b981',bg:'#ecfdf5',dark:'#022c22',style:'profesional y ordenado',emoji:'📊'},
-  veterinaria:{primary:'#16a34a',secondary:'#15803d',accent:'#4ade80',bg:'#f0fdf4',dark:'#14532d',style:'cálido y confiable',emoji:'🐾'},
-  fisioterapia:{primary:'#0891b2',secondary:'#0e7490',accent:'#22d3ee',bg:'#ecfeff',dark:'#164e63',style:'salud y bienestar',emoji:'🦴'},
-  inmobiliaria:{primary:'#92400e',secondary:'#78350f',accent:'#f59e0b',bg:'#fffbeb',dark:'#451a03',style:'premium y de confianza',emoji:'🏠'},
-  academia:{primary:'#4f46e5',secondary:'#4338ca',accent:'#818cf8',bg:'#eef2ff',dark:'#1e1b4b',style:'educativo y dinámico',emoji:'📚'},
-  gimnasio:{primary:'#111827',secondary:'#1f2937',accent:'#ef4444',bg:'#fef2f2',dark:'#111827',style:'energético y motivador',emoji:'💪'},
-  psicologia:{primary:'#7c3aed',secondary:'#6d28d9',accent:'#c4b5fd',bg:'#f5f3ff',dark:'#2e1065',style:'tranquilo y empático',emoji:'🧠'},
-  farmacia:{primary:'#16a34a',secondary:'#15803d',accent:'#86efac',bg:'#f0fdf4',dark:'#14532d',style:'saludable y confiable',emoji:'💊'},
-  hotel:{primary:'#92400e',secondary:'#78350f',accent:'#fbbf24',bg:'#fefce8',dark:'#451a03',style:'lujoso y acogedor',emoji:'🏨'},
-  optica:{primary:'#0ea5e9',secondary:'#0284c7',accent:'#7dd3fc',bg:'#f0f9ff',dark:'#0c4a6e',style:'moderno y claro',emoji:'👓'},
-  fontanero:{primary:'#1d4ed8',secondary:'#1e40af',accent:'#60a5fa',bg:'#eff6ff',dark:'#1e3a5f',style:'confiable y eficiente',emoji:'🔧'},
-  generic:{primary:'#7c3aed',secondary:'#6d28d9',accent:'#a78bfa',bg:'#f5f3ff',dark:'#2e1065',style:'profesional y moderno',emoji:'🏪'}
+var SECTOR_PROFILES={
+dental:{
+primary:'#0ea5e9',primaryDark:'#0284c7',accent:'#38bdf8',bg:'#f0f9ff',dark:'#0c4a6e',
+font:'Inter',
+hero:'Tu sonrisa, nuestra prioridad',
+heroSub:'Clínica dental moderna con tecnología de vanguardia y un equipo humano que te cuida en cada visita.',
+heroImg:'https://images.unsplash.com/photo-1606811971618-4486d14f3f99?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=900&q=80',
+services:[
+{ico:'🦷',name:'Limpieza dental profesional',desc:'Higiene completa con ultrasonidos y pulido para mantener tus encías sanas.'},
+{ico:'😁',name:'Ortodoncia invisible',desc:'Alineadores transparentes a medida sin brackets visibles.'},
+{ico:'✨',name:'Blanqueamiento dental',desc:'Tratamiento profesional para una sonrisa hasta 8 tonos más blanca.'},
+{ico:'🔧',name:'Implantes dentales',desc:'Implantes de titanio de alta calidad con garantía de por vida.'},
+{ico:'👶',name:'Odontopediatría',desc:'Cuidado dental especializado para los más pequeños de la casa.'},
+{ico:'🩺',name:'Endodoncia y periodoncia',desc:'Tratamientos avanzados para conservar tus dientes naturales.'}],
+values:[{ico:'🏆',name:'Experiencia',desc:'Más de 15 años cuidando sonrisas en la zona.'},{ico:'💎',name:'Calidad',desc:'Materiales premium y tecnología de última generación.'},{ico:'🤝',name:'Confianza',desc:'Trato cercano y planes de tratamiento personalizados.'}],
+team:[{name:'Dra. Ana Martínez',role:'Directora · Ortodoncia',bio:'Especialista en ortodoncia invisible con más de 12 años de experiencia.',avatar:'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80'},{name:'Dr. Carlos Ruiz',role:'Implantología',bio:'Cirujano oral con formación internacional en implantes avanzados.',avatar:'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80'},{name:'Lucía Pérez',role:'Higienista',bio:'Especialista en cuidado periodontal y prevención.',avatar:'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80'}]
+},
+restaurante:{
+primary:'#dc2626',primaryDark:'#b91c1c',accent:'#f97316',bg:'#fff7ed',dark:'#431407',
+font:'Playfair Display',
+hero:'Sabores que se quedan contigo',
+heroSub:'Cocina honesta hecha con producto de temporada y mucho cariño. Te esperamos.',
+heroImg:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=900&q=80',
+services:[
+{ico:'🍽️',name:'Menú del día',desc:'Cocina casera con producto fresco a precio cerrado, lunes a viernes.'},
+{ico:'🥘',name:'Carta tradicional',desc:'Nuestros clásicos elaborados con recetas de siempre y producto local.'},
+{ico:'🍷',name:'Bodega seleccionada',desc:'Vinos D.O. y referencias del territorio cuidadosamente escogidas.'},
+{ico:'🎉',name:'Eventos y celebraciones',desc:'Reservados privados para grupos, comuniones y comidas de empresa.'},
+{ico:'🥗',name:'Opciones saludables',desc:'Platos vegetarianos, sin gluten y opciones ligeras adaptadas.'},
+{ico:'📦',name:'Comida para llevar',desc:'Disfruta de nuestros platos en casa con servicio de take away.'}],
+values:[{ico:'🌿',name:'Producto local',desc:'Trabajamos con productores y mercados de proximidad.'},{ico:'👨‍🍳',name:'Cocina honesta',desc:'Recetas tradicionales con ese toque que nos hace diferentes.'},{ico:'❤️',name:'Trato cercano',desc:'Aquí no eres un número. Eres parte de la familia.'}],
+team:[{name:'Javier Soler',role:'Chef ejecutivo',bio:'15 años en cocinas de referencia. Apasionado del producto de temporada.',avatar:'https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400&q=80'},{name:'María García',role:'Jefa de sala',bio:'La sonrisa que recibe a cada cliente y se asegura de que disfrutes.',avatar:'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80'},{name:'Pablo Núñez',role:'Sumiller',bio:'Te recomendará el maridaje perfecto para tu menú.',avatar:'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&q=80'}]
+},
+abogado:{
+primary:'#1e3a5f',primaryDark:'#1e40af',accent:'#3b82f6',bg:'#eff6ff',dark:'#0f172a',
+font:'Merriweather',
+hero:'Defendemos tus derechos con rigor',
+heroSub:'Despacho de abogados especializado con un equipo multidisciplinar a tu servicio.',
+heroImg:'https://images.unsplash.com/photo-1521791136064-7986c2920216?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=900&q=80',
+services:[
+{ico:'⚖️',name:'Derecho civil',desc:'Contratos, herencias, reclamaciones y todo lo relacionado con el derecho civil.'},
+{ico:'💼',name:'Derecho laboral',desc:'Despidos, conciliaciones, negociación colectiva y asesoramiento a empresas.'},
+{ico:'🏛️',name:'Derecho penal',desc:'Defensa penal en todo tipo de procedimientos con discreción y experiencia.'},
+{ico:'🏢',name:'Derecho mercantil',desc:'Constitución de sociedades, contratos comerciales y M&A.'},
+{ico:'👨‍👩‍👧',name:'Derecho de familia',desc:'Divorcios, custodia, pensiones y mediación familiar.'},
+{ico:'📄',name:'Derecho fiscal',desc:'Asesoramiento fiscal, recursos ante Hacienda y planificación.'}],
+values:[{ico:'🎯',name:'Especialización',desc:'Equipo multidisciplinar con expertos en cada rama del derecho.'},{ico:'🔒',name:'Confidencialidad',desc:'Discreción absoluta en cada caso que llevamos.'},{ico:'📊',name:'Resultados',desc:'Estrategia clara y comunicación transparente en todo momento.'}],
+team:[{name:'Roberto Aguilar',role:'Socio · Derecho civil',bio:'25 años de carrera. Especialista en contratación y herencias complejas.',avatar:'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80'},{name:'Carmen López',role:'Socia · Derecho laboral',bio:'Experta en relaciones laborales y procedimientos ante la jurisdicción social.',avatar:'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80'},{name:'Daniel Fernández',role:'Derecho mercantil',bio:'Asesor fiscal y mercantil para pymes y grandes cuentas.',avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'}]
+},
+peluqueria:{
+primary:'#7c3aed',primaryDark:'#6d28d9',accent:'#a78bfa',bg:'#f5f3ff',dark:'#2e1065',
+font:'Poppins',
+hero:'Reinventa tu estilo con nosotros',
+heroSub:'Salón especializado en cortes, color y tratamientos. Cada cliente, una historia.',
+heroImg:'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=900&q=80',
+services:[
+{ico:'✂️',name:'Corte y peinado',desc:'Cortes personalizados que se adaptan a tu estilo de vida y rostro.'},
+{ico:'🎨',name:'Color y mechas',desc:'Coloración profesional, balayage, mechas californianas y babylights.'},
+{ico:'💆‍♀️',name:'Tratamientos capilares',desc:'Hidratación profunda, queratina y reparación intensiva del cabello.'},
+{ico:'👰',name:'Peinados de novia',desc:'Para tu día especial. Pruebas previas y servicio a domicilio.'},
+{ico:'🪒',name:'Barbería',desc:'Cortes masculinos clásicos y modernos, arreglo de barba con toalla caliente.'},
+{ico:'💅',name:'Estética complementaria',desc:'Manicura, pedicura y diseño de cejas para completar tu look.'}],
+values:[{ico:'💜',name:'Personalización',desc:'Cada cliente recibe un asesoramiento de estilo único.'},{ico:'🌱',name:'Productos premium',desc:'Trabajamos con marcas profesionales respetuosas con el cabello.'},{ico:'⏰',name:'Puntualidad',desc:'Respetamos tu tiempo. Reservas online disponibles 24h.'}],
+team:[{name:'Laura Vega',role:'Directora · Color',bio:'Experta en balayage formada en Londres. Más de 10 años creando looks únicos.',avatar:'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80'},{name:'Sergio Marín',role:'Estilista senior',bio:'Especialista en cortes de tendencia masculina y femenina.',avatar:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80'},{name:'Noelia Castro',role:'Tratamientos',bio:'Tu cabello en las mejores manos: hidratación y reparación.',avatar:'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&q=80'}]
+},
+gestoria:{
+primary:'#065f46',primaryDark:'#047857',accent:'#10b981',bg:'#ecfdf5',dark:'#022c22',
+font:'Inter',
+hero:'Tu gestoría de confianza',
+heroSub:'Asesoramiento fiscal, laboral y contable para autónomos y pymes. Sin sorpresas.',
+heroImg:'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1554224154-26032ffc0d07?w=900&q=80',
+services:[
+{ico:'📊',name:'Contabilidad',desc:'Llevanza completa de la contabilidad para autónomos y pequeñas empresas.'},
+{ico:'💰',name:'Asesoramiento fiscal',desc:'Declaraciones de IVA, IRPF, Sociedades y planificación fiscal.'},
+{ico:'👥',name:'Asesoría laboral',desc:'Gestión de nóminas, contratos, seguros sociales y altas/bajas.'},
+{ico:'🏢',name:'Constitución de sociedades',desc:'Te acompañamos en todo el proceso de creación de tu empresa.'},
+{ico:'📑',name:'Renta y declaraciones',desc:'Optimización de tu declaración de la renta para que no pagues de más.'},
+{ico:'🚀',name:'Plan de empresa',desc:'Asesoramiento integral para nuevos emprendedores y autónomos.'}],
+values:[{ico:'⚡',name:'Agilidad',desc:'Respuestas rápidas y plazos siempre cumplidos.'},{ico:'🎓',name:'Profesionalidad',desc:'Equipo titulado y en formación continua en normativa.'},{ico:'🤝',name:'Cercanía',desc:'Hablamos tu idioma. Sin tecnicismos innecesarios.'}],
+team:[{name:'Antonio Reyes',role:'Asesor fiscal',bio:'Economista con 20 años de experiencia. Especialista en pymes y autónomos.',avatar:'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80'},{name:'Beatriz Mora',role:'Asesoría laboral',bio:'Graduada Social. Tu mano derecha en gestión de personal.',avatar:'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80'},{name:'Marta Jiménez',role:'Contabilidad',bio:'Detallista hasta el último céntimo. Tu contabilidad bajo control.',avatar:'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=400&q=80'}]
+},
+veterinaria:{
+primary:'#16a34a',primaryDark:'#15803d',accent:'#4ade80',bg:'#f0fdf4',dark:'#14532d',
+font:'Nunito',
+hero:'Cuidamos a quien más quieres',
+heroSub:'Centro veterinario integral con un equipo que trata a cada mascota como propia.',
+heroImg:'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=900&q=80',
+services:[
+{ico:'🩺',name:'Medicina general',desc:'Consultas, revisiones y tratamientos para perros, gatos y otras mascotas.'},
+{ico:'💉',name:'Vacunaciones y prevención',desc:'Calendario de vacunas, desparasitación y chequeos preventivos.'},
+{ico:'🔪',name:'Cirugía y hospitalización',desc:'Quirófano equipado para cirugías programadas y de urgencia.'},
+{ico:'🦷',name:'Dental veterinario',desc:'Limpiezas y tratamientos dentales con anestesia segura.'},
+{ico:'🐾',name:'Peluquería canina',desc:'Baños, cortes y servicios de estética para todas las razas.'},
+{ico:'🏥',name:'Urgencias 24h',desc:'Atendemos las emergencias cuando tu mascota más lo necesita.'}],
+values:[{ico:'❤️',name:'Cariño',desc:'Tratamos a cada mascota con la atención que se merece.'},{ico:'🔬',name:'Tecnología',desc:'Equipos de diagnóstico avanzado: rayos X, ecografía, laboratorio.'},{ico:'👨‍⚕️',name:'Especialistas',desc:'Equipo veterinario con formación en distintas especialidades.'}],
+team:[{name:'Dra. Patricia Sanz',role:'Directora · Cirugía',bio:'Veterinaria especialista en tejidos blandos. 18 años de experiencia.',avatar:'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=400&q=80'},{name:'Dr. Iván Romero',role:'Medicina interna',bio:'Especialista en diagnóstico y tratamiento de patologías complejas.',avatar:'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80'},{name:'Sara Molina',role:'Auxiliar técnica',bio:'La cara amable que recibe a tu mascota y la hace sentir como en casa.',avatar:'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80'}]
+},
+taller:{
+primary:'#d97706',primaryDark:'#b45309',accent:'#fbbf24',bg:'#fffbeb',dark:'#451a03',
+font:'Roboto',
+hero:'Tu coche en las mejores manos',
+heroSub:'Taller mecánico multimarca con experiencia y diagnóstico avanzado. Presupuesto sin compromiso.',
+heroImg:'https://images.unsplash.com/photo-1486754735734-325b5831c3ad?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1632823469850-2f77dd9c7f93?w=900&q=80',
+services:[
+{ico:'🔧',name:'Mecánica general',desc:'Mantenimiento, revisiones y reparaciones de motor y transmisión.'},
+{ico:'⚡',name:'Electromecánica',desc:'Diagnóstico electrónico, baterías, alternadores e instalación eléctrica.'},
+{ico:'🛞',name:'Neumáticos',desc:'Venta, montaje, alineado y equilibrado de neumáticos de todas las marcas.'},
+{ico:'🛑',name:'Frenos y suspensión',desc:'Pastillas, discos, amortiguadores y sistemas de seguridad.'},
+{ico:'❄️',name:'Aire acondicionado',desc:'Carga, recarga y reparación de sistemas de climatización.'},
+{ico:'🔍',name:'Pre-ITV',desc:'Revisión completa antes de pasar la ITV para evitar sorpresas.'}],
+values:[{ico:'⚙️',name:'Multimarca',desc:'Trabajamos con todas las marcas y modelos del mercado.'},{ico:'💯',name:'Garantía',desc:'Todas nuestras reparaciones llevan garantía por escrito.'},{ico:'💵',name:'Precio justo',desc:'Presupuesto detallado antes de empezar. Sin sorpresas.'}],
+team:[{name:'Manuel Torres',role:'Jefe de taller',bio:'30 años con las manos en grasa. Diagnóstico que rara vez falla.',avatar:'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?w=400&q=80'},{name:'Rubén Salas',role:'Electromecánico',bio:'Especialista en electrónica del automóvil y vehículos híbridos.',avatar:'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80'},{name:'Ainhoa López',role:'Atención al cliente',bio:'Te explica cualquier reparación con palabras claras, sin tecnicismos.',avatar:'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80'}]
+},
+fisioterapia:{
+primary:'#0891b2',primaryDark:'#0e7490',accent:'#22d3ee',bg:'#ecfeff',dark:'#164e63',
+font:'Inter',
+hero:'Recupera tu bienestar',
+heroSub:'Centro de fisioterapia y rehabilitación con tratamientos personalizados para cada paciente.',
+heroImg:'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=900&q=80',
+services:[
+{ico:'🤲',name:'Fisioterapia manual',desc:'Terapia manual especializada para aliviar dolores y mejorar la movilidad.'},
+{ico:'🏃',name:'Rehabilitación deportiva',desc:'Recuperación de lesiones y prevención para deportistas amateur y profesionales.'},
+{ico:'🧘',name:'Pilates terapéutico',desc:'Sesiones individuales y de grupo para fortalecer la postura y el core.'},
+{ico:'⚡',name:'Electroterapia',desc:'TENS, ultrasonido y láser para acelerar la recuperación.'},
+{ico:'🦴',name:'Osteopatía',desc:'Tratamiento estructural global para dolores crónicos.'},
+{ico:'🤰',name:'Suelo pélvico',desc:'Fisioterapia especializada pre y post-parto y para incontinencia.'}],
+values:[{ico:'🎯',name:'Tratamiento personalizado',desc:'Plan individual adaptado a tu lesión y a tu ritmo.'},{ico:'🔬',name:'Evidencia científica',desc:'Aplicamos las técnicas con respaldo clínico actualizado.'},{ico:'⏱️',name:'Resultados',desc:'Mejora notable desde las primeras sesiones.'}],
+team:[{name:'Pablo Hernández',role:'Director · Fisioterapeuta',bio:'Colegiado nº XXXX. Especialista en deportiva y traumatología.',avatar:'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80'},{name:'Lucía Romero',role:'Suelo pélvico',bio:'Especialista en uroginecología y readaptación posparto.',avatar:'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80'},{name:'Marcos Gil',role:'Osteopatía',bio:'Osteópata D.O. con formación europea en terapia manual.',avatar:'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80'}]
+},
+generic:{
+primary:'#7c3aed',primaryDark:'#6d28d9',accent:'#a78bfa',bg:'#f5f3ff',dark:'#2e1065',
+font:'Inter',
+hero:'Tu negocio de confianza',
+heroSub:'Calidad, profesionalidad y trato cercano. Esa es nuestra forma de trabajar contigo.',
+heroImg:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80',
+aboutImg:'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=900&q=80',
+services:[
+{ico:'⭐',name:'Servicio personalizado',desc:'Atención cercana y soluciones adaptadas a cada cliente.'},
+{ico:'⚡',name:'Eficiencia',desc:'Trabajamos con plazos claros y respuestas rápidas.'},
+{ico:'🤝',name:'Confianza',desc:'Años acompañando a clientes que confían en nosotros.'},
+{ico:'💼',name:'Asesoramiento experto',desc:'Equipo formado y especializado en lo que hace.'},
+{ico:'🎯',name:'Resultados',desc:'Nos comprometemos con la calidad de cada proyecto.'},
+{ico:'📞',name:'Soporte continuo',desc:'Estamos aquí también después del primer contacto.'}],
+values:[{ico:'🏆',name:'Profesionalidad',desc:'Trabajamos con rigor y atención al detalle.'},{ico:'❤️',name:'Cercanía',desc:'Para nosotros cada cliente es importante.'},{ico:'✨',name:'Calidad',desc:'No hacemos atajos. Hacemos las cosas bien.'}],
+team:[{name:'Carlos Méndez',role:'Director',bio:'Lidera el equipo con experiencia y visión.',avatar:'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80'},{name:'Elena Torres',role:'Responsable de operaciones',bio:'Se asegura de que todo funcione a la perfección.',avatar:'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80'},{name:'Javier Ramos',role:'Atención al cliente',bio:'Tu primer contacto. Resuelve dudas con paciencia.',avatar:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80'}]
+}
 };
 
-function getSectorTheme(nicho){return SECTOR_THEMES[nicho]||SECTOR_THEMES.generic}
+function _buildHTML(p){
+  var svcsCards=p.services.map(function(s){return '<div class="service-card"><div class="service-icon">'+s.ico+'</div><h3>'+s.name+'</h3><p>'+s.desc+'</p></div>'}).join('');
+  var valuesHTML=p.values.map(function(v){return '<div class="value-card"><div class="value-icon">'+v.ico+'</div><h4>'+v.name+'</h4><p>'+v.desc+'</p></div>'}).join('');
+  var teamHTML=p.team.map(function(t){return '<div class="team-card"><div class="team-avatar"><img src="'+t.avatar+'" alt="'+t.name+'"></div><h4>'+t.name+'</h4><div class="role">'+t.role+'</div><div class="bio">'+t.bio+'</div></div>'}).join('');
+  var quickServices=p.services.slice(0,3).map(function(s){return s.name}).concat(['Pedir cita']);
+  var quickHTML=quickServices.map(function(q){return '<button onclick="cbQuick(\''+q.replace(/'/g,"\\'")+'\')">'+q+'</button>'}).join('');
+  var fontHref='https://fonts.googleapis.com/css2?family='+p.font.replace(/ /g,'+')+':wght@400;500;600;700;800&display=swap';
 
-function showDemoModal(biz){
-  var existing=document.getElementById('demo-gen-modal');
-  if(existing)existing.remove();
-  var modal=document.createElement('div');
-  modal.id='demo-gen-modal';
-  modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px';
-  modal.innerHTML='<div style="background:#0c0c16;border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center">'
-    +'<div style="width:56px;height:56px;border:2px solid rgba(124,58,237,.3);border-top-color:#9d5fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px"></div>'
-    +'<div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px">Generando web demo</div>'
-    +'<div style="font-size:.78rem;color:#9090b0;margin-bottom:20px" id="demo-gen-status">Analizando datos de <b style="color:#e0e0f4">'+biz+'</b>...</div>'
-    +'<div style="display:flex;flex-direction:column;gap:7px" id="demo-gen-steps">'
-    +'<div id="dgs-1" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Preparando estructura y contenido</div>'
-    +'<div id="dgs-2" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Generando diseño con IA</div>'
-    +'<div id="dgs-3" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Integrando chatbot y datos reales</div>'
-    +'<div id="dgs-4" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:\'Space Mono\',monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Optimizando para móvil</div>'
-    +'</div>'
-    +'<button onclick="document.getElementById(\'demo-gen-modal\').remove()" style="margin-top:20px;background:transparent;border:1px solid rgba(124,58,237,.3);color:#9090b0;border-radius:8px;padding:7px 16px;font-size:.72rem;cursor:pointer;font-family:\'Sora\',sans-serif">Cancelar</button>'
-    +'</div>';
-  document.body.appendChild(modal);
-  return modal;
+  return '<!DOCTYPE html>\n'
++'<html lang="es">\n'
++'<head>\n'
++'<meta charset="UTF-8">\n'
++'<meta name="viewport" content="width=device-width,initial-scale=1">\n'
++'<title>{BIZ_NAME} · {BIZ_SECTOR}</title>\n'
++'<meta name="description" content="{BIZ_DESC}">\n'
++'<!-- WhiteMoon Demo · whitemoon.es -->\n'
++'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
++'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
++'<link href="'+fontHref+'" rel="stylesheet">\n'
++'<style>\n'
++':root{--primary:'+p.primary+';--primary-dark:'+p.primaryDark+';--accent:'+p.accent+';--bg:'+p.bg+';--dark:'+p.dark+';--text:#1a1a2e;--muted:#6b7280;--border:#e5e7eb}\n'
++'*{box-sizing:border-box;margin:0;padding:0}\n'
++'html{scroll-behavior:smooth}\n'
++'body{font-family:"'+p.font+'",sans-serif;color:var(--text);line-height:1.6;background:#fff;-webkit-font-smoothing:antialiased}\n'
++'img{max-width:100%;display:block}\n'
++'a{color:inherit}\n'
++'.container{max-width:1200px;margin:0 auto;padding:0 24px}\n'
++'.btn{display:inline-block;padding:14px 30px;border-radius:10px;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-size:.95rem;transition:transform .2s,box-shadow .2s,background .2s;font-family:inherit}\n'
++'.btn-primary{background:var(--primary);color:#fff}\n'
++'.btn-primary:hover{background:var(--primary-dark);transform:translateY(-2px);box-shadow:0 12px 24px rgba(0,0,0,.18)}\n'
++'.btn-outline{background:transparent;color:var(--primary);border:2px solid var(--primary)}\n'
++'.btn-outline:hover{background:var(--primary);color:#fff}\n'
++'nav{position:fixed;top:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);z-index:100;border-bottom:1px solid var(--border)}\n'
++'.nav-inner{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;max-width:1200px;margin:0 auto}\n'
++'.logo{font-weight:800;font-size:1.35rem;color:var(--primary);text-decoration:none;letter-spacing:-.02em}\n'
++'.nav-links{display:flex;gap:32px;align-items:center}\n'
++'.nav-links a{color:var(--text);text-decoration:none;font-weight:500;font-size:.92rem;transition:color .2s}\n'
++'.nav-links a:hover{color:var(--primary)}\n'
++'.nav-cta{background:var(--primary);color:#fff !important;padding:9px 20px;border-radius:8px;font-weight:600 !important;font-size:.86rem !important}\n'
++'.nav-cta:hover{background:var(--primary-dark);color:#fff !important}\n'
++'.hero{padding:140px 0 96px;background:linear-gradient(135deg,var(--bg) 0%,#fff 80%);position:relative;overflow:hidden}\n'
++'.hero-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:64px;align-items:center}\n'
++'.hero-tag{display:inline-block;background:#fff;border:1px solid var(--border);padding:6px 14px;border-radius:20px;font-size:.78rem;font-weight:600;color:var(--primary);margin-bottom:20px}\n'
++'.hero h1{font-size:3.4rem;font-weight:800;line-height:1.08;letter-spacing:-.02em;margin-bottom:22px;color:var(--dark)}\n'
++'.hero h1 span{color:var(--primary)}\n'
++'.hero-sub{font-size:1.18rem;color:var(--muted);margin-bottom:36px;max-width:560px}\n'
++'.hero-cta{display:flex;gap:14px;margin-bottom:52px;flex-wrap:wrap}\n'
++'.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:520px;padding-top:24px;border-top:1px solid var(--border)}\n'
++'.stat-num{font-size:2.4rem;font-weight:800;color:var(--primary);line-height:1;letter-spacing:-.02em}\n'
++'.stat-label{font-size:.8rem;color:var(--muted);font-weight:500;margin-top:6px;line-height:1.3}\n'
++'.hero-img{border-radius:20px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.18);aspect-ratio:4/5;position:relative}\n'
++'.hero-img img{width:100%;height:100%;object-fit:cover}\n'
++'.section{padding:96px 0}\n'
++'.section-head{text-align:center;margin-bottom:64px;max-width:720px;margin-left:auto;margin-right:auto}\n'
++'.section-tag{display:inline-block;font-size:.74rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--primary);margin-bottom:14px}\n'
++'.section-head h2{font-size:2.5rem;font-weight:800;letter-spacing:-.02em;color:var(--dark);margin-bottom:14px;line-height:1.15}\n'
++'.section-head p{font-size:1.08rem;color:var(--muted)}\n'
++'.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}\n'
++'.service-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:32px;transition:all .25s}\n'
++'.service-card:hover{border-color:var(--primary);transform:translateY(-6px);box-shadow:0 24px 48px rgba(0,0,0,.08)}\n'
++'.service-icon{width:60px;height:60px;border-radius:14px;background:var(--bg);display:flex;align-items:center;justify-content:center;margin-bottom:22px;font-size:1.7rem}\n'
++'.service-card h3{font-size:1.18rem;font-weight:700;margin-bottom:10px;color:var(--dark)}\n'
++'.service-card p{color:var(--muted);font-size:.94rem;line-height:1.6}\n'
++'.about{background:var(--bg);padding:96px 0}\n'
++'.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}\n'
++'.about-img{border-radius:20px;overflow:hidden;aspect-ratio:5/4;box-shadow:0 20px 40px rgba(0,0,0,.1)}\n'
++'.about-img img{width:100%;height:100%;object-fit:cover}\n'
++'.about-content h2{font-size:2.4rem;font-weight:800;letter-spacing:-.02em;margin-bottom:20px;color:var(--dark)}\n'
++'.about-content > p{color:var(--muted);font-size:1.05rem;margin-bottom:14px}\n'
++'.features{background:#fff;padding:96px 0}\n'
++'.features-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}\n'
++'.feature-card{padding:28px 22px;border-radius:14px;background:var(--bg);text-align:center;border:1px solid transparent;transition:all .25s}\n'
++'.feature-card:hover{border-color:var(--primary);background:#fff;transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,0,0,.08)}\n'
++'.feature-num{display:inline-block;font-size:.78rem;font-weight:700;color:var(--primary);background:#fff;padding:5px 12px;border-radius:14px;margin-bottom:14px;letter-spacing:.05em;border:1px solid var(--primary)}\n'
++'.feature-card h4{font-weight:700;font-size:1.05rem;margin-bottom:8px;color:var(--dark)}\n'
++'.feature-card p{font-size:.88rem;color:var(--muted);line-height:1.55}\n'
++'.testimonials{background:linear-gradient(135deg,var(--bg) 0%,#fff 100%);padding:96px 0}\n'
++'.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}\n'
++'.testimonial-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:30px;position:relative;transition:transform .25s}\n'
++'.testimonial-card:hover{transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,0,0,.08)}\n'
++'.testimonial-stars{color:#fbbf24;font-size:1rem;margin-bottom:14px;letter-spacing:2px}\n'
++'.testimonial-text{font-size:.95rem;color:var(--text);margin-bottom:20px;line-height:1.65;font-style:italic}\n'
++'.testimonial-author{display:flex;align-items:center;gap:12px;padding-top:16px;border-top:1px solid var(--border)}\n'
++'.testimonial-avatar{width:44px;height:44px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem}\n'
++'.testimonial-author strong{font-size:.92rem;font-weight:700;color:var(--dark);display:block}\n'
++'.testimonial-author span{font-size:.78rem;color:var(--muted)}\n'
++'.faq{padding:96px 0;background:#fff}\n'
++'.faq-list{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}\n'
++'.faq-item{background:var(--bg);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:border-color .2s}\n'
++'.faq-item.open{border-color:var(--primary)}\n'
++'.faq-q{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;font-weight:600;color:var(--dark);font-size:1rem;transition:color .2s}\n'
++'.faq-q:hover{color:var(--primary)}\n'
++'.faq-toggle{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:700;transition:transform .25s;font-size:1.1rem;line-height:1}\n'
++'.faq-item.open .faq-toggle{transform:rotate(45deg)}\n'
++'.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 24px;color:var(--muted);font-size:.94rem;line-height:1.65}\n'
++'.faq-item.open .faq-a{max-height:300px;padding:0 24px 22px}\n'
++'.cta-banner{padding:80px 0;background:linear-gradient(135deg,var(--primary) 0%,var(--primary-dark) 100%);color:#fff;text-align:center;position:relative;overflow:hidden}\n'
++'.cta-banner::before{content:"";position:absolute;top:-50%;right:-10%;width:400px;height:400px;background:rgba(255,255,255,.05);border-radius:50%}\n'
++'.cta-banner::after{content:"";position:absolute;bottom:-50%;left:-10%;width:400px;height:400px;background:rgba(255,255,255,.05);border-radius:50%}\n'
++'.cta-inner{position:relative;z-index:1;max-width:720px;margin:0 auto;padding:0 24px}\n'
++'.cta-banner h2{font-size:2.4rem;font-weight:800;margin-bottom:16px;letter-spacing:-.02em;line-height:1.15}\n'
++'.cta-banner p{font-size:1.1rem;opacity:.92;margin-bottom:32px;max-width:560px;margin-left:auto;margin-right:auto}\n'
++'.cta-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}\n'
++'.cta-actions .btn{font-size:1rem;padding:16px 36px}\n'
++'.cta-actions .btn-white{background:#fff;color:var(--primary)}\n'
++'.cta-actions .btn-white:hover{background:var(--bg);transform:translateY(-2px);box-shadow:0 12px 28px rgba(0,0,0,.2)}\n'
++'.cta-actions .btn-ghost-w{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.5)}\n'
++'.cta-actions .btn-ghost-w:hover{background:#fff;color:var(--primary);border-color:#fff}\n'
++'.values{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:48px}\n'
++'.value-card{text-align:center}\n'
++'.value-icon{width:64px;height:64px;border-radius:50%;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.7rem;box-shadow:0 8px 20px rgba(0,0,0,.08)}\n'
++'.value-card h4{font-weight:700;font-size:1.05rem;margin-bottom:8px;color:var(--dark)}\n'
++'.value-card p{font-size:.88rem;color:var(--muted)}\n'
++'.team{padding:96px 0;background:#fff}\n'
++'.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1000px;margin:0 auto}\n'
++'.team-card{text-align:center}\n'
++'.team-avatar{width:170px;height:170px;border-radius:50%;margin:0 auto 18px;overflow:hidden;border:5px solid var(--bg);box-shadow:0 12px 28px rgba(0,0,0,.1)}\n'
++'.team-avatar img{width:100%;height:100%;object-fit:cover}\n'
++'.team-card h4{font-size:1.15rem;font-weight:700;margin-bottom:4px;color:var(--dark)}\n'
++'.team-card .role{font-size:.86rem;color:var(--primary);font-weight:600;margin-bottom:10px}\n'
++'.team-card .bio{font-size:.88rem;color:var(--muted);max-width:260px;margin:0 auto;line-height:1.55}\n'
++'.contact{background:var(--dark);color:#fff;padding:96px 0}\n'
++'.contact .section-head h2{color:#fff}\n'
++'.contact .section-head p{color:rgba(255,255,255,.75)}\n'
++'.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:980px;margin:0 auto;align-items:stretch}\n'
++'.contact-info{display:flex;flex-direction:column;gap:22px;justify-content:center}\n'
++'.info-row{display:flex;gap:16px;align-items:flex-start}\n'
++'.info-icon{width:46px;height:46px;border-radius:12px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.2rem}\n'
++'.info-row strong{display:block;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:4px;font-weight:600}\n'
++'.info-row span{font-size:1rem;font-weight:500;line-height:1.5}\n'
++'.info-row a{color:#fff;text-decoration:none}\n'
++'.info-row a:hover{color:var(--accent)}\n'
++'.wa-cta{background:#25D366;color:#fff;padding:40px 36px;border-radius:20px;text-align:center;display:flex;flex-direction:column;justify-content:center}\n'
++'.wa-cta h3{font-size:1.4rem;font-weight:800;margin-bottom:10px}\n'
++'.wa-cta p{margin-bottom:22px;opacity:.95;font-size:.95rem}\n'
++'.wa-btn{background:#fff;color:#25D366 !important;padding:14px 28px;border-radius:10px;font-weight:700;text-decoration:none;display:inline-block;font-size:1rem;transition:transform .2s,box-shadow .2s}\n'
++'.wa-btn:hover{transform:translateY(-2px);box-shadow:0 14px 28px rgba(0,0,0,.2)}\n'
++'footer{background:#0a0a14;color:rgba(255,255,255,.7);padding:56px 0 24px;font-size:.88rem}\n'
++'.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:48px;margin-bottom:32px}\n'
++'.footer-grid h5{color:#fff;font-size:.82rem;font-weight:700;margin-bottom:16px;text-transform:uppercase;letter-spacing:.12em}\n'
++'.footer-grid p,.footer-grid a{color:rgba(255,255,255,.6);font-size:.9rem;text-decoration:none;display:block;margin-bottom:8px;line-height:1.7}\n'
++'.footer-grid a:hover{color:#fff}\n'
++'.footer-logo{color:var(--primary);font-weight:800;font-size:1.3rem;margin-bottom:14px;display:block}\n'
++'.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;text-align:center;font-size:.78rem;color:rgba(255,255,255,.4)}\n'
++'.footer-bottom a{color:var(--primary);text-decoration:none}\n'
++'@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,0,0,.25)}50%{box-shadow:0 0 0 16px rgba(0,0,0,0)}}\n'
++'@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}\n'
++'@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-6px);opacity:1}}\n'
++'.cb-toggle{position:fixed;bottom:24px;right:24px;width:62px;height:62px;border-radius:50%;background:var(--primary);color:#fff;border:none;cursor:pointer;box-shadow:0 10px 28px rgba(0,0,0,.28);z-index:9999;display:flex;align-items:center;justify-content:center;animation:pulse 2.4s infinite;font-size:1.6rem;transition:transform .2s}\n'
++'.cb-toggle:hover{transform:scale(1.07)}\n'
++'.cb-window{position:fixed;bottom:100px;right:24px;width:360px;max-height:580px;background:#fff;border-radius:20px;box-shadow:0 24px 60px rgba(0,0,0,.22);z-index:9998;display:none;flex-direction:column;overflow:hidden;animation:fadeIn .25s ease}\n'
++'.cb-window.open{display:flex}\n'
++'.cb-header{background:var(--primary);color:#fff;padding:16px 20px;display:flex;align-items:center;gap:12px}\n'
++'.cb-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;flex-shrink:0}\n'
++'.cb-title{font-weight:700;font-size:.95rem;line-height:1.2}\n'
++'.cb-status{font-size:.74rem;opacity:.9;display:flex;align-items:center;gap:6px;margin-top:2px}\n'
++'.cb-status::before{content:"";width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block}\n'
++'.cb-close{margin-left:auto;background:transparent;color:#fff;border:none;cursor:pointer;font-size:1.5rem;opacity:.85;line-height:1}\n'
++'.cb-close:hover{opacity:1}\n'
++'.cb-body{flex:1;padding:18px;overflow-y:auto;background:#f8f9fb;display:flex;flex-direction:column;gap:10px;min-height:280px;max-height:380px}\n'
++'.msg{max-width:85%;padding:10px 14px;border-radius:14px;font-size:.88rem;line-height:1.45;animation:fadeIn .25s ease;word-wrap:break-word}\n'
++'.msg.bot{background:#fff;border:1px solid var(--border);border-bottom-left-radius:4px;align-self:flex-start;color:#333}\n'
++'.msg.user{background:var(--primary);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}\n'
++'.cb-quick{display:flex;flex-wrap:wrap;gap:6px;padding:12px;border-top:1px solid var(--border);background:#fff}\n'
++'.cb-quick button{background:var(--bg);border:1px solid var(--primary);color:var(--primary);padding:7px 12px;border-radius:18px;font-size:.78rem;cursor:pointer;font-family:inherit;font-weight:500;transition:background .2s,color .2s}\n'
++'.cb-quick button:hover{background:var(--primary);color:#fff}\n'
++'.cb-input{display:flex;border-top:1px solid var(--border);background:#fff}\n'
++'.cb-input input{flex:1;border:none;padding:14px 16px;font-size:.92rem;outline:none;font-family:inherit;color:var(--text)}\n'
++'.cb-input button{background:var(--primary);color:#fff;border:none;padding:0 22px;cursor:pointer;font-weight:700;font-family:inherit}\n'
++'.cb-input button:hover{background:var(--primary-dark)}\n'
++'.typing{display:inline-flex;gap:4px;padding:12px 14px;background:#fff;border:1px solid var(--border);border-radius:14px;align-self:flex-start;border-bottom-left-radius:4px}\n'
++'.typing span{width:6px;height:6px;border-radius:50%;background:#999;animation:bounce 1s infinite ease-in-out}\n'
++'.typing span:nth-child(2){animation-delay:.15s}\n'
++'.typing span:nth-child(3){animation-delay:.3s}\n'
++'.cb-wa-final{padding:14px;background:#fff;border-top:1px solid var(--border);display:none}\n'
++'.cb-wa-final.show{display:block}\n'
++'.cb-wa-final a{display:block;text-align:center;background:#25D366;color:#fff;padding:12px;border-radius:10px;font-weight:700;text-decoration:none;font-size:.9rem;transition:background .2s}\n'
++'.cb-wa-final a:hover{background:#1ea952}\n'
++'@media(max-width:900px){\n'
++'.hero-grid,.about-grid,.contact-grid,.footer-grid{grid-template-columns:1fr;gap:40px}\n'
++'.services-grid,.team-grid,.values,.features-grid,.testimonials-grid{grid-template-columns:1fr 1fr}\n'
++'.hero h1{font-size:2.4rem}\n'
++'.section-head h2,.about-content h2{font-size:1.9rem}\n'
++'.section,.about,.team,.contact{padding:64px 0}\n'
++'.nav-links a:not(.nav-cta){display:none}\n'
++'.hero-img{aspect-ratio:16/10}\n'
++'}\n'
++'@media(max-width:600px){\n'
++'.services-grid,.team-grid,.values,.features-grid,.testimonials-grid{grid-template-columns:1fr}\n'
++'.cb-window{bottom:0;right:0;left:0;width:100vw;max-height:90vh;border-radius:18px 18px 0 0}\n'
++'.cb-toggle{bottom:18px;right:18px}\n'
++'.hero{padding:104px 0 56px}\n'
++'.hero h1{font-size:2rem}\n'
++'.hero-sub{font-size:1rem}\n'
++'.stats{grid-template-columns:repeat(3,1fr);gap:14px}\n'
++'.stat-num{font-size:1.6rem}\n'
++'}\n'
++'</style>\n'
++'</head>\n'
++'<body>\n'
++'<nav>\n'
++'<div class="nav-inner">\n'
++'<a href="#" class="logo">{BIZ_NAME}</a>\n'
++'<div class="nav-links">\n'
++'<a href="#servicios">Servicios</a>\n'
++'<a href="#quienes">Quiénes somos</a>\n'
++'<a href="#equipo">Equipo</a>\n'
++'<a href="#contacto">Contacto</a>\n'
++'<a href="#contacto" class="nav-cta">Pedir cita</a>\n'
++'</div>\n'
++'</div>\n'
++'</nav>\n'
++'<section class="hero">\n'
++'<div class="container">\n'
++'<div class="hero-grid">\n'
++'<div>\n'
++'<span class="hero-tag">{BIZ_SECTOR}</span>\n'
++'<h1>'+p.hero.replace(/(\w+)$/,'<span>$1</span>')+'</h1>\n'
++'<p class="hero-sub">{BIZ_DESC}</p>\n'
++'<div class="hero-cta">\n'
++'<a href="#contacto" class="btn btn-primary">Pedir cita ahora</a>\n'
++'<a href="#servicios" class="btn btn-outline">Ver servicios</a>\n'
++'</div>\n'
++'<div class="stats">\n'
++'<div><div class="stat-num">+15</div><div class="stat-label">Años de experiencia</div></div>\n'
++'<div><div class="stat-num">+2K</div><div class="stat-label">Clientes satisfechos</div></div>\n'
++'<div><div class="stat-num">98%</div><div class="stat-label">Recomendación</div></div>\n'
++'</div>\n'
++'</div>\n'
++'<div class="hero-img"><img src="'+p.heroImg+'" alt="{BIZ_NAME}" loading="lazy"></div>\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="section" id="servicios">\n'
++'<div class="container">\n'
++'<div class="section-head">\n'
++'<span class="section-tag">Servicios</span>\n'
++'<h2>Lo que podemos hacer por ti</h2>\n'
++'<p>'+p.heroSub+'</p>\n'
++'</div>\n'
++'<div class="services-grid">\n'
++svcsCards+'\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="features">\n'
++'<div class="container">\n'
++'<div class="section-head">\n'
++'<span class="section-tag">Por qué elegirnos</span>\n'
++'<h2>Lo que nos hace diferentes</h2>\n'
++'<p>Cuatro razones por las que cientos de clientes confían en nosotros cada año.</p>\n'
++'</div>\n'
++'<div class="features-grid">\n'
++'<div class="feature-card"><div class="feature-num">01</div><h4>Atención cercana</h4><p>Te escuchamos antes de actuar. Cada cliente recibe un trato personalizado y honesto.</p></div>\n'
++'<div class="feature-card"><div class="feature-num">02</div><h4>Calidad garantizada</h4><p>Materiales, técnicas y procesos de primer nivel. Tu satisfacción es nuestra prioridad.</p></div>\n'
++'<div class="feature-card"><div class="feature-num">03</div><h4>Transparencia total</h4><p>Sin letra pequeña ni sorpresas. Te explicamos todo antes de empezar y respetamos lo acordado.</p></div>\n'
++'<div class="feature-card"><div class="feature-num">04</div><h4>Resultados</h4><p>Lo que importa es que salgas satisfecho/a. Trabajamos para que vuelvas y nos recomiendes.</p></div>\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="about" id="quienes">\n'
++'<div class="container">\n'
++'<div class="about-grid">\n'
++'<div class="about-img"><img src="'+p.aboutImg+'" alt="Sobre {BIZ_NAME}" loading="lazy"></div>\n'
++'<div class="about-content">\n'
++'<span class="section-tag">Quiénes somos</span>\n'
++'<h2>{BIZ_NAME}, comprometidos contigo</h2>\n'
++'<p>{BIZ_DESC}</p>\n'
++'<p>Llevamos años trabajando con un único objetivo: que cuando salgas de aquí lo recomiendes. Cada cliente recibe la atención que merece, sin atajos.</p>\n'
++'</div>\n'
++'</div>\n'
++'<div class="values">\n'
++valuesHTML+'\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="team" id="equipo">\n'
++'<div class="container">\n'
++'<div class="section-head">\n'
++'<span class="section-tag">Equipo</span>\n'
++'<h2>Las personas detrás del proyecto</h2>\n'
++'<p>Profesionales formados, comprometidos y siempre cercanos.</p>\n'
++'</div>\n'
++'<div class="team-grid">\n'
++teamHTML+'\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="testimonials">\n'
++'<div class="container">\n'
++'<div class="section-head">\n'
++'<span class="section-tag">Testimonios</span>\n'
++'<h2>Lo que dicen de nosotros</h2>\n'
++'<p>Opiniones reales de personas que ya han confiado en {BIZ_NAME}.</p>\n'
++'</div>\n'
++'<div class="testimonials-grid">\n'
++'<div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"Profesionales de verdad. Me sentí escuchada desde el primer momento y el resultado superó mis expectativas. 100% recomendable."</p><div class="testimonial-author"><div class="testimonial-avatar">M</div><div><strong>María G.</strong><span>Cliente desde 2022</span></div></div></div>\n'
++'<div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"Llevo años yendo a {BIZ_NAME} y siempre salgo contento. Cumplen plazos, son honestos y el trato es inmejorable. Una garantía."</p><div class="testimonial-author"><div class="testimonial-avatar">C</div><div><strong>Carlos R.</strong><span>Cliente recurrente</span></div></div></div>\n'
++'<div class="testimonial-card"><div class="testimonial-stars">★★★★★</div><p class="testimonial-text">"Encontré {BIZ_NAME} por recomendación y no me arrepiento. Trato cercano, precio justo y trabajo bien hecho. Vuelvo seguro."</p><div class="testimonial-author"><div class="testimonial-avatar">L</div><div><strong>Laura M.</strong><span>Nuevo cliente</span></div></div></div>\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="faq">\n'
++'<div class="container">\n'
++'<div class="section-head">\n'
++'<span class="section-tag">Preguntas frecuentes</span>\n'
++'<h2>Resolvemos tus dudas</h2>\n'
++'<p>Las preguntas que más nos hacen. Si tienes otra, escríbenos.</p>\n'
++'</div>\n'
++'<div class="faq-list">\n'
++'<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>¿Cómo puedo pedir cita?</span><span class="faq-toggle">+</span></div><div class="faq-a">Puedes llamarnos al teléfono, escribirnos por WhatsApp o usar el chat de la web. Te respondemos en pocos minutos durante nuestro horario de atención.</div></div>\n'
++'<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>¿Cuánto cuesta una primera consulta?</span><span class="faq-toggle">+</span></div><div class="faq-a">Cada caso es diferente. Lo mejor es que pidas cita y te demos un presupuesto personalizado y sin compromiso adaptado a lo que necesitas.</div></div>\n'
++'<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>¿Qué horario tenéis?</span><span class="faq-toggle">+</span></div><div class="faq-a">Nuestro horario de atención es {BIZ_HOURS}. Fuera de este horario puedes dejarnos un mensaje y te atenderemos a primera hora del día siguiente.</div></div>\n'
++'<div class="faq-item" onclick="this.classList.toggle(\'open\')"><div class="faq-q"><span>¿Atendéis urgencias o casos rápidos?</span><span class="faq-toggle">+</span></div><div class="faq-a">Hacemos todo lo posible por encajar las urgencias en nuestra agenda. Llámanos directamente y te buscamos hueco lo antes posible.</div></div>\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="cta-banner">\n'
++'<div class="cta-inner">\n'
++'<h2>¿Listo/a para empezar con {BIZ_NAME}?</h2>\n'
++'<p>Pide tu primera cita o consulta sin compromiso. Te atendemos en menos de 24 horas.</p>\n'
++'<div class="cta-actions">\n'
++'<a href="#contacto" class="btn btn-white">📅 Pedir cita ahora</a>\n'
++'<a href="https://wa.me/{BIZ_WA}?text=Hola%2C%20vengo%20de%20la%20web" target="_blank" rel="noopener" class="btn btn-ghost-w">💬 Escribir por WhatsApp</a>\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<section class="contact" id="contacto">\n'
++'<div class="container">\n'
++'<div class="section-head">\n'
++'<span class="section-tag" style="color:var(--accent)">Contacto</span>\n'
++'<h2>Hablemos</h2>\n'
++'<p>Estamos aquí para resolver tus dudas y atenderte en lo que necesites.</p>\n'
++'</div>\n'
++'<div class="contact-grid">\n'
++'<div class="contact-info">\n'
++'<div class="info-row"><div class="info-icon">📞</div><div><strong>Teléfono</strong><span><a href="tel:{BIZ_PHONE}">{BIZ_PHONE}</a></span></div></div>\n'
++'<div class="info-row"><div class="info-icon">📧</div><div><strong>Email</strong><span><a href="mailto:{BIZ_EMAIL}">{BIZ_EMAIL}</a></span></div></div>\n'
++'<div class="info-row"><div class="info-icon">📍</div><div><strong>Dirección</strong><span>{BIZ_ADDRESS}</span></div></div>\n'
++'<div class="info-row"><div class="info-icon">🕐</div><div><strong>Horario</strong><span>{BIZ_HOURS}</span></div></div>\n'
++'</div>\n'
++'<div class="wa-cta">\n'
++'<h3>¿Prefieres WhatsApp?</h3>\n'
++'<p>Escríbenos directamente y te respondemos enseguida.</p>\n'
++'<a class="wa-btn" href="https://wa.me/{BIZ_WA}?text=Hola%2C%20vengo%20de%20la%20web" target="_blank" rel="noopener">💬 Abrir WhatsApp</a>\n'
++'</div>\n'
++'</div>\n'
++'</div>\n'
++'</section>\n'
++'<footer>\n'
++'<div class="container">\n'
++'<div class="footer-grid">\n'
++'<div>\n'
++'<span class="footer-logo">{BIZ_NAME}</span>\n'
++'<p>{BIZ_DESC}</p>\n'
++'</div>\n'
++'<div>\n'
++'<h5>Servicios</h5>\n'
++p.services.slice(0,4).map(function(s){return'<a href="#servicios">'+s.name+'</a>'}).join('\n')+'\n'
++'</div>\n'
++'<div>\n'
++'<h5>Contacto</h5>\n'
++'<a href="tel:{BIZ_PHONE}">{BIZ_PHONE}</a>\n'
++'<a href="mailto:{BIZ_EMAIL}">{BIZ_EMAIL}</a>\n'
++'<p>{BIZ_ADDRESS}</p>\n'
++'</div>\n'
++'</div>\n'
++'<div class="footer-bottom">© {BIZ_NAME} · Todos los derechos reservados · Web creada por <a href="https://whitemoon.es" target="_blank" rel="noopener">WhiteMoon</a></div>\n'
++'</div>\n'
++'</footer>\n'
++'<button class="cb-toggle" onclick="cbToggle()" aria-label="Abrir chat">💬</button>\n'
++'<div class="cb-window" id="cb-window">\n'
++'<div class="cb-header">\n'
++'<div class="cb-avatar">{BIZ_NAME_INITIAL}</div>\n'
++'<div><div class="cb-title">{BIZ_NAME}</div><div class="cb-status">Online · responde en minutos</div></div>\n'
++'<button class="cb-close" onclick="cbToggle()" aria-label="Cerrar">×</button>\n'
++'</div>\n'
++'<div class="cb-body" id="cb-body"></div>\n'
++'<div class="cb-quick">'+quickHTML+'</div>\n'
++'<div class="cb-input"><input id="cb-input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off"><button onclick="cbSend()" aria-label="Enviar">➤</button></div>\n'
++'<div class="cb-wa-final" id="cb-wa-final"><a href="https://wa.me/{BIZ_WA}?text=Hola%2C%20vengo%20de%20la%20web" target="_blank" rel="noopener">💬 Continuar por WhatsApp</a></div>\n'
++'</div>\n'
++'<script>\n'
++'(function(){\n'
++'var cbState="idle",cbData={name:"",phone:"",service:""},started=false;\n'
++'var SERVICE_KEYS='+JSON.stringify(p.services.map(function(s){return s.name.toLowerCase()}))+';\n'
++'function normalize(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"")}\n'
++'function el(id){return document.getElementById(id)}\n'
++'window.cbToggle=function(){var w=el("cb-window");w.classList.toggle("open");if(w.classList.contains("open")&&!started){started=true;cbStart()}}\n'
++'function addMsg(t,who){var b=el("cb-body");var d=document.createElement("div");d.className="msg "+who;d.textContent=t;b.appendChild(d);b.scrollTop=b.scrollHeight}\n'
++'function typing(on){var b=el("cb-body");var ex=el("typing-i");if(ex)ex.remove();if(on){var d=document.createElement("div");d.className="typing";d.id="typing-i";d.innerHTML="<span></span><span></span><span></span>";b.appendChild(d);b.scrollTop=b.scrollHeight}}\n'
++'function botMsg(t,delay){delay=delay||900;typing(true);setTimeout(function(){typing(false);addMsg(t,"bot")},delay)}\n'
++'function cbStart(){setTimeout(function(){botMsg("¡Hola! 👋 Soy el asistente virtual de {BIZ_NAME}. ¿En qué puedo ayudarte hoy?")},700)}\n'
++'function showWA(){el("cb-wa-final").classList.add("show")}\n'
++'function handle(t){\n'
++'addMsg(t,"user");\n'
++'var n=normalize(t);\n'
++'if(cbState==="await_name"){cbData.name=t;cbState="await_phone";botMsg("Encantado, "+t+". ¿Me dices un teléfono para que te llamemos?");return}\n'
++'if(cbState==="await_phone"){cbData.phone=t;cbState="done";botMsg("Anotado, "+cbData.name+". Nuestro equipo te llamará al "+t+". Si lo prefieres, escríbenos directo por WhatsApp 👇");setTimeout(showWA,1100);return}\n'
++'if(n.match(/cita|reserv|contacto|atencion|llama|telefono|presupuesto|consult|hablar/)){cbState="await_name";botMsg("Genial. ¿Me dices tu nombre?");return}\n'
++'var matched=null;for(var i=0;i<SERVICE_KEYS.length;i++){var k=normalize(SERVICE_KEYS[i]);if(n.indexOf(k.split(" ")[0])>-1){matched=SERVICE_KEYS[i];break}}\n'
++'if(matched){botMsg("Te interesa "+matched+", perfecto. ¿Quieres pedir cita o tienes alguna pregunta concreta?");return}\n'
++'if(n.match(/precio|cuanto|cuesta|tarif/)){botMsg("Cada caso es distinto. Lo mejor es que pidamos cita para darte presupuesto sin compromiso. ¿Te parece bien?");return}\n'
++'if(n.match(/horario|abierto|abren|abre/)){botMsg("Nuestro horario es: {BIZ_HOURS}. ¿Quieres que te apunte una cita?");return}\n'
++'if(n.match(/donde|direccion|llegar|ubicacion/)){botMsg("Estamos en {BIZ_ADDRESS}. ¿Te ayudo con algo más?");return}\n'
++'if(n.match(/hola|buenas|buenos|saludos/)){botMsg("¡Hola! Cuéntame, ¿qué necesitas?");return}\n'
++'botMsg("Te ayudo con eso. ¿Quieres pedir cita o que te llamemos?");\n'
++'}\n'
++'window.cbQuick=function(t){var i=el("cb-input");i.value=t;cbSend()}\n'
++'window.cbSend=function(){var i=el("cb-input");var v=i.value.trim();if(!v)return;i.value="";handle(v)}\n'
++'document.addEventListener("DOMContentLoaded",function(){var i=el("cb-input");if(i)i.addEventListener("keypress",function(e){if(e.key==="Enter")cbSend()})});\n'
++'})();\n'
++'</'+'script>\n'
++'</body>\n'
++'</html>';
 }
 
-function stepDone(n){
-  var el=document.getElementById('dgs-'+n);
-  if(!el)return;
-  el.style.color='#22c55e';
-  el.querySelector('span').style.cssText='width:14px;height:14px;border-radius:50%;background:#22c55e;border:1px solid #22c55e;flex-shrink:0;display:flex;align-items:center;justify-content:center';
-  el.querySelector('span').innerHTML='<svg viewBox="0 0 24 24" style="width:8px;height:8px;stroke:#000;fill:none;stroke-width:3"><polyline points="20 6 9 17 4 12"/></svg>';
+function getTemplate(nicho){
+  switch(nicho){
+    case 'dental': return _buildHTML(SECTOR_PROFILES.dental);
+    case 'restaurante': return _buildHTML(SECTOR_PROFILES.restaurante);
+    case 'abogado': return _buildHTML(SECTOR_PROFILES.abogado);
+    case 'peluqueria': return _buildHTML(SECTOR_PROFILES.peluqueria);
+    case 'gestoria': return _buildHTML(SECTOR_PROFILES.gestoria);
+    case 'veterinaria': return _buildHTML(SECTOR_PROFILES.veterinaria);
+    case 'taller': return _buildHTML(SECTOR_PROFILES.taller);
+    case 'fisioterapia': return _buildHTML(SECTOR_PROFILES.fisioterapia);
+    default: return _buildHTML(SECTOR_PROFILES.generic);
+  }
 }
 
-function stepActive(n,txt){
-  var el=document.getElementById('dgs-'+n);
-  if(!el)return;
-  el.style.color='#9d5fff';
-  el.querySelector('span').style.cssText='width:14px;height:14px;border-radius:50%;border:2px solid #9d5fff;border-top-color:transparent;animation:spin .7s linear infinite;flex-shrink:0';
-  var s=document.getElementById('demo-gen-status');if(s&&txt)s.textContent=txt;
+function injectData(html,d){
+  var biz=d.bizName||d.domain;
+  var wa=d.waNumber||(d.phones&&d.phones.length?d.phones[0].replace(/\D/g,''):'34600000000');
+  var svcsStr=d.services&&d.services.length?d.services.slice(0,8).join(', '):'';
+  var initial=(biz||'W').trim().charAt(0).toUpperCase();
+  return html
+    .replace(/\{BIZ_NAME_INITIAL\}/g,initial)
+    .replace(/\{BIZ_NAME\}/g,biz)
+    .replace(/\{BIZ_SECTOR\}/g,d.sector||'')
+    .replace(/\{BIZ_PHONE\}/g,d.phones&&d.phones.length?d.phones[0]:'')
+    .replace(/\{BIZ_EMAIL\}/g,d.emails&&d.emails.length?d.emails[0]:'')
+    .replace(/\{BIZ_ADDRESS\}/g,d.address||'')
+    .replace(/\{BIZ_HOURS\}/g,d.hours||'Lun-Vie 9:00-20:00, Sáb 9:00-14:00')
+    .replace(/\{BIZ_WA\}/g,wa)
+    .replace(/\{BIZ_DESC\}/g,d.description||'Especialistas en '+(d.sector||'nuestro sector').toLowerCase()+' con años de experiencia.')
+    .replace(/\{BIZ_SERVICES\}/g,svcsStr)
+    .replace(/\{BIZ_URL\}/g,d.url||'');
 }
 
-async function generateWebDemo(idx){
+function generateWebDemo(idx){
   var d=prosResults[idx];
   if(!d){showToast('Prospecto no encontrado');return}
-
-  var apiKey=localStorage.getItem('wm_api_key')||'';
-  if(!apiKey){
-    showToast('Introduce tu API key de Anthropic primero');
-    return;
-  }
-
+  var template=getTemplate(d.nicho);
+  var html=injectData(template,d);
   var biz=d.bizName||d.domain;
-  var theme=getSectorTheme(d.nicho);
-  var modal=showDemoModal(biz);
-
-  // Step 1
-  stepActive(1,'Preparando datos del negocio...');
-  await new Promise(function(r){setTimeout(r,600)});
-  stepDone(1);
-
-  // Build context for Claude
-  var ph=d.phones&&d.phones.length?d.phones[0]:'';
-  var em=d.emails&&d.emails.length?d.emails[0]:'';
-  var addr=d.address||'';
-  var waNum=d.waNumber||ph.replace(/\D/g,'')||'';
-  var svcs=d.services&&d.services.length?d.services.slice(0,10):['Consulta nuestros servicios'];
-  var hrs=d.hours||'Lun-Vie 9:00-20:00, Sáb 9:00-14:00';
-  var desc=d.description||'Especialistas en '+d.sector.toLowerCase()+' con años de experiencia.';
-
-  // Step 2
-  stepActive(2,'Generando diseño personalizado con IA...');
-
-  var prompt='Genera una página web HTML completa, moderna y profesional para el siguiente negocio. Devuelve SOLO el código HTML, sin explicaciones, sin markdown, sin bloques de código.\n\n'
-    +'NEGOCIO: '+biz+'\n'
-    +'SECTOR: '+d.sector+'\n'
-    +'DESCRIPCIÓN: '+desc+'\n'
-    +'SERVICIOS: '+svcs.join(', ')+'\n'
-    +(ph?'TELÉFONO: '+ph+'\n':'')
-    +(em?'EMAIL: '+em+'\n':'')
-    +(addr?'DIRECCIÓN: '+addr+'\n':'')
-    +(waNum?'WHATSAPP: '+waNum+'\n':'')
-    +'HORARIO: '+hrs+'\n'
-    +'URL ORIGINAL: '+d.url+'\n\n'
-    +'ESTILO VISUAL: '+theme.style+'\n'
-    +'COLOR PRIMARIO: '+theme.primary+'\n'
-    +'COLOR SECUNDARIO: '+theme.secondary+'\n'
-    +'COLOR ACENTO: '+theme.accent+'\n'
-    +'COLOR FONDO: '+theme.bg+'\n\n'
-    +'REQUISITOS OBLIGATORIOS:\n'
-    +'1. HTML autocontenido completo con CSS y JS embebidos\n'
-    +'2. Navbar fijo con logo (nombre del negocio) y links de navegación\n'
-    +'3. Hero section con título impactante, subtítulo, CTA "Pedir cita" y stats (años experiencia, clientes, satisfacción)\n'
-    +'4. Sección de servicios en grid (cards para cada servicio detectado)\n'
-    +'5. Sección "Quiénes somos" con valores y equipo (3 fichas ficticias creíbles)\n'
-    +'6. Footer con datos de contacto reales\n'
-    +'7. CHATBOT FLOTANTE: widget en esquina inferior derecha con:\n'
-    +'   - Botón circular con animación pulse\n'
-    +'   - Modal 360px con header del color primario\n'
-    +'   - Mensaje bienvenida con nombre del negocio\n'
-    +'   - Botones rápidos con los primeros 3-4 servicios + "Pedir cita"\n'
-    +'   - Flujo: pregunta servicio → pide nombre → pide teléfono → resumen → botón WhatsApp\n'
-    +'   - Botón WhatsApp final abre: https://wa.me/'+(waNum||'34600000000')+'?text=Hola%2C+vengo+de+la+web\n'
-    +'   - Typing animation (3 puntos)\n'
-    +'   - Normalize function para tildes en keywords\n'
-    +'8. Totalmente responsive (mobile first)\n'
-    +'9. Imágenes: usar únicamente URLs de Unsplash (https://images.unsplash.com/photo-XXXXX?w=800&q=80) relevantes para el sector\n'
-    +'10. Sin precios hardcoded en ningún sitio\n'
-    +'11. Diseño que muestre claramente el valor de una web profesional vs la web actual\n'
-    +'12. Añadir al final del head este comentario: <!-- WhiteMoon Demo · whitemoon.es -->\n\n'
-    +'IMPORTANTE: El código debe funcionar abriendo el HTML directamente en el navegador, sin dependencias externas salvo Google Fonts y Unsplash.';
-
-  try{
-    var response=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':apiKey,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:8000,
-        messages:[{role:'user',content:prompt}]
-      })
-    });
-
-    if(!response.ok){
-      var err=await response.json();
-      throw new Error(err.error&&err.error.message?err.error.message:'API error '+response.status);
-    }
-
-    var data=await response.json();
-    var htmlContent=data.content&&data.content[0]&&data.content[0].text?data.content[0].text:'';
-
-    // Clean: remove markdown code blocks if present
-    htmlContent=htmlContent.replace(/^```html\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
-
-    if(!htmlContent||htmlContent.length<500){throw new Error('Respuesta vacía o demasiado corta')}
-
-    stepDone(2);
-
-    // Step 3
-    stepActive(3,'Integrando datos reales...');
-    await new Promise(function(r){setTimeout(r,500)});
-    stepDone(3);
-
-    // Step 4
-    stepActive(4,'Optimizando para móvil...');
-    await new Promise(function(r){setTimeout(r,400)});
-    stepDone(4);
-
-    // Update modal to success
-    var modalInner=modal.querySelector('div');
-    if(modalInner){
-      modalInner.innerHTML='<div style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid #22c55e;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">'
-        +'<svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#22c55e;fill:none;stroke-width:2.5"><polyline points="20 6 9 17 4 12"/></svg></div>'
-        +'<div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px">¡Web demo lista!</div>'
-        +'<div style="font-size:.78rem;color:#9090b0;margin-bottom:20px">'+biz+' · '+d.sector+'</div>'
-        +'<div style="display:flex;flex-direction:column;gap:8px">'
-        +'<button onclick="downloadWebDemo()" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:\'Sora\',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar HTML</button>'
-        +'<button onclick="previewWebDemo()" style="background:transparent;border:1px solid rgba(124,58,237,.4);color:#c084fc;border-radius:9px;padding:10px 20px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:\'Sora\',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Vista previa</button>'
-        +'<button onclick="document.getElementById(\'demo-gen-modal\').remove()" style="background:transparent;border:1px solid rgba(255,255,255,.08);color:#505070;border-radius:9px;padding:8px 20px;font-size:.72rem;cursor:pointer;font-family:\'Sora\',sans-serif">Cerrar</button>'
-        +'</div>';
-    }
-
-    // Store generated HTML
-    window._lastGeneratedDemo={html:htmlContent,biz:biz,domain:d.domain,sector:d.sector};
-    showToast('✓ Web demo generada para '+biz);
-
-  }catch(err){
-    console.error('Demo gen error:',err);
-    var modalInner2=modal.querySelector('div');
-    if(modalInner2){
-      modalInner2.innerHTML='<div style="width:56px;height:56px;border-radius:50%;background:rgba(255,77,106,.1);border:2px solid #ff4d6a;display:flex;align-items:center;justify-content:center;margin:0 auto 20px">'
-        +'<svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#ff4d6a;fill:none;stroke-width:2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>'
-        +'<div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:6px">Error al generar</div>'
-        +'<div style="font-size:.74rem;color:#ff8da0;margin-bottom:16px;font-family:\'Space Mono\',monospace">'+err.message+'</div>'
-        +'<button onclick="document.getElementById(\'demo-gen-modal\').remove()" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:9px;padding:10px 20px;font-size:.78rem;font-weight:600;cursor:pointer;font-family:\'Sora\',sans-serif">Cerrar</button>';
-    }
-  }
-}
-
-function downloadWebDemo(){
-  var d=window._lastGeneratedDemo;
-  if(!d){showToast('No hay demo generada');return}
-  var blob=new Blob([d.html],{type:'text/html;charset=utf-8'});
+  var blob=new Blob([html],{type:'text/html;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
   a.href=url;
   a.download='demo-'+d.domain.replace(/[^a-z0-9]/gi,'-')+'.html';
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('✓ Descargando '+a.download);
-}
-
-function previewWebDemo(){
-  var d=window._lastGeneratedDemo;
-  if(!d){showToast('No hay demo generada');return}
-  var blob=new Blob([d.html],{type:'text/html'});
-  var url=URL.createObjectURL(blob);
-  window.open(url,'_blank');
+  showToast('✓ Web demo descargada para '+biz);
 }
 </script>
 </body>
