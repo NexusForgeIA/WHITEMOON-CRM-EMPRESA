@@ -295,6 +295,65 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 @media(max-width:700px){.mrr-chart{height:140px;gap:5px;padding:8px}.mrr-bar-val{font-size:.58rem}.mrr-bar-label{font-size:.56rem}}
 .stat-pill.pill-mrr{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.2);color:var(--green2)}
 .stat-pill.pill-goal{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent)}
+/* Responsive — Mobile + Tablet */
+.hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--text);align-items:center;justify-content:center;border-radius:8px;transition:background .18s}
+.hamburger:hover{background:var(--bg2)}
+.hamburger svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+@media(max-width:900px){
+  .hamburger{display:flex}
+  .header-left{width:auto;flex:1;min-width:0;border-right:none;padding:0 10px 0 14px}
+  .logo-txt{font-size:.85rem}
+  .sidebar{transform:translateX(-100%);transition:transform .25s ease;width:260px;z-index:500;box-shadow:8px 0 32px rgba(0,0,0,.5)}
+  .sidebar.sb-open{transform:translateX(0)}
+  .main{margin-left:0}
+  .header-center{padding:0 10px;gap:6px;flex-wrap:wrap;overflow:hidden}
+  .header-center .stat-pill:not(.mrr-pill){display:none}
+  .h-badge{display:none}
+  .page{padding:18px 16px;max-width:100%}
+  .pros-card{grid-template-columns:1fr}
+  .rrss-layout{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .page{padding:14px 12px}
+  .page-title{font-size:1rem}
+  .page-sub{font-size:.72rem}
+  .g2,.g3{grid-template-columns:1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  .header-left{padding:0 8px 0 12px}
+  .logo-txt{font-size:.78rem}
+  .header-center{padding:0 6px}
+  .stat-pill{font-size:.6rem;padding:3px 8px}
+  /* Form analizar negocio: textarea + button full width */
+  textarea#pros-html-paste{min-height:120px}
+  /* Acciones por prospecto: 2 columnas */
+  .pros-actions-grid{display:grid !important;grid-template-columns:1fr 1fr;gap:6px}
+  .pros-actions-grid > .btn,.pros-actions-grid > a{width:100%;justify-content:center;text-align:center;padding:7px 8px;font-size:.66rem}
+  /* Tabs: scroll horizontal */
+  .tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{flex:0 0 auto;padding:7px 12px}
+  /* Modales como bottom-sheet */
+  .modal-overlay{padding:0;align-items:flex-end}
+  .modal-box{max-width:100%;width:100%;max-height:92vh;border-radius:16px 16px 0 0;padding:18px}
+  /* Pricing cards */
+  #p-pricing .g3{grid-template-columns:1fr}
+  /* Pricing summary text smaller + scroll */
+  #pricing-summary{font-size:.62rem;overflow-x:auto}
+  /* Clientes: stats 2x2, tabla apilada (ya cubierto a 700px) */
+  #cl-summary{grid-template-columns:1fr 1fr}
+  .big-num{font-size:1.4rem !important}
+  /* MRR chart: scroll horizontal */
+  .mrr-chart{overflow-x:auto;height:160px;display:flex;gap:8px;padding:10px}
+  .mrr-bar-col{min-width:46px;flex:0 0 auto}
+  /* Propuestas: form 1 col + checkboxes 2 col */
+  #p-proposals .g2{grid-template-columns:1fr}
+  #p-proposals .flex.gap8.fwrap{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+  .proposal-card .flex.gap8{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .proposal-card .flex.gap8 .btn{width:100%;justify-content:center}
+  /* Pipeline list: stack labels y badges */
+  .pipe-grid{grid-template-columns:1fr 1fr}
+  /* Recientes en sidebar mobile: dejar como está */
+}
 </style>
 </head>
 <body>
@@ -310,16 +369,21 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   <div class="header-center">
     <div class="stat-pill"><div class="stat-dot"></div>Activo &middot; <b id="hc-an">0</b> analizados</div>
     <div class="stat-pill">Propuestas: <b id="hc-pp">0</b></div>
-    <div class="stat-pill pill-mrr">MRR: <b id="hc-mrr">0€</b></div>
+    <div class="stat-pill pill-mrr mrr-pill">MRR: <b id="hc-mrr">0€</b></div>
     <div class="stat-pill pill-goal">Meta: <b id="hc-goal">0%</b></div>
   </div>
   <div class="header-right">
     <div class="h-badge">WhiteMoon &middot; Agencia IA</div>
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="Abrir menú">
+      <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
   </div>
 </header>
 
 <!-- LAYOUT -->
 <div class="layout">
+
+<div id="sb-overlay" onclick="toggleSidebar()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:399"></div>
 
 <!-- SIDEBAR -->
 <nav class="sidebar">
@@ -523,6 +587,20 @@ function goPage(id,el){
   $(id).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active')});
   if(el)el.classList.add('active');
+  if(window.innerWidth<=900)closeSidebar();
+}
+function toggleSidebar(){
+  var sb=document.querySelector('.sidebar');
+  var ov=$('sb-overlay');
+  if(!sb)return;
+  var open=sb.classList.toggle('sb-open');
+  if(ov)ov.style.display=open?'block':'none';
+}
+function closeSidebar(){
+  var sb=document.querySelector('.sidebar');
+  var ov=$('sb-overlay');
+  if(sb)sb.classList.remove('sb-open');
+  if(ov)ov.style.display='none';
 }
 function updateCounters(){$('hc-an').textContent=(typeof prosResults!=='undefined'?prosResults.length:S.analyzed);$('hc-pp').textContent=S.proposals;$('sb-pp').textContent=S.proposals;var sbp=$('sb-pipe');if(sbp&&typeof _allProspectMeta==='function')sbp.textContent=_allProspectMeta().length;if(typeof updateHeaderMRR==='function')updateHeaderMRR()}
 
@@ -894,7 +972,7 @@ function renderProsResults(){
     // Flags
     html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+(r.needsWebRedesign?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>SEO '+r.seoGrade+'</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>SEO '+r.seoGrade+'</span>')+'</div>';
     // Actions
-    html+='<div class="flex gap8 fwrap mb4"><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar web</a><button class="btn btn-ghost btn-xs" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">Servicios + Prompts ▾</button><button class="btn btn-cyan btn-xs" onclick="generateWebDemo('+i+')"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>🌐 Generar Web Demo</button><button class="btn btn-ghost btn-xs" onclick="openFichaVisita('+i+')">📋 Ficha visita</button><button class="btn btn-orange btn-xs" onclick="openCallScript('+i+')">📞 Script llamada</button><button class="btn btn-green btn-xs" onclick="openROI('+i+')">📈 ROI</button><button class="btn btn-ghost btn-xs" onclick="openComparative('+i+')">⚡ Antes/Después</button><button class="btn btn-ghost btn-xs" onclick="openEmail('+i+')">✉️ Email</button></div>';
+    html+='<div class="flex gap8 fwrap mb4 pros-actions-grid"><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar web</a><button class="btn btn-ghost btn-xs" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">Servicios + Prompts ▾</button><button class="btn btn-cyan btn-xs" onclick="generateWebDemo('+i+')"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>🌐 Generar Web Demo</button><button class="btn btn-ghost btn-xs" onclick="openFichaVisita('+i+')">📋 Ficha visita</button><button class="btn btn-orange btn-xs" onclick="openCallScript('+i+')">📞 Script llamada</button><button class="btn btn-green btn-xs" onclick="openROI('+i+')">📈 ROI</button><button class="btn btn-ghost btn-xs" onclick="openComparative('+i+')">⚡ Antes/Después</button><button class="btn btn-ghost btn-xs" onclick="openEmail('+i+')">✉️ Email</button></div>';
     // Pipeline state row
     var pmeta=getProspectMeta(r.domain);
     var stOpts=PIPELINE_STATES.map(function(s){return '<option value="'+s.id+'"'+(s.id===pmeta.status?' selected':'')+' style="color:'+s.color+'">'+s.label+'</option>'}).join('');
