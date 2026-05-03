@@ -315,48 +315,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   <div id="pros-results-list"></div>
 </div>
 
-<!-- RRSS -->
-<div class="page" id="p-rrss">
-  <div class="page-head">
-    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Generador de Contenido RRSS</div>
-    <div class="page-sub">Genera contenido real listo para publicar basado en los datos del prospecto analizado.</div>
-  </div>
-  <div class="rrss-layout">
-    <div class="rrss-sidebar">
-      <div class="field-group mb12"><span class="field-label">Negocio analizado</span>
-        <select class="select" id="r-prospect" style="font-size:.76rem" onchange="loadProspectRRSS()"><option value="">— Selecciona prospecto —</option></select>
-      </div>
-      <div id="r-prospect-info" style="display:none;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:9px;margin-bottom:12px;font-size:.68rem;color:var(--text2);line-height:1.6"></div>
-      <div class="field-group mb12"><span class="field-label">Pack WhiteMoon RRSS</span>
-        <select class="select" id="r-pack" style="font-size:.76rem">
-          <option value="launch">LaunchPack — 99€/mes (1 red, 8 posts)</option>
-          <option value="accelerator">AcceleratorPack — 199€/mes (2 redes, 12 posts)</option>
-          <option value="scale">ScalePack — 399€/mes (todas + GMB, 16 posts)</option>
-        </select>
-      </div>
-      <div class="field-group mb12"><span class="field-label" style="margin-bottom:7px">Plataformas</span>
-        <div class="platform-grid"><div class="plat-btn on" onclick="this.classList.toggle('on')"><span class="p-ico">📘</span>Facebook</div><div class="plat-btn on" onclick="this.classList.toggle('on')"><span class="p-ico">📸</span>Instagram</div><div class="plat-btn" onclick="this.classList.toggle('on')"><span class="p-ico">▶️</span>TikTok</div><div class="plat-btn" onclick="this.classList.toggle('on')"><span class="p-ico">💼</span>LinkedIn</div></div>
-      </div>
-      <div class="field-group mb12"><span class="field-label" style="margin-bottom:7px">Tipo de contenido</span>
-        <div style="display:flex;flex-direction:column;gap:3px">
-          <div class="ct-row on" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Carrusel educativo</span></div>
-          <div class="ct-row on" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Post de venta</span></div>
-          <div class="ct-row on" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Testimonio / caso real</span></div>
-          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Reel / Video</span></div>
-          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Behind the scenes</span></div>
-          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">Oferta / Promoción</span></div>
-          <div class="ct-row" onclick="this.classList.toggle('on')"><div class="ct-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div><span class="ct-label">FAQ / Pregunta frecuente</span></div>
-        </div>
-      </div>
-      <div class="field-group mb12"><span class="field-label">Nombre del negocio (manual)</span><input class="input" id="r-biz-manual" placeholder="Si no analizaste HTML..." style="font-size:.76rem"></div>
-      <div class="field-group mb12"><span class="field-label">Sector (manual)</span><select class="select" id="r-sector" style="font-size:.76rem"><option value="">Auto del prospecto</option><option>Restaurante</option><option>Centro de Belleza</option><option>Clínica Dental</option><option>Inmobiliaria</option><option>Fontanero</option><option>Academia</option><option>Gimnasio</option><option>Peluquería</option><option>Gestoría</option><option>Abogado</option><option>Veterinaria</option><option>Taller Mecánico</option></select></div>
-      <button class="btn btn-orange" onclick="generateRRSS()" style="width:100%"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Generar Contenido</button>
-      <div style="margin-top:8px"><button class="btn btn-ghost btn-sm" onclick="generateRRSS();setTimeout(function(){copyAllRRSS()},200)" style="width:100%">Generar + Copiar TODO</button></div>
-    </div>
-    <div id="rrss-output"><div class="empty-state" style="padding:36px 20px"><div class="es-icon"><svg viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/></svg></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:5px">Analiza un negocio primero</div><div style="font-size:.74rem;color:var(--text2);max-width:280px;margin:0 auto;line-height:1.6">Ve a "Analizar Negocio", pega el HTML y vuelve aquí para generar contenido RRSS personalizado.</div></div></div>
-  </div>
-</div>
-
 <!-- PROPOSALS -->
 <div class="page" id="p-proposals">
   <div class="page-head">
@@ -375,10 +333,8 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
     </div>
     <div class="field-group mb12"><span class="field-label">Servicios a ofrecer</span>
       <div class="flex gap8 fwrap" style="margin-top:4px">
-        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-chatbot" checked> Chatbot IA</label>
-        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-voice" checked> Agente Voz IA</label>
+        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-voice" checked> Agente Voz IA + Chatbot</label>
         <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-wa"> WhatsApp Bot</label>
-        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-rrss"> Gestión RRSS</label>
         <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-web"> Web SEO</label>
         <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-booking"> Reservas Online</label>
       </div>
@@ -735,8 +691,7 @@ function buildCP(d){
 }
 function buildPP(d){
   var biz=d.bizName||d.domain;
-  var m=Object.keys(d.rrss).filter(function(k){return!d.rrss[k].ok}).length;
-  return'PROPUESTA DE SERVICIOS IA — WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nHola,\n\nTras analizar la web de '+biz+' ('+d.url+'), hemos detectado '+d.probs.length+' oportunidades donde la IA puede generar impacto inmediato:\n\n'+d.probs.map(function(p){return'⚠️ '+p}).join('\n')+'\n\n━━━ DATOS DEL NEGOCIO ━━━\n🏪 '+biz+'\n🌐 '+d.url+'\n📞 '+(d.phones&&d.phones.length?d.phones.join(' / '):'[no detectado]')+'\n📧 '+(d.emails&&d.emails.length?d.emails[0]:'[no detectado]')+'\n\n━━━ SERVICIOS WHITEMOON RECOMENDADOS ━━━\n'+(!d.chat?'\n🤖 CHATBOT IA WEB — Pack Basic: 49€/mes + 120€ setup\n':'')+(!d.chat?'\n🎙️ AGENTE DE VOZ IA 24h — Pack Advance: 99€/mes + 299€ setup\n':'')+(!d.wa?'\n📱 WHATSAPP BUSINESS + BOT — Incluido en Pack Advance\n':'')+(m>=3?'\n📊 GESTIÓN RRSS CON IA — LaunchPack: 99€/mes\n':'')+'\n━━━ PACKS COMPLETOS ━━━\n\n🤖 Pack Basic → 49€/mes + 120€ setup\n🤖 Pack Advance → 99€/mes + 299€ setup ⭐\n🏪 Pack Pyme → 1.800€ setup (Web + Chatbot + Reservas)\n\n¿Hablamos esta semana? Demo sin compromiso.\n\n— WhiteMoon · whitemoon.es\n📍 Majadahonda, Madrid'
+  return'PROPUESTA DE SERVICIOS IA — WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nHola,\n\nTras analizar la web de '+biz+' ('+d.url+'), hemos detectado '+d.probs.length+' oportunidades donde la IA puede generar impacto inmediato:\n\n'+d.probs.map(function(p){return'⚠️ '+p}).join('\n')+'\n\n━━━ DATOS DEL NEGOCIO ━━━\n🏪 '+biz+'\n🌐 '+d.url+'\n📞 '+(d.phones&&d.phones.length?d.phones.join(' / '):'[no detectado]')+'\n📧 '+(d.emails&&d.emails.length?d.emails[0]:'[no detectado]')+'\n\n━━━ SERVICIOS WHITEMOON RECOMENDADOS ━━━\n'+(!d.chat?'\n🎙️ AGENTE DE VOZ IA 24h + CHATBOT — Pack Advance: 149€/mes + 299€ setup\n':'')+(!d.wa?'\n📱 WHATSAPP BUSINESS + BOT — Incluido en Pack Advance\n':'')+'\n━━━ PACKS COMPLETOS ━━━\n\n🤖 Pack Advance → 149€/mes + 299€ setup ⭐\n🏪 Pack Pyme → 1.800€ setup (Web + Chatbot + Reservas)\n\n¿Hablamos esta semana? Demo sin compromiso.\n\n— WhiteMoon · whitemoon.es\n📍 Majadahonda, Madrid'
 }
 function buildWP(d){
   var biz=d.bizName||d.domain;
@@ -762,14 +717,12 @@ function createManualProposal(){
   var contactInfo=$('prop-contactinfo').value||'';
   var notes=$('prop-notes').value||'';
   var svcs=[];
-  if($('pc-chatbot').checked)svcs.push('🤖 Chatbot IA Web — Pack Basic: 49€/mes + 120€ setup');
-  if($('pc-voice').checked)svcs.push('🎙️ Agente de Voz IA 24h — Pack Advance: 99€/mes + 299€ setup');
+  if($('pc-voice').checked)svcs.push('🎙️ Agente de Voz IA 24h + Chatbot — Pack Advance: 149€/mes + 299€ setup');
   if($('pc-wa').checked)svcs.push('📱 WhatsApp Business + Bot IA — Incluido en Pack Advance');
-  if($('pc-rrss').checked)svcs.push('📊 Gestión RRSS con IA — LaunchPack: 99€/mes');
   if($('pc-web').checked)svcs.push('🌐 Web SEO Optimizada — Pack Pyme: 1.800€ setup');
   if($('pc-booking').checked)svcs.push('📅 Sistema de Reservas Online — Incluido en Pack Pyme');
   if(!svcs.length){showToast('Selecciona al menos un servicio');return}
-  var propText='PROPUESTA DE SERVICIOS IA — WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n'+(contact?'Hola '+contact+',\n\n':'Hola,\n\n')+'Propuesta para '+biz+' ('+sector+'):\n\n'+svcs.join('\n')+'\n\n━━━ PACKS COMPLETOS ━━━\n\n🤖 Pack Basic → 49€/mes + 120€ setup\n🤖 Pack Advance → 99€/mes + 299€ setup ⭐\n🏪 Pack Pyme → 1.800€ setup\n'+(notes?'\n━━━ NOTAS ━━━\n'+notes+'\n':'')+'\n¿Hablamos esta semana?\n\n— WhiteMoon · whitemoon.es\n📍 Majadahonda, Madrid';
+  var propText='PROPUESTA DE SERVICIOS IA — WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n'+(contact?'Hola '+contact+',\n\n':'Hola,\n\n')+'Propuesta para '+biz+' ('+sector+'):\n\n'+svcs.join('\n')+'\n\n━━━ PACKS COMPLETOS ━━━\n\n🤖 Pack Advance → 149€/mes + 299€ setup ⭐\n🏪 Pack Pyme → 1.800€ setup\n'+(notes?'\n━━━ NOTAS ━━━\n'+notes+'\n':'')+'\n¿Hablamos esta semana?\n\n— WhiteMoon · whitemoon.es\n📍 Majadahonda, Madrid';
   S.proposals++;
   var c=$('proposals-list');var es=c.querySelector('.empty-state');if(es)es.remove();
   var el=document.createElement('div');el.className='proposal-card';
@@ -798,7 +751,6 @@ function prosAnalyzeHTML(){
   renderProsResults();
   $('pros-html-paste').value='';$('pros-html-url').value='';$('pros-html-sector').value='';
   showToast('✓ '+data.domain+' analizado — '+data.probs.length+' oportunidades');
-  refreshProspectList();
   addRecent(data);
   addProposal(data);
 }
@@ -830,10 +782,9 @@ function renderProsResults(){
     html+='<div id="'+cid+'" style="display:none;border-top:1px solid var(--border2);padding-top:10px;margin-top:6px">';
     // Services
     html+='<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">🎯 Servicios WhiteMoon para vender</div><div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">';
-    if(noChat)html+='<div class="svc-row"><div class="svc-dot si-p"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Agente de Voz IA 24h + Chatbot</div><div style="font-size:.66rem;color:var(--text2)">Atiende llamadas, cualifica y agenda automáticamente</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Pack Advance — 99€/mes + 299€ setup</div></div></div>';
+    if(noChat)html+='<div class="svc-row"><div class="svc-dot si-p"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Agente de Voz IA 24h + Chatbot</div><div style="font-size:.66rem;color:var(--text2)">Atiende llamadas, cualifica y agenda automáticamente</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Pack Advance — 149€/mes + 299€ setup</div></div></div>';
     if(noWa)html+='<div class="svc-row"><div class="svc-dot si-g"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">WhatsApp Business + Bot IA</div><div style="font-size:.66rem;color:var(--text2)">Respuesta automática 24h</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Incluido en Pack Advance</div></div></div>';
     if(!r.booking)html+='<div class="svc-row"><div class="svc-dot si-c"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Sistema de Reservas Online</div><div style="font-size:.66rem;color:var(--text2)">Pack Pyme — 1.800€ (Web + Chatbot + Reservas)</div></div></div>';
-    if(noFb||noIg)html+='<div class="svc-row"><div class="svc-dot si-o"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Gestión RRSS con IA</div><div style="font-size:.66rem;color:var(--text2)">LaunchPack — 99€/mes · Accelerator — 199€/mes</div></div></div>';
     if(r.needsWebRedesign)html+='<div class="svc-row"><div class="svc-dot" style="background:rgba(239,68,68,.12);color:#ef4444"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Web SEO Optimizada</div><div style="font-size:.66rem;color:var(--text2)">SEO actual: '+r.seo+'% (grado '+r.seoGrade+')</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Pack Pyme — 1.800€ setup</div></div></div>';
     html+='</div>';
     // SEO issues
@@ -890,120 +841,6 @@ function renderProsResults(){
     html+=tabs+panels+'</div></div>';
   });
   c.innerHTML=html;
-}
-
-// RRSS GENERATOR
-var PACK_CONFIG={launch:{posts:8,weeks:4,perWeek:2,redes:1,name:'LaunchPack',price:'99€/mes'},accelerator:{posts:12,weeks:4,perWeek:3,redes:2,name:'AcceleratorPack',price:'199€/mes'},scale:{posts:16,weeks:4,perWeek:4,redes:'todas',name:'ScalePack',price:'399€/mes'}};
-var DAYS_ES=['Lunes','Martes','Miércoles','Jueves','Viernes'];
-
-function loadProspectRRSS(){
-  var sel=$('r-prospect');var idx=sel.value;
-  var info=$('r-prospect-info');
-  if(idx===''||!prosResults[idx]){info.style.display='none';return}
-  var d=prosResults[idx];
-  info.style.display='block';
-  info.innerHTML='<b style="color:var(--text)">'+d.sectorIco+' '+(d.bizName||d.domain)+'</b><br>'+d.sector+'<br>'+(d.services&&d.services.length?'Servicios: '+d.services.slice(0,5).join(', ')+'<br>':'')+(d.address||'')+(d.phones&&d.phones.length?'<br>Tel: '+d.phones[0]:'');
-  $('r-biz-manual').value=d.bizName||d.domain;
-}
-
-function refreshProspectList(){
-  var sel=$('r-prospect');
-  sel.innerHTML='<option value="">— Selecciona prospecto —</option>';
-  prosResults.forEach(function(r,i){
-    var opt=document.createElement('option');opt.value=i;opt.textContent=r.sectorIco+' '+(r.bizName||r.domain)+' ('+r.sector+')';sel.appendChild(opt);
-  });
-}
-
-var CT_MAP2={
-'Carrusel educativo':{ico:'📊',gen:function(biz,sector,svcs,desc,plat){
-  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
-  var topics=['5 errores comunes al elegir '+svc,'Lo que deberías saber sobre '+svc,'Guía rápida: '+svc+' explicado fácil','3 mitos sobre '+svc];
-  var topic=topics[rnd(0,topics.length-1)];
-  var slides=[];
-  slides.push('📌 SLIDE 1 (Portada): "'+topic+'" — Logo '+biz+'. Fondo oscuro, título bold.');
-  for(var i=2;i<=6;i++)slides.push('📌 SLIDE '+i+': Punto '+(i-1)+' — Título corto + explicación (máx 25 palabras) + icono.');
-  slides.push('📌 SLIDE 7 (CTA): "¿Quieres saber más? Escríbenos" — Logo '+biz+'.');
-  return{content:'CARRUSEL — '+plat.toUpperCase()+'\nNegocio: '+biz+' ('+sector+')\nTema: '+topic+'\n\n'+slides.join('\n\n')+'\n\nFormato: 1080x1080px. Tono educativo.',caption:'¿Sabías esto sobre '+svc+'? 👆 Desliza.\n\n#'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #'+sector.replace(/ /g,'')+'  #Consejos',hooks:[topic,'¿Cuánto sabes sobre '+svc+'?','Lo que el 90% no sabe']}
-}},
-'Post de venta':{ico:'🛒',gen:function(biz,sector,svcs,desc,plat){
-  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
-  return{content:'POST DE VENTA — '+plat.toUpperCase()+'\nNegocio: '+biz+'\nServicio: '+svc+'\n\n¿Necesitas '+svc.toLowerCase()+'? En '+biz+' te ofrecemos la mejor solución.\n\n✅ Profesionales con experiencia\n✅ Atención personalizada\n✅ Resultados garantizados\n\n📞 Llámanos o escríbenos por WhatsApp.',caption:'¿Buscas '+svc.toLowerCase()+'? En '+biz+' estamos para ayudarte 💪\n\n#'+biz.replace(/[^a-zA-Z0-9]/g,'')+'  #'+svc.replace(/ /g,''),hooks:['¿Necesitas '+svc.toLowerCase()+'?','Tu solución está aquí','En '+biz+' te lo ponemos fácil']}
-}},
-'Testimonio / caso real':{ico:'⭐',gen:function(biz,sector,svcs,desc,plat){
-  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,2))]:'nuestro servicio';
-  var nombre=['María G.','Carlos R.','Laura M.','Javier P.','Ana S.'][rnd(0,4)];
-  return{content:'TESTIMONIO — '+plat.toUpperCase()+'\n\n"Llevaba tiempo buscando un buen '+sector.toLowerCase()+' y encontré '+biz+'. Desde el primer momento me sentí muy bien atendido/a. El '+svc.toLowerCase()+' superó mis expectativas."\n— '+nombre+'\n\n⭐⭐⭐⭐⭐',caption:'"'+biz+' cambió mi experiencia con '+svc.toLowerCase()+'" — '+nombre+' ⭐⭐⭐⭐⭐\n\n#Testimonio  #ClientesFelices',hooks:['Lo que '+nombre+' dice de nosotros','5 estrellas no es casualidad','De la duda a la confianza']}
-}},
-'Reel / Video':{ico:'🎬',gen:function(biz,sector,svcs,desc,plat){
-  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,2))]:'lo que hacemos';
-  return{content:'GUIÓN REEL — 30-45s\n\n0-3s: HOOK — "¿Sabías que...?" + plano del local\n3-8s: PROBLEMA — "Muchas personas no saben cuándo necesitan '+svc.toLowerCase()+'..."\n8-22s: SOLUCIÓN — 3 puntos con texto superpuesto\n22-30s: RESULTADO — Antes/después\n30-45s: CTA — "¿Te interesa? Escríbenos" + logo\n\n🎵 Música trending · 📐 9:16 vertical',caption:'🎬 ¿Sabías esto? Mira hasta el final 👀\n\n#Reel  #'+biz.replace(/[^a-zA-Z0-9]/g,''),hooks:['Lo que nadie te cuenta','Mira esto antes de decidir','30 segundos que te interesan']}
-}},
-'Behind the scenes':{ico:'🎥',gen:function(biz,sector,svcs,desc,plat){
-  return{content:'BEHIND THE SCENES\n\n📸 Story 1: "Os enseñamos un día en '+biz+'"\n📸 Story 2: Preparando el espacio — "Todo listo para recibiros"\n📸 Story 3: Momento de trabajo real\n📸 Story 4: Detalle especial — "Lo que nos hace diferentes"\n📸 Story 5: CTA — "¿Quieres vivir la experiencia? Reserva aquí"\n\nTono: auténtico, sin filtros.',caption:'👀 Hoy os enseñamos todo, sin filtros ✨\n\n#BehindTheScenes  #'+biz.replace(/[^a-zA-Z0-9]/g,''),hooks:['Lo que pasa cuando no nos veis','Un día normal en '+biz,'¿Quieres ver cómo trabajamos?']}
-}},
-'Oferta / Promoción':{ico:'🔥',gen:function(biz,sector,svcs,desc,plat){
-  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
-  return{content:'POST OFERTA\n\n🔥 OFERTA ESPECIAL — Solo esta semana 🔥\n\n'+svc+' con descuento exclusivo para nuevos clientes.\n\n✅ Primera consulta/sesión GRATIS\n✅ Sin compromiso · ✅ Plazas limitadas\n\n⏰ Válida hasta [fecha]',caption:'🔥 OFERTA esta semana 🔥 '+svc+' con descuento.\n\nPlazas limitadas ⏰\n\n#Oferta  #'+biz.replace(/[^a-zA-Z0-9]/g,''),hooks:['Solo esta semana','Plazas limitadas','Si estabas esperando, es ahora']}
-}},
-'FAQ / Pregunta frecuente':{ico:'❓',gen:function(biz,sector,svcs,desc,plat){
-  var svc=svcs.length?svcs[rnd(0,Math.min(svcs.length-1,3))]:'nuestros servicios';
-  return{content:'POST FAQ\n\n❓ "¿Cuánto cuesta '+svc.toLowerCase()+'?"\n\nEn '+biz+' cada caso es diferente. Ofrecemos consulta inicial para darte presupuesto personalizado sin compromiso.\n\n💡 Precios transparentes, sin sorpresas\n\n¿Tienes otra pregunta? Escríbenos 👇',caption:'❓ La pregunta que más nos hacéis. Aquí la respuesta 👇\n\n#FAQ  #'+biz.replace(/[^a-zA-Z0-9]/g,''),hooks:['La pregunta que TODOS hacen','¿Cuánto cuesta realmente?','Tu duda más común']}
-}}
-};
-
-function generateRRSS(){
-  var prospectIdx=$('r-prospect').value;
-  var d=prospectIdx!==''?prosResults[prospectIdx]:null;
-  var biz=d?(d.bizName||d.domain):($('r-biz-manual').value||'Negocio');
-  var sector=d?d.sector:($('r-sector').value||'Negocio local');
-  var svcs=d&&d.services?d.services:[];
-  var desc=d?d.description:'';
-  var pack=$('r-pack').value;
-  var pc=PACK_CONFIG[pack];
-  var platforms=[];
-  document.querySelectorAll('.plat-btn.on').forEach(function(p){platforms.push(p.textContent.trim())});
-  if(!platforms.length)platforms=['Instagram','Facebook'];
-  var types=[];
-  document.querySelectorAll('.ct-row.on .ct-label').forEach(function(e){types.push(e.textContent.trim())});
-  if(!types.length)types=['Carrusel educativo','Post de venta','Testimonio / caso real'];
-  var cards=[],today=new Date(),postNum=0;
-  for(var w=0;w<pc.weeks&&postNum<pc.posts;w++){
-    var weekStart=new Date(today);weekStart.setDate(today.getDate()+(w*7));
-    for(var p=0;p<pc.perWeek&&postNum<pc.posts;p++){
-      var postDate=new Date(weekStart);postDate.setDate(weekStart.getDate()+Math.floor((p/pc.perWeek)*5));
-      var dayName=DAYS_ES[postDate.getDay()===0?4:postDate.getDay()===6?4:postDate.getDay()-1];
-      var dateStr=postDate.getDate()+'/'+(postDate.getMonth()+1);
-      var type=types[postNum%types.length];
-      var plat=platforms[postNum%platforms.length];
-      var tpl=CT_MAP2[type];if(!tpl)continue;
-      var gen=tpl.gen(biz,sector,svcs,desc,plat);
-      cards.push({ico:tpl.ico,type:type,plat:plat,week:'Sem '+(w+1),wc:['tag-g','tag-o','tag-c','tag-p'][w%4],day:dayName,date:dateStr,postNum:postNum+1,content:gen.content,caption:gen.caption,hooks:gen.hooks});
-      postNum++;
-    }
-  }
-  S.prompts+=cards.length;updateCounters();
-  var headerHtml='<div class="card mb12" style="border-color:var(--accent-border)"><div class="flex jcb aic"><div><div style="font-size:.88rem;font-weight:800;color:#fff">'+pc.name+' — '+biz+'</div><div style="font-size:.7rem;color:var(--text2);margin-top:3px">'+pc.posts+' publicaciones/mes · '+pc.price+' · '+platforms.join(' + ')+'</div></div><div class="flex gap8"><button class="btn btn-p btn-sm" onclick="copyAllRRSS()">Copiar TODO</button></div></div></div>';
-  var contentHtml='<div class="prompt-cards">';
-  cards.forEach(function(c){
-    contentHtml+='<div class="prompt-card" data-rrss-card><div class="pc-header"><div class="pc-type"><span style="font-size:1rem">'+c.ico+'</span>'+c.type+' #'+c.postNum+'</div><div style="display:flex;gap:5px;align-items:center"><span class="tag">'+c.plat+'</span><span class="tag '+c.wc+'">'+c.week+' · '+c.day+' '+c.date+'</span></div></div>';
-    contentHtml+='<div class="pc-content" data-rrss-content>'+c.content.replace(/\n/g,'<br>')+'</div>';
-    contentHtml+='<div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:6px 0 3px">Caption:</div>';
-    contentHtml+='<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:9px;font-size:.72rem;color:var(--text);line-height:1.6;margin-bottom:6px;white-space:pre-wrap" data-rrss-caption>'+c.caption+'</div>';
-    contentHtml+='<div style="font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px">Hooks:</div>';
-    contentHtml+='<div class="pc-hooks">'+c.hooks.map(function(h){return'<div class="hook-item" onclick="copyTxt(\''+h.replace(/'/g,"\\'")+'\')">'+h+'</div>'}).join('')+'</div>';
-    contentHtml+='<div class="flex gap8" style="margin-top:6px"><button class="btn btn-p btn-xs" onclick="copyTxt(this.closest(\'.prompt-card\').querySelector(\'[data-rrss-content]\').textContent+\'\\n\\nCAPTION:\\n\'+this.closest(\'.prompt-card\').querySelector(\'[data-rrss-caption]\').textContent)">Copiar post</button><button class="btn btn-ghost btn-xs" onclick="copyTxt(this.closest(\'.prompt-card\').querySelector(\'[data-rrss-caption]\').textContent)">Copiar caption</button></div>';
-    contentHtml+='</div>';
-  });
-  contentHtml+='</div>';
-  $('rrss-output').innerHTML=headerHtml+contentHtml;
-  window._lastRRSSCards=cards;
-  showToast(cards.length+' contenidos generados para '+biz);
-}
-
-function copyAllRRSS(){
-  if(!window._lastRRSSCards||!window._lastRRSSCards.length){showToast('Genera contenido primero');return}
-  var all=window._lastRRSSCards.map(function(c){return'═══ POST #'+c.postNum+' — '+c.week+' · '+c.day+' '+c.date+' ═══\nPlataforma: '+c.plat+'\n\n'+c.content+'\n\nCAPTION:\n'+c.caption+'\n'}).join('\n\n');
-  copyTxt(all);
 }
 
 // ═══════════════════════════════════════
