@@ -3038,22 +3038,183 @@ function injectData(html,d){
     .replace(/\{BIZ_URL\}/g,d.url||'');
 }
 
-function generateWebDemo(idx){
-  var d=prosResults[idx];
-  if(!d){showToast('Prospecto no encontrado');return}
-  var template=getTemplate(d.nicho,d);
-  var html=injectData(template,d);
+// ═══ DEMO REPOS por sector ═══
+var DEMO_REPOS={
+  'dental':      'https://nexusforgeia.github.io/WHITEMOON-CLINICAS-DENTALES/',
+  'restaurante': 'https://nexusforgeia.github.io/WHITEMOON-RESTAURANTES/',
+  'peluqueria':  'https://nexusforgeia.github.io/WHITEMOON-PELUQUERIAS/',
+  'abogado':     'https://nexusforgeia.github.io/WHITEMOON-ABOGADOS/',
+  'gestoria':    'https://nexusforgeia.github.io/WHITEMOON-GESTORIAS/',
+  'taller':      'https://nexusforgeia.github.io/WHITEMOON-TALLERES-COCHES/',
+  'veterinaria': 'https://nexusforgeia.github.io/WHITEMOON-VETERINARIOS/',
+  'academia':    'https://nexusforgeia.github.io/WHITEMOON-CENTROS-FORMACION/',
+  'belleza':     'https://nexusforgeia.github.io/WHITEMOON-ESTETICA/',
+  'fisioterapia':'https://nexusforgeia.github.io/WHITEMOON-PODOLOGOS/',
+  'default':     'https://nexusforgeia.github.io/WHITEMOON-CLINICAS-DENTALES/'
+};
+
+function personalizeDemo(html,d){
   var biz=d.bizName||d.domain;
+  var wa=d.waNumber||(d.phones&&d.phones.length?d.phones[0].replace(/\D/g,''):'34643199580');
+  var phone=d.phones&&d.phones.length?d.phones[0]:'';
+  var email=d.emails&&d.emails.length?d.emails[0]:'';
+  var addr=d.address||'';
+  var hours=d.hours||'Lun-Vie 9:00-20:00';
+
+  var demoNames=['WhiteMoon Dental','Clínica Dental Ejemplo','Bambú Sushi','GastronomIA','Sakura Sushi','WhiteMoon Estetic','Lumière Estética','WhiteMoon Peluquería','WhiteMoon Abogados','PodologIA','WhiteMoon Veterinarios','WhiteMoon Formación','WhiteMoon Gestoría','WhiteMoon Taller'];
+  demoNames.forEach(function(name){
+    var rx=new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'g');
+    html=html.replace(rx,biz);
+  });
+
+  if(phone){
+    html=html.replace(/wa\.me\/34643199580/g,'wa.me/'+wa);
+    html=html.replace(/wa\.me\/346\d{8}/g,'wa.me/'+wa);
+    html=html.replace(/643\s*199\s*580/g,phone);
+    html=html.replace(/643199580/g,wa.replace(/^34/,''));
+  }
+  if(email){
+    html=html.replace(/info@[a-z0-9.-]+\.[a-z]{2,}/gi,email);
+    html=html.replace(/contacto@[a-z0-9.-]+\.[a-z]{2,}/gi,email);
+  }
+  if(addr){
+    html=html.replace(/Calle [^<"]+/gi,addr);
+    html=html.replace(/C\/ [^<"]+/gi,addr);
+  }
+  if(hours&&hours.length>5){
+    html=html.replace(/Lun-Vie \d+:\d+-\d+:\d+/g,hours);
+    html=html.replace(/Lunes a Viernes[^<"]*/g,hours);
+  }
+
+  html=html.replace('<head>','<head>\n<!-- Demo generada por WhiteMoon Scout para '+biz+' · whitemoon.es -->');
+
+  return html;
+}
+
+function showDemoLoadingModal(biz){
+  var existing=document.getElementById('demo-gen-modal');
+  if(existing)existing.remove();
+  var modal=document.createElement('div');
+  modal.id='demo-gen-modal';
+  modal.style.cssText='position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;animation:overlayIn .2s ease';
+  modal.innerHTML='<div style="background:#0c0c16;border:1px solid rgba(124,58,237,.3);border-radius:16px;padding:32px;max-width:420px;width:100%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.6)">'
++'<div style="width:56px;height:56px;border:2px solid rgba(124,58,237,.3);border-top-color:#9d5fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 20px"></div>'
++'<div style="font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px">Generando demo para '+biz+'</div>'
++'<div id="demo-step-text" style="font-size:.78rem;color:#9090b0;margin-bottom:20px">Iniciando…</div>'
++'<div style="display:flex;flex-direction:column;gap:7px;text-align:left;max-width:280px;margin:0 auto" id="demo-steps">'
++'<div id="ds-1" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Cargando plantilla del sector</div>'
++'<div id="ds-2" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Personalizando con datos reales</div>'
++'<div id="ds-3" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Preparando archivo</div>'
++'<div id="ds-4" style="display:flex;align-items:center;gap:8px;font-size:.72rem;color:#505070;font-family:monospace"><span style="width:14px;height:14px;border-radius:50%;border:1px solid #505070;flex-shrink:0"></span>Lista para descargar</div>'
++'</div>'
++'<button onclick="closeDemoModal()" style="margin-top:20px;background:transparent;border:1px solid rgba(124,58,237,.3);color:#9090b0;border-radius:8px;padding:7px 16px;font-size:.72rem;cursor:pointer;font-family:Sora,sans-serif">Cancelar</button>'
++'</div>';
+  document.body.appendChild(modal);
+}
+
+function updateDemoStep(n,txt){
+  var stepEl=document.getElementById('ds-'+n);
+  var textEl=document.getElementById('demo-step-text');
+  if(n>1){
+    var prev=document.getElementById('ds-'+(n-1));
+    if(prev){
+      prev.style.color='#22c55e';
+      var sp=prev.querySelector('span');
+      if(sp)sp.style.cssText='width:14px;height:14px;border-radius:50%;background:#22c55e;flex-shrink:0';
+    }
+  }
+  if(stepEl){
+    stepEl.style.color='#9d5fff';
+    var sp2=stepEl.querySelector('span');
+    if(sp2)sp2.style.cssText='width:14px;height:14px;border-radius:50%;border:2px solid #9d5fff;border-top-color:transparent;animation:spin .7s linear infinite;flex-shrink:0';
+  }
+  if(textEl&&txt)textEl.textContent=txt;
+}
+
+function closeDemoModal(){
+  var m=document.getElementById('demo-gen-modal');
+  if(m)m.remove();
+}
+
+function showDemoSuccessModal(html,biz,domain){
+  for(var i=1;i<=4;i++){
+    var el=document.getElementById('ds-'+i);
+    if(el){
+      el.style.color='#22c55e';
+      var sp=el.querySelector('span');
+      if(sp)sp.style.cssText='width:14px;height:14px;border-radius:50%;background:#22c55e;flex-shrink:0';
+    }
+  }
+  window._lastGeneratedDemo={html:html,biz:biz,domain:domain};
+  setTimeout(function(){
+    var modal=document.getElementById('demo-gen-modal');
+    if(!modal)return;
+    var inner=modal.querySelector('div');
+    if(!inner)return;
+    inner.innerHTML='<div style="width:56px;height:56px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid #22c55e;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;box-shadow:0 0 24px rgba(34,197,94,.3)">'
++'<svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#22c55e;fill:none;stroke-width:2.5"><polyline points="20 6 9 17 4 12"/></svg></div>'
++'<div style="font-size:1.05rem;font-weight:700;color:#fff;margin-bottom:6px">¡Demo lista!</div>'
++'<div style="font-size:.78rem;color:#9090b0;margin-bottom:22px">'+biz+' · Personalizada con datos reales</div>'
++'<div style="display:flex;flex-direction:column;gap:8px">'
++'<button onclick="downloadDemoHTML(window._lastGeneratedDemo.html,window._lastGeneratedDemo.domain)" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border:none;border-radius:9px;padding:11px 20px;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-family:Sora,sans-serif"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar HTML</button>'
++'<button onclick="previewDemoHTML(window._lastGeneratedDemo.html)" style="background:transparent;border:1px solid rgba(124,58,237,.4);color:#c084fc;border-radius:9px;padding:10px 20px;font-size:.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;font-family:Sora,sans-serif"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>Vista previa</button>'
++'<button onclick="closeDemoModal()" style="background:transparent;border:1px solid rgba(255,255,255,.08);color:#505070;border-radius:9px;padding:8px 20px;font-size:.72rem;cursor:pointer;font-family:Sora,sans-serif">Cerrar</button>'
++'</div>';
+  },600);
+}
+
+function downloadDemoHTML(html,domain){
   var blob=new Blob([html],{type:'text/html;charset=utf-8'});
   var url=URL.createObjectURL(blob);
   var a=document.createElement('a');
   a.href=url;
-  a.download='demo-'+d.domain.replace(/[^a-z0-9]/gi,'-')+'.html';
+  a.download='demo-'+(domain||'negocio').replace(/[^a-z0-9]/gi,'-')+'.html';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
-  showToast('✓ Web demo descargada para '+biz);
+  showToast('✓ Demo descargada');
+}
+
+function previewDemoHTML(html){
+  var blob=new Blob([html],{type:'text/html'});
+  var url=URL.createObjectURL(blob);
+  window.open(url,'_blank');
+}
+
+async function generateWebDemo(idx){
+  var d=prosResults[idx];
+  if(!d){showToast('Prospecto no encontrado');return}
+  var biz=d.bizName||d.domain;
+  showDemoLoadingModal(biz);
+  var repoUrl=DEMO_REPOS[d.nicho]||DEMO_REPOS['default'];
+  try{
+    updateDemoStep(1,'Cargando plantilla del sector…');
+    var response=await fetch(repoUrl,{cache:'no-store'});
+    if(!response.ok)throw new Error('No se pudo cargar la plantilla ('+response.status+')');
+    var html=await response.text();
+
+    updateDemoStep(2,'Personalizando con tus datos…');
+    await new Promise(function(r){setTimeout(r,250)});
+    html=personalizeDemo(html,d);
+
+    updateDemoStep(3,'Preparando archivo…');
+    await new Promise(function(r){setTimeout(r,400)});
+
+    updateDemoStep(4,'¡Lista para descargar!');
+    showDemoSuccessModal(html,biz,d.domain);
+  }catch(err){
+    console.warn('Fetch repo demo falló, usando plantilla local:',err);
+    try{
+      var tpl=getTemplate(d.nicho,d);
+      var html2=injectData(tpl,d);
+      downloadDemoHTML(html2,d.domain);
+      showToast('✓ Demo generada (plantilla local) para '+biz);
+    }catch(e2){
+      showToast('Error generando demo: '+(e2.message||e2));
+    }
+    closeDemoModal();
+  }
 }
 </script>
 
