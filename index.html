@@ -346,11 +346,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   /* MRR chart: scroll horizontal */
   .mrr-chart{overflow-x:auto;height:160px;display:flex;gap:8px;padding:10px}
   .mrr-bar-col{min-width:46px;flex:0 0 auto}
-  /* Propuestas: form 1 col + checkboxes 2 col */
-  #p-proposals .g2{grid-template-columns:1fr}
-  #p-proposals .flex.gap8.fwrap{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
-  .proposal-card .flex.gap8{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-  .proposal-card .flex.gap8 .btn{width:100%;justify-content:center}
   /* Pipeline list: stack labels y badges */
   .pipe-grid{grid-template-columns:1fr 1fr}
   /* Recientes en sidebar mobile: dejar como está */
@@ -384,7 +379,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   </div>
   <div class="header-center">
     <div class="stat-pill"><div class="stat-dot"></div>Activo &middot; <b id="hc-an">0</b> analizados</div>
-    <div class="stat-pill">Propuestas: <b id="hc-pp">0</b></div>
     <div class="stat-pill pill-mrr mrr-pill">MRR: <b id="hc-mrr">0€</b></div>
     <div class="stat-pill pill-goal">Meta: <b id="hc-goal">0%</b></div>
   </div>
@@ -416,11 +410,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   <div class="sb-section">
     <div class="sb-label">Herramientas IA</div>
 
-    <button class="nav-item" onclick="goPage('p-proposals',this)">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-      Propuestas
-      <span class="nav-badge nb-g" id="sb-pp">0</span>
-    </button>
     <button class="nav-item" onclick="goPage('p-clients',this);refreshClientsPage()">
       <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg></div>
       Clientes
@@ -455,7 +444,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
   <input id="url-input" type="hidden" value="">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>Analizar Prospecto por HTML</div>
-    <div class="page-sub">Pega el código fuente de la web de cualquier negocio. Scout analiza todo y genera los prompts de venta de agentes IA listos para enviar.</div>
+    <div class="page-sub">Pega el código fuente de la web de cualquier negocio. Scout analiza todo y te permite generar una web demo lista para enseñar.</div>
   </div>
   <div class="card mb16">
     <div class="g2 mb12">
@@ -469,7 +458,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       <div style="font-size:.68rem;color:var(--muted);margin-bottom:6px">Abre la web del negocio → <b style="color:var(--text)">Ctrl+U</b> → <b style="color:var(--text)">Ctrl+A</b> → <b style="color:var(--text)">Ctrl+C</b> → pegar aquí</div>
       <textarea class="textarea" id="pros-html-paste" placeholder="Pega aquí todo el código fuente HTML..." style="min-height:140px;max-height:280px;font-size:.66rem"></textarea>
     </div>
-    <button class="btn btn-p" onclick="prosAnalyzeHTML()" style="width:100%"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Analizar y generar prompts de venta</button>
+    <button class="btn btn-p" onclick="prosAnalyzeHTML()" style="width:100%"><svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Analizar negocio</button>
   </div>
   <div id="pros-counter" style="display:none" class="flex jcb aic mb12">
     <div style="font-size:.78rem;color:var(--text2)"><b style="color:var(--text)" id="pros-total">0</b> prospectos analizados</div>
@@ -479,36 +468,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
     </div>
   </div>
   <div id="pros-results-list"></div>
-</div>
-
-<!-- PROPOSALS -->
-<div class="page" id="p-proposals">
-  <div class="page-head">
-    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Propuestas Comerciales</div>
-    <div class="page-sub">Propuestas generadas desde el analizador y creadas manualmente.</div>
-  </div>
-  <div class="card mb16">
-    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>Crear propuesta manual</div>
-    <div class="g2 mb12">
-      <div class="field-group"><span class="field-label">Nombre del negocio</span><input class="input" id="prop-biz" placeholder="Ej: Clínica Dental Sonríe"></div>
-      <div class="field-group"><span class="field-label">Sector</span><input class="input" id="prop-sector" placeholder="Clínica Dental"></div>
-    </div>
-    <div class="g2 mb12">
-      <div class="field-group"><span class="field-label">Contacto (nombre)</span><input class="input" id="prop-contact" placeholder="María García"></div>
-      <div class="field-group"><span class="field-label">Teléfono / Email</span><input class="input" id="prop-contactinfo" placeholder="+34 600 000 000"></div>
-    </div>
-    <div class="field-group mb12"><span class="field-label">Servicios a ofrecer</span>
-      <div class="flex gap8 fwrap" style="margin-top:4px">
-        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-voice" checked> Agente Voz IA + Chatbot</label>
-        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-wa"> WhatsApp Bot</label>
-        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-web"> Web SEO</label>
-        <label style="font-size:.72rem;color:var(--text2);display:flex;align-items:center;gap:4px"><input type="checkbox" id="pc-booking"> Reservas Online</label>
-      </div>
-    </div>
-    <div class="field-group mb12"><span class="field-label">Notas adicionales (opcional)</span><textarea class="textarea" id="prop-notes" placeholder="Detalles extra..." style="min-height:60px"></textarea></div>
-    <button class="btn btn-p" onclick="createManualProposal()" style="width:100%"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>Generar propuesta</button>
-  </div>
-  <div id="proposals-list"><div class="empty-state"><div class="es-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg></div><div style="font-size:.86rem;font-weight:700;color:var(--text);margin-bottom:5px">Sin propuestas aún</div><div style="font-size:.74rem;color:var(--text2)">Analiza un prospecto o crea una propuesta manual.</div></div></div>
 </div>
 
 <!-- PRICING -->
@@ -620,7 +579,7 @@ function closeSidebar(){
   if(sb)sb.classList.remove('sb-open');
   if(ov)ov.style.display='none';
 }
-function updateCounters(){$('hc-an').textContent=(typeof prosResults!=='undefined'?prosResults.length:S.analyzed);$('hc-pp').textContent=S.proposals;$('sb-pp').textContent=S.proposals;var sbp=$('sb-pipe');if(sbp&&typeof _allProspectMeta==='function')sbp.textContent=_allProspectMeta().length;if(typeof updateHeaderMRR==='function')updateHeaderMRR()}
+function updateCounters(){$('hc-an').textContent=(typeof prosResults!=='undefined'?prosResults.length:S.analyzed);var sbp=$('sb-pipe');if(sbp&&typeof _allProspectMeta==='function')sbp.textContent=_allProspectMeta().length;if(typeof updateHeaderMRR==='function')updateHeaderMRR()}
 
 // SECTOR DETECT
 var SECTORS=[
@@ -879,68 +838,8 @@ function analyzeHTML(url,html){
 function promptBlock(ico,title,content){return'<div class="card mb12"><div class="flex jcb aic mb8"><div style="font-size:.82rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px"><span style="font-size:1.1rem">'+ico+'</span>'+title+'</div><button class="btn btn-p btn-sm" onclick="copyTxt(this.closest(\'.card\').querySelector(\'.prompt-display\').textContent)">Copiar</button></div><div class="prompt-display">'+content.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div></div>'}
 function switchScanTab(el,id){el.parentElement.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});el.classList.add('on');['st-voice','st-chatbot','st-pitch','st-wa'].forEach(function(i){var e=$(i);if(e)e.style.display='none'});$(id).style.display='block'}
 
-// PROMPT BUILDERS
-function buildVP(d){
-  var biz=d.bizName||d.domain;
-  var ph=d.phones&&d.phones.length?d.phones[0]:'[teléfono no detectado]';
-  var svcs=d.services&&d.services.length?d.services.slice(0,6).join(', '):'Servicios del negocio';
-  var hrs=d.hours||'Consultar con el negocio';
-  var addr=d.address||'[dirección no detectada]';
-  var waNum=d.waNumber||'[no detectado]';
-  return'# PROMPT SISTEMA — AGENTE DE VOZ IA\n# Negocio: '+biz+'\n# Web: '+d.url+'\n# Sector: '+d.sector+'\n# Plataformas: VAPI, Bland.ai, ElevenLabs, Retell\n\n## IDENTIDAD\nEres el/la asistente virtual telefónico/a de '+biz+', un/a '+d.sector+'.\n'+(addr!=='[dirección no detectada]'?'Ubicación: '+addr+'\n':'')+'Web: '+d.url+'\n'+(ph!=='[teléfono no detectado]'?'Teléfono: '+ph+'\n':'')+(waNum!=='[no detectado]'?'WhatsApp: '+waNum+'\n':'')+'\n## SERVICIOS\n'+svcs+'\n\n## HORARIO\n'+hrs+'\n\n## OBJETIVO\nAtender llamadas 24h: informar, cualificar leads y agendar citas.\n\n## FLUJO\n\n### 1. SALUDO\n"Hola, gracias por llamar a '+biz+'. ¿En qué puedo ayudarte?"\n\n### 2. CAPTURA OBLIGATORIA\n- "¿Me dices tu nombre y apellidos?"\n- "¿Un teléfono móvil de contacto?"\nNO avanzar sin estos datos.\n\n### 3. AGENDAR CITA\nPreguntar día y hora → confirmar\n\n### 4. RESUMEN\n"Perfecto [nombre]. He anotado:\n- Nombre: [nombre]\n- Teléfono: [teléfono]\n- Servicio: [detalle]\n- Cita: [día y hora]\nTe confirmamos por WhatsApp."\n\n### 5. CIERRE\n"¿Algo más? Gracias [nombre]. ¡Que tengas un buen día!"\n\n## REGLAS\n- SIEMPRE pedir nombre + teléfono\n- SIEMPRE confirmar datos al final\n- NUNCA inventar precios\n- Derivar humano → '+ph+'\n- Duración: 2-4 min'
-}
-function buildCP(d){
-  var biz=d.bizName||d.domain;
-  var ph=d.phones&&d.phones.length?d.phones[0]:'[teléfono]';
-  var svcs=d.services&&d.services.length?d.services.slice(0,10):[];
-  var hrs=d.hours||'Consultar horario en la web';
-  var addr=d.address||'';
-  var waNum=d.waNumber||'';
-  var svcList=svcs.length?svcs.join(', '):'Consultar en la web';
-  return'# PROMPT SISTEMA — CHATBOT IA WEB\n# Negocio: '+biz+'\n# Web: '+d.url+'\n# Sector: '+d.sector+'\n\n## IDENTIDAD\nEres el asistente virtual de '+biz+', un/a '+d.sector+'.\nApareces como widget de chat en su web.\n'+(addr?'Dirección: '+addr+'\n':'')+(ph!=='[teléfono]'?'Teléfono: '+ph+'\n':'')+(waNum?'WhatsApp: '+waNum+'\n':'')+'\n## SERVICIOS\n'+svcList+'\n\n## HORARIO\n'+hrs+'\n\n## OBJETIVO\nAtender visitantes 24h: responder preguntas, cualificar y agendar citas.\n\n## TONO\nProfesional, empático y directo. Respuestas cortas (máx 3 frases).\n\n## SALUDO\n"¡Hola! 👋 Bienvenido/a a '+biz+'. ¿En qué puedo ayudarte?"\n\n## MENÚ RÁPIDO\n'+(svcs.length?svcs.slice(0,4).map(function(s,i){return(i+1)+'. '+s}).join('\n')+'\n':'1. Ver servicios\n2. Pedir cita\n3. Horarios\n4. Contacto\n')+'\n## CAPTURA DE LEAD\nAntes de dar info detallada, recoger:\n- Nombre completo\n- Teléfono\n- Servicio que necesita\n\n## FUERA DE HORARIO\n"Ahora no estamos disponibles. Deja tus datos y te contactamos mañana."\n\n## REGLAS\n- Si no sabe: "Deja tu contacto y el equipo te responde"\n- NUNCA inventar precios\n- Si urgencia: llamada directa a '+ph
-}
-function buildPP(d){
-  var biz=d.bizName||d.domain;
-  return'PROPUESTA DE SERVICIOS IA — WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\nHola,\n\nTras analizar la web de '+biz+' ('+d.url+'), hemos detectado '+d.probs.length+' oportunidades donde la IA puede generar impacto inmediato:\n\n'+d.probs.map(function(p){return'⚠️ '+p}).join('\n')+'\n\n━━━ DATOS DEL NEGOCIO ━━━\n🏪 '+biz+'\n🌐 '+d.url+'\n📞 '+(d.phones&&d.phones.length?d.phones.join(' / '):'[no detectado]')+'\n📧 '+(d.emails&&d.emails.length?d.emails[0]:'[no detectado]')+'\n\n━━━ SERVICIOS WHITEMOON RECOMENDADOS ━━━\n'+(!d.chat?'\n🎙️ AGENTE DE VOZ IA 24h + CHATBOT — Pack Advance: 149€/mes + 299€ setup\n':'')+(!d.wa?'\n📱 WHATSAPP BUSINESS + BOT — Incluido en Pack Advance\n':'')+'\n━━━ PACKS COMPLETOS ━━━\n\n🤖 Pack Advance → 149€/mes + 299€ setup ⭐\n🏪 Pack Pyme → 1.800€ setup (Web + Chatbot + Reservas)\n\n¿Hablamos esta semana? Demo sin compromiso.\n\n— WhiteMoon · whitemoon.es\n📍 Majadahonda, Madrid'
-}
-function buildWP(d){
-  var biz=d.bizName||d.domain;
-  return'Hola 👋\n\nSoy [tu nombre] de WhiteMoon. He estado viendo la web de '+biz+' ('+d.domain+') y quería comentaros algo rápido:\n\n'+(!d.chat?'No tenéis chatbot ni agente de voz. Cada cliente que os escribe fuera de horario se pierde.\n\n':'')+(d.services&&d.services.length?'Veo que ofrecéis '+d.services.slice(0,3).join(', ')+' — un agente IA gestionaría esas consultas automáticamente 24h.\n\n':'')+(!d.wa?'Tampoco he detectado WhatsApp Business activo.\n\n':'')+'Instalamos agentes IA que atienden 24h, cualifican leads y agendan citas. Sin que tengáis que hacer nada extra.\n\nPara un '+d.sector.toLowerCase()+' como '+biz+' lo tenemos funcionando en 48h.\n\n¿Tenéis 5 min esta semana para una demo en vivo?\n\n— WhiteMoon\n🌐 whitemoon.es'
-}
-
-// RECENTS + PROPOSALS
+// RECENTS
 function addRecent(d){var list=$('recent-list');var empty=$('recent-empty');if(empty)empty.remove();var col=d.score>=65?'#22c55e':d.score>=45?'var(--orange)':'var(--accent)';var el=document.createElement('div');el.className='recent-item';el.innerHTML='<div class="r-dot" style="background:'+col+'"></div><div style="min-width:0"><div class="r-name">'+d.sector+'</div><div class="r-url">'+d.domain+'</div></div>';el.onclick=function(){goPage('p-prospector',document.querySelectorAll('.nav-item')[0])};list.insertBefore(el,list.firstChild)}
-
-function addProposal(d){
-  S.proposals++;
-  var propText=buildPP(d);
-  var c=$('proposals-list');var es=c.querySelector('.empty-state');if(es)es.remove();
-  var el=document.createElement('div');el.className='proposal-card';
-  el.innerHTML='<div class="flex jcb aic mb12"><div><div style="font-size:.86rem;font-weight:700;color:var(--text)">'+d.sector+' — '+(d.bizName||d.domain)+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px">Potencial: '+d.score+'% · '+d.probs.length+' oportunidades</div></div><div class="flex gap8"><button class="btn btn-ghost btn-sm" onclick="copyTxt(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent)">Copiar</button><button class="btn btn-green btn-sm" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent),\'_blank\')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="this.closest(\'.proposal-card\').remove();S.proposals--;updateCounters()">Eliminar</button></div></div><div class="prompt-display">'+propText.replace(/\n/g,'<br>')+'</div>';
-  c.insertBefore(el,c.firstChild);updateCounters()
-}
-
-function createManualProposal(){
-  var biz=$('prop-biz').value||'Negocio';
-  var sector=$('prop-sector').value||'Negocio local';
-  var contact=$('prop-contact').value||'';
-  var contactInfo=$('prop-contactinfo').value||'';
-  var notes=$('prop-notes').value||'';
-  var svcs=[];
-  if($('pc-voice').checked)svcs.push('🎙️ Agente de Voz IA 24h + Chatbot — Pack Advance: 149€/mes + 299€ setup');
-  if($('pc-wa').checked)svcs.push('📱 WhatsApp Business + Bot IA — Incluido en Pack Advance');
-  if($('pc-web').checked)svcs.push('🌐 Web SEO Optimizada — Pack Pyme: 1.800€ setup');
-  if($('pc-booking').checked)svcs.push('📅 Sistema de Reservas Online — Incluido en Pack Pyme');
-  if(!svcs.length){showToast('Selecciona al menos un servicio');return}
-  var propText='PROPUESTA DE SERVICIOS IA — WHITEMOON\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n'+(contact?'Hola '+contact+',\n\n':'Hola,\n\n')+'Propuesta para '+biz+' ('+sector+'):\n\n'+svcs.join('\n')+'\n\n━━━ PACKS COMPLETOS ━━━\n\n🤖 Pack Advance → 149€/mes + 299€ setup ⭐\n🏪 Pack Pyme → 1.800€ setup\n'+(notes?'\n━━━ NOTAS ━━━\n'+notes+'\n':'')+'\n¿Hablamos esta semana?\n\n— WhiteMoon · whitemoon.es\n📍 Majadahonda, Madrid';
-  S.proposals++;
-  var c=$('proposals-list');var es=c.querySelector('.empty-state');if(es)es.remove();
-  var el=document.createElement('div');el.className='proposal-card';
-  el.innerHTML='<div class="flex jcb aic mb12"><div><div style="font-size:.86rem;font-weight:700;color:var(--text)">'+sector+' — '+biz+'</div><div style="font-size:.68rem;color:var(--muted);margin-top:2px">'+(contact?contact+' · ':'')+svcs.length+' servicios'+(contactInfo?' · '+contactInfo:'')+'</div></div><div class="flex gap8"><button class="btn btn-ghost btn-sm" onclick="copyTxt(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent)">Copiar</button><button class="btn btn-green btn-sm" onclick="window.open(\'https://wa.me/'+(contactInfo.replace(/[^0-9+]/g,''))+'?text=\'+encodeURIComponent(this.closest(\'.proposal-card\').querySelector(\'.prompt-display\').textContent),\'_blank\')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp</button><button class="btn btn-ghost btn-sm" onclick="this.closest(\'.proposal-card\').remove();S.proposals--;updateCounters()">Eliminar</button></div></div><div class="prompt-display">'+propText.replace(/\n/g,'<br>')+'</div>';
-  c.insertBefore(el,c.firstChild);updateCounters();
-  $('prop-biz').value='';$('prop-sector').value='';$('prop-contact').value='';$('prop-contactinfo').value='';$('prop-notes').value='';
-  showToast('Propuesta para '+biz+' creada');
-}
 
 // PROSPECTOR
 var prosResults=[];
@@ -966,7 +865,6 @@ function prosAnalyzeHTML(){
   $('pros-html-paste').value='';$('pros-html-url').value='';$('pros-html-sector').value='';
   showToast('✓ '+data.domain+' analizado — '+data.probs.length+' oportunidades');
   addRecent(data);
-  addProposal(data);
 }
 
 function exportPros(){copyTxt(prosResults.map(function(r){return r.domain+' | '+r.sector+' | Score:'+r.score+' | '+r.probs.length+' oportunidades'}).join('\n'))}
@@ -984,80 +882,15 @@ function renderProsResults(){
     var noChat=!r.chat,noWa=!r.wa,noFb=!r.rrss.facebook.ok,noIg=!r.rrss.instagram.ok;
     var cid='pc-'+i;
     html+='<div class="card mb12" style="'+(hot?'border-color:rgba(255,140,66,.25);background:rgba(255,140,66,.02)':'')+'">';
-    html+='<div class="flex jcb aic mb8" style="cursor:pointer" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">';
+    html+='<div class="flex jcb aic mb8">';
     html+='<div><div style="font-size:.88rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+r.sectorIco+' '+r.domain+'<span class="tag tag-g" style="margin-left:4px">HTML</span>'+(hot?'<span class="hot-badge">VENDER</span>':'')+'</div>';
     html+='<div style="font-size:.68rem;color:var(--text2);margin-top:2px">'+r.sector+' · '+r.cms+' · '+r.probs.length+' oportunidades</div></div>';
     html+='<div style="text-align:right"><div class="pros-score" style="color:'+sc+'">'+r.score+'%</div><div style="font-size:.56rem;color:var(--muted)">% venta</div></div></div>';
     // Flags
-    html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+(r.needsWebRedesign?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>SEO '+r.seoGrade+'</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>SEO '+r.seoGrade+'</span>')+'</div>';
+    html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+'</div>';
     // Actions
-    html+='<div class="flex gap8 fwrap mb4 pros-actions-grid"><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar web</a><button class="btn btn-ghost btn-xs" onclick="var e=document.getElementById(\''+cid+'\');e.style.display=e.style.display===\'none\'?\'block\':\'none\'">Servicios + Prompts ▾</button><button class="btn btn-ghost btn-xs" onclick="deleteProspect(\''+r.domain+'\',this.closest(\'.card\'))" style="color:var(--red2)">🗑️ Eliminar</button><button class="btn btn-cyan btn-xs" onclick="generateWebDemo('+i+')"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>🌐 Generar Web Demo</button><button class="btn btn-ghost btn-xs" onclick="openFichaVisita('+i+')">📋 Ficha visita</button><button class="btn btn-orange btn-xs" onclick="openCallScript('+i+')">📞 Script llamada</button><button class="btn btn-green btn-xs" onclick="openROI('+i+')">📈 ROI</button><button class="btn btn-ghost btn-xs" onclick="openComparative('+i+')">⚡ Antes/Después</button><button class="btn btn-ghost btn-xs" onclick="openEmail('+i+')">✉️ Email</button></div>';
-    // Pipeline state row
-    var pmeta=getProspectMeta(r.domain);
-    var stOpts=PIPELINE_STATES.map(function(s){return '<option value="'+s.id+'"'+(s.id===pmeta.status?' selected':'')+' style="color:'+s.color+'">'+s.label+'</option>'}).join('');
-    var notesEsc=(pmeta.notes||'').replace(/"/g,'&quot;');
-    html+='<div class="pipeline-state-row"><select class="ps-select" onchange="updateProspectStatus(\''+r.domain+'\',this.value,'+i+')">'+stOpts+'</select><textarea class="ps-notes" maxlength="200" placeholder="Notas (max 200)..." onblur="updateProspectNotes(\''+r.domain+'\',this.value)">'+notesEsc+'</textarea>'+(pmeta.lastContact?'<span class="ps-date">Últ: '+pmeta.lastContact+'</span>':'')+'</div>';
-    // Expandable
-    html+='<div id="'+cid+'" style="display:none;border-top:1px solid var(--border2);padding-top:10px;margin-top:6px">';
-    // Services
-    html+='<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">🎯 Servicios WhiteMoon para vender</div><div style="display:flex;flex-direction:column;gap:4px;margin-bottom:12px">';
-    if(noChat)html+='<div class="svc-row"><div class="svc-dot si-p"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Agente de Voz IA 24h + Chatbot</div><div style="font-size:.66rem;color:var(--text2)">Atiende llamadas, cualifica y agenda automáticamente</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Pack Advance — 149€/mes + 299€ setup</div></div></div>';
-    if(noWa)html+='<div class="svc-row"><div class="svc-dot si-g"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">WhatsApp Business + Bot IA</div><div style="font-size:.66rem;color:var(--text2)">Respuesta automática 24h</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Incluido en Pack Advance</div></div></div>';
-    if(!r.booking)html+='<div class="svc-row"><div class="svc-dot si-c"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Sistema de Reservas Online</div><div style="font-size:.66rem;color:var(--text2)">Pack Pyme — 1.800€ (Web + Chatbot + Reservas)</div></div></div>';
-    if(r.needsWebRedesign)html+='<div class="svc-row"><div class="svc-dot" style="background:rgba(239,68,68,.12);color:#ef4444"><svg viewBox="0 0 24 24" style="width:11px;height:11px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div><div><div style="font-size:.76rem;font-weight:700;color:var(--text)">Web SEO Optimizada</div><div style="font-size:.66rem;color:var(--text2)">SEO actual: '+r.seo+'% (grado '+r.seoGrade+')</div><div style="font-size:.64rem;color:var(--orange2);font-family:\'Space Mono\',monospace">Pack Pyme — 1.800€ setup</div></div></div>';
+    html+='<div class="flex gap8 fwrap pros-actions-grid"><a href="'+r.url+'" target="_blank" class="btn btn-ghost btn-xs">Visitar web</a><button class="btn btn-cyan btn-xs" onclick="generateWebDemo('+i+')"><svg viewBox="0 0 24 24" style="width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>🌐 Generar Web Demo</button><button class="btn btn-ghost btn-xs" onclick="deleteProspect(\''+r.domain+'\',this.closest(\'.card\'))" style="color:var(--red2)">🗑️ Eliminar</button></div>';
     html+='</div>';
-    // SEO issues
-    if(r.seoIssues&&r.seoIssues.length>0){
-      html+='<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--orange2);margin-bottom:7px">🔍 SEO '+r.seo+'% (Grado '+r.seoGrade+')</div>';
-      html+='<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px">';
-      r.seoIssues.forEach(function(issue){html+='<span class="tag tag-o" style="font-size:.62rem">'+issue+'</span>'});
-      html+='</div>';
-    }
-    // Web content
-    if(r.pageContent){
-      var contentSections=[
-        {id:'inicio',label:'🏠 Inicio',data:r.pageContent.inicio},
-        {id:'quienes',label:'👥 Quiénes',data:r.pageContent.quienes},
-        {id:'servicios',label:'⚡ Servicios',data:r.pageContent.servicios},
-        {id:'contacto',label:'📍 Contacto',data:r.pageContent.contacto},
-        {id:'otros',label:'📝 Otros',data:r.pageContent.otros}
-      ].filter(function(s){return s.data.texts.length>0});
-      if(contentSections.length){
-        var fullWebText='=== WEB: '+(r.bizName||r.domain)+' ===\nURL: '+r.url+'\nSector: '+r.sector+'\n';
-        if(r.description)fullWebText+='Descripción: '+r.description+'\n';
-        if(r.phones&&r.phones.length)fullWebText+='Teléfono: '+r.phones.join(' / ')+'\n';
-        if(r.emails&&r.emails.length)fullWebText+='Email: '+r.emails.join(' / ')+'\n';
-        if(r.address)fullWebText+='Dirección: '+r.address+'\n';
-        var contentKey='webContent_'+i;window[contentKey]=fullWebText;
-        html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px"><div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cyan)">📄 Contenido extraído</div><button class="btn btn-p btn-xs" onclick="copyTxt(window.webContent_'+i+')">Copiar TODO</button></div>';
-        var ctabs='<div class="tabs" style="margin-bottom:6px;flex-wrap:wrap">';
-        var cpanels='';
-        contentSections.forEach(function(cs,ci){
-          var on=ci===0;
-          ctabs+='<button class="tab'+(on?' on':'')+'" onclick="this.parentElement.querySelectorAll(\'.tab\').forEach(function(t){t.classList.remove(\'on\')});this.classList.add(\'on\');this.closest(\'[id^=pc]\').querySelectorAll(\'[data-ct]\').forEach(function(x){x.style.display=\'none\'});this.closest(\'[id^=pc]\').querySelector(\'[data-ct='+cs.id+']\').style.display=\'block\'">'+cs.label+'</button>';
-          var secText=cs.data.texts.map(function(s){return s.title+(s.content?'\n'+s.content:'')}).join('\n\n');
-          var txt=cs.data.texts.map(function(s){return'<div style="margin-bottom:8px"><div style="font-size:.72rem;font-weight:700;color:var(--text);margin-bottom:3px">'+s.title+'</div>'+(s.content?'<div style="font-size:.7rem;color:var(--text2);line-height:1.6">'+s.content.replace(/\n/g,'<br>')+'</div>':'')+'</div>'}).join('');
-          cpanels+='<div data-ct="'+cs.id+'"'+(on?'':' style="display:none"')+'><div style="max-height:160px;overflow-y:auto;padding:8px;background:var(--bg2);border-radius:6px;margin-bottom:6px">'+txt+'</div><button class="btn btn-ghost btn-xs" onclick="copyTxt('+JSON.stringify(secText).replace(/'/g,"\\'")+')">Copiar sección</button></div>';
-        });
-        ctabs+='</div>';
-        html+=ctabs+cpanels+'<div style="margin-bottom:12px"></div>';
-      }
-    }
-    // Prompts
-    html+='<div style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px">📋 Prompts de venta</div>';
-    var tabs='<div class="tabs" style="margin-bottom:8px">';
-    var panels='';
-    var prompts=[{id:'v',label:'Agente Voz',content:buildVP(r)},{id:'c',label:'Chatbot',content:buildCP(r)},{id:'p',label:'Pitch',content:buildPP(r)},{id:'w',label:'WhatsApp',content:buildWP(r)}];
-    prompts.forEach(function(pm,pi){
-      var on=pi===0;
-      tabs+='<button class="tab'+(on?' on':'')+'" onclick="this.parentElement.querySelectorAll(\'.tab\').forEach(function(t){t.classList.remove(\'on\')});this.classList.add(\'on\');this.closest(\'[id^=pc]\').querySelectorAll(\'[data-pm]\').forEach(function(x){x.style.display=\'none\'});this.closest(\'[id^=pc]\').querySelector(\'[data-pm='+pm.id+']\').style.display=\'block\'">'+pm.label+'</button>';
-      var safeContent=pm.content.replace(/\n/g,'<br>');
-      var sendBtns='';
-      if(pm.id==='w')sendBtns='<button class="btn btn-green btn-xs" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(this.parentElement.previousElementSibling.textContent),\'_blank\')">Enviar WA</button>';
-      panels+='<div data-pm="'+pm.id+'"'+(on?'':' style="display:none"')+'><div class="prompt-display" style="max-height:200px">'+safeContent+'</div><div class="flex gap8 fwrap" style="margin-top:5px"><button class="btn btn-p btn-xs" onclick="copyTxt(this.parentElement.previousElementSibling.textContent)">Copiar</button>'+sendBtns+'</div></div>';
-    });
-    tabs+='</div>';
-    html+=tabs+panels+'</div></div>';
   });
   c.innerHTML=html;
 }
@@ -1699,8 +1532,6 @@ function _downloadComparative(idx){
 
 function _addComparativeToProposal(idx){
   var d=prosResults[idx];if(!d)return;
-  addProposal(d);
-  showToast('Propuesta creada para '+(d.bizName||d.domain));
   closeModalById('cmp-modal');
 }
 
