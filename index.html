@@ -832,7 +832,91 @@ function analyzeHTML(url,html){
     pageContent.contacto.texts.push({title:'Datos de contacto',content:contactInfo.join('\n')});
   }
 
-  return{url,domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score,ssl,mobile,chat,wa,gmb,analytics,cta,booking,seo,seoGrade,seoIssues,needsWebRedesign,cms,rrss,probs,bizName,phones,emails,address,services,hours,waNumber,description,pageContent,sections};
+  // Specialties by nicho
+  var allText=html.toLowerCase();
+  var ESP_MAP={
+    abogado:[
+      ['Derecho Bancario',['microcredito','microcrédito','revolving','clausula suelo','cláusula suelo','usura','tarjeta revolving','reclamación bancaria']],
+      ['Derecho Laboral',['laboral','despido','erte','nómina','nomina','indemnización']],
+      ['Derecho de Familia',['familia','divorcio','custodia','pensión alimenticia','pension alimenticia']],
+      ['Derecho Penal',['penal','denuncia','querella','delito']],
+      ['Derecho Mercantil',['mercantil','sociedad limitada','sociedad anónima','sociedades','contrato mercantil']],
+      ['Extranjería',['extranjería','extranjeria','nie','residencia','nacionalidad']],
+      ['Herencias y Sucesiones',['herencia','sucesión','sucesion','testamento']],
+      ['Derecho Inmobiliario',['inmobiliario','arrendamiento','alquiler','hipoteca']]
+    ],
+    dental:[
+      ['Ortodoncia',['ortodoncia','brackets','invisalign']],
+      ['Implantes',['implante','prótesis','protesis']],
+      ['Blanqueamiento',['blanqueamiento']],
+      ['Periodoncia',['periodoncia','encía','encia']],
+      ['Endodoncia',['endodoncia','nervio']],
+      ['Odontología Infantil',['odontopediatr','odontología infantil','niños','niño']]
+    ],
+    restaurante:[
+      ['Terraza',['terraza']],
+      ['Reservas online',['reserva online','booking online','reservar online']],
+      ['Delivery',['delivery','domicilio','takeaway','take away']],
+      ['Opciones veganas',['vegano','vegetariano']],
+      ['Sin gluten',['sin gluten','celíaco','celiaco']],
+      ['Menú infantil',['menú infantil','menu infantil','menú niños','menu niños']]
+    ],
+    fisioterapia:[
+      ['Fisio deportiva',['deportiv']],
+      ['Osteopatía',['osteopat']],
+      ['Pilates',['pilates']],
+      ['Neurológica',['neurolog']],
+      ['Pediátrica',['pediátr','pediatr','infantil']]
+    ],
+    veterinaria:[
+      ['Urgencias 24h',['urgencia','24h','emergencia']],
+      ['Cirugía',['cirugía','cirugia','quirófano','quirofano']],
+      ['Peluquería canina',['peluquería canina','peluqueria canina','grooming']],
+      ['Animales exóticos',['exótico','exotico','reptil','aves exóticas']]
+    ]
+  };
+  var especialidades=[];
+  var nichoEsps=ESP_MAP[sec.n];
+  if(nichoEsps){
+    nichoEsps.forEach(function(esp){
+      var name=esp[0],kws=esp[1];
+      for(var ki=0;ki<kws.length;ki++){
+        if(allText.indexOf(kws[ki])>-1){
+          especialidades.push({name:name,keywords:kws});
+          break;
+        }
+      }
+    });
+  }
+
+  // Team extraction
+  var equipo=[];
+  doc.querySelectorAll('[class*="team"],[class*="equipo"],[class*="doctor"],[class*="abogado"],[class*="profesional"],[class*="staff"],[class*="member"]').forEach(function(el){
+    var nombreEl=el.querySelector('h3,h4,h5,.nombre,.name');
+    var cargoEl=el.querySelector('.cargo,.puesto,.title,.subtitle,.role');
+    if(nombreEl){
+      var n=(nombreEl.textContent||'').replace(/\s+/g,' ').trim().substring(0,60);
+      var c=cargoEl?(cargoEl.textContent||'').replace(/\s+/g,' ').trim().substring(0,60):'';
+      var dup=false;for(var ei=0;ei<equipo.length;ei++)if(equipo[ei].nombre===n){dup=true;break}
+      if(n.length>=3 && !/cookie|nav|menu|footer|©/i.test(n) && !dup){
+        equipo.push({nombre:n,cargo:c});
+      }
+    }
+  });
+  equipo=equipo.slice(0,4);
+
+  // Social URLs (real links)
+  var socialUrls={instagram:'',facebook:'',linkedin:'',youtube:'',tiktok:''};
+  doc.querySelectorAll('a[href]').forEach(function(a){
+    var hrefL=(a.getAttribute('href')||'').toLowerCase();
+    if(!socialUrls.instagram && hrefL.indexOf('instagram.com/')>-1) socialUrls.instagram=a.getAttribute('href');
+    if(!socialUrls.facebook && hrefL.indexOf('facebook.com/')>-1) socialUrls.facebook=a.getAttribute('href');
+    if(!socialUrls.linkedin && hrefL.indexOf('linkedin.com/')>-1) socialUrls.linkedin=a.getAttribute('href');
+    if(!socialUrls.youtube && (hrefL.indexOf('youtube.com/')>-1 || hrefL.indexOf('youtu.be')>-1)) socialUrls.youtube=a.getAttribute('href');
+    if(!socialUrls.tiktok && hrefL.indexOf('tiktok.com/')>-1) socialUrls.tiktok=a.getAttribute('href');
+  });
+
+  return{url,domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score,ssl,mobile,chat,wa,gmb,analytics,cta,booking,seo,seoGrade,seoIssues,needsWebRedesign,cms,rrss,probs,bizName,phones,emails,address,services,hours,waNumber,description,pageContent,sections,especialidades,equipo,socialUrls};
 }
 
 function promptBlock(ico,title,content){return'<div class="card mb12"><div class="flex jcb aic mb8"><div style="font-size:.82rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px"><span style="font-size:1.1rem">'+ico+'</span>'+title+'</div><button class="btn btn-p btn-sm" onclick="copyTxt(this.closest(\'.card\').querySelector(\'.prompt-display\').textContent)">Copiar</button></div><div class="prompt-display">'+content.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div></div>'}
@@ -2295,12 +2379,37 @@ team:[{name:'Carlos Méndez',role:'Director',bio:'Lidera el equipo con experienc
 }
 };
 
-function _buildHTML(p){
+function _buildHTML(p,d){
+  d=d||{};
+  var hasEsps=d.especialidades&&d.especialidades.length;
+  var hasEquipo=d.equipo&&d.equipo.length;
+
   var svcsCards=p.services.map(function(s){return '<div class="service-card"><div class="service-icon">'+s.ico+'</div><h3>'+s.name+'</h3><p>'+s.desc+'</p></div>'}).join('');
   var valuesHTML=p.values.map(function(v){return '<div class="value-card"><div class="value-icon">'+v.ico+'</div><h4>'+v.name+'</h4><p>'+v.desc+'</p></div>'}).join('');
-  var teamHTML=p.team.map(function(t){return '<div class="team-card"><div class="team-avatar"><img src="'+t.avatar+'" alt="'+t.name+'"></div><h4>'+t.name+'</h4><div class="role">'+t.role+'</div><div class="bio">'+t.bio+'</div></div>'}).join('');
-  var quickServices=p.services.slice(0,3).map(function(s){return s.name}).concat(['Pedir cita']);
+  var teamHTML=hasEquipo
+    ? d.equipo.map(function(t){var ini=(t.nombre||'?').trim().charAt(0).toUpperCase();return '<div class="team-card"><div class="team-avatar" style="display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--primary);font-size:3rem;font-weight:800">'+ini+'</div><h4>'+t.nombre+'</h4>'+(t.cargo?'<div class="role">'+t.cargo+'</div>':'<div class="role">Equipo profesional</div>')+'</div>'}).join('')
+    : p.team.map(function(t){return '<div class="team-card"><div class="team-avatar"><img src="'+t.avatar+'" alt="'+t.name+'"></div><h4>'+t.name+'</h4><div class="role">'+t.role+'</div><div class="bio">'+t.bio+'</div></div>'}).join('');
+
+  var espSectionHTML='';
+  if(hasEsps){
+    var espCards=d.especialidades.map(function(e){return '<div class="esp-card"><div class="esp-check">✓</div><h4>'+e.name+'</h4></div>'}).join('');
+    espSectionHTML='<section class="section esp-section">\n'
+      +'<div class="container">\n'
+      +'<div class="section-head">\n'
+      +'<span class="section-tag">Áreas de especialización</span>\n'
+      +'<h2>Especialistas en {BIZ_ESPECIALIDADES}</h2>\n'
+      +'<p>Estas son las áreas donde más nos requieren nuestros clientes.</p>\n'
+      +'</div>\n'
+      +'<div class="esp-grid">'+espCards+'</div>\n'
+      +'</div>\n'
+      +'</section>\n';
+  }
+
+  // Quick chat buttons + chatbot keyword data
+  var quickBase=hasEsps?d.especialidades.slice(0,3).map(function(e){return e.name}):p.services.slice(0,3).map(function(s){return s.name});
+  var quickServices=quickBase.concat(['Pedir cita']);
   var quickHTML=quickServices.map(function(q){return '<button onclick="cbQuick(\''+q.replace(/'/g,"\\'")+'\')">'+q+'</button>'}).join('');
+  var espDataJSON=JSON.stringify(hasEsps?d.especialidades.map(function(e){return {name:e.name,kws:e.keywords}}):[]);
   var fontHref='https://fonts.googleapis.com/css2?family='+p.font.replace(/ /g,'+')+':wght@400;500;600;700;800&display=swap';
 
   return '<!DOCTYPE html>\n'
@@ -2408,6 +2517,12 @@ function _buildHTML(p){
 +'.value-icon{width:64px;height:64px;border-radius:50%;background:#fff;color:var(--primary);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:1.7rem;box-shadow:0 8px 20px rgba(0,0,0,.08)}\n'
 +'.value-card h4{font-weight:700;font-size:1.05rem;margin-bottom:8px;color:var(--dark)}\n'
 +'.value-card p{font-size:.88rem;color:var(--muted)}\n'
++'.esp-section{background:var(--bg);padding:80px 0}\n'
++'.esp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;max-width:1100px;margin:0 auto}\n'
++'.esp-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:10px;transition:all .2s}\n'
++'.esp-card:hover{border-color:var(--primary);transform:translateY(-3px);box-shadow:0 16px 32px rgba(0,0,0,.08)}\n'
++'.esp-check{width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem}\n'
++'.esp-card h4{font-size:1rem;font-weight:700;color:var(--dark);line-height:1.3}\n'
 +'.team{padding:96px 0;background:#fff}\n'
 +'.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;max-width:1000px;margin:0 auto}\n'
 +'.team-card{text-align:center}\n'
@@ -2475,7 +2590,7 @@ function _buildHTML(p){
 +'.cb-wa-final a:hover{background:#1ea952}\n'
 +'@media(max-width:900px){\n'
 +'.hero-grid,.about-grid,.contact-grid,.footer-grid{grid-template-columns:1fr;gap:40px}\n'
-+'.services-grid,.team-grid,.values,.features-grid,.testimonials-grid{grid-template-columns:1fr 1fr}\n'
++'.services-grid,.team-grid,.values,.features-grid,.testimonials-grid,.esp-grid{grid-template-columns:1fr 1fr}\n'
 +'.hero h1{font-size:2.4rem}\n'
 +'.section-head h2,.about-content h2{font-size:1.9rem}\n'
 +'.section,.about,.team,.contact{padding:64px 0}\n'
@@ -2483,7 +2598,7 @@ function _buildHTML(p){
 +'.hero-img{aspect-ratio:16/10}\n'
 +'}\n'
 +'@media(max-width:600px){\n'
-+'.services-grid,.team-grid,.values,.features-grid,.testimonials-grid{grid-template-columns:1fr}\n'
++'.services-grid,.team-grid,.values,.features-grid,.testimonials-grid,.esp-grid{grid-template-columns:1fr}\n'
 +'.cb-window{bottom:0;right:0;left:0;width:100vw;max-height:90vh;border-radius:18px 18px 0 0}\n'
 +'.cb-toggle{bottom:18px;right:18px}\n'
 +'.hero{padding:104px 0 56px}\n'
@@ -2540,6 +2655,7 @@ function _buildHTML(p){
 +'</div>\n'
 +'</div>\n'
 +'</section>\n'
++espSectionHTML
 +'<section class="features">\n'
 +'<div class="container">\n'
 +'<div class="section-head">\n'
@@ -2681,13 +2797,14 @@ function _buildHTML(p){
 +'(function(){\n'
 +'var cbState="idle",cbData={name:"",phone:"",service:""},started=false;\n'
 +'var SERVICE_KEYS='+JSON.stringify(p.services.map(function(s){return s.name.toLowerCase()}))+';\n'
++'var ESPECIALIDADES='+espDataJSON+';\n'
 +'function normalize(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"")}\n'
 +'function el(id){return document.getElementById(id)}\n'
 +'window.cbToggle=function(){var w=el("cb-window");w.classList.toggle("open");if(w.classList.contains("open")&&!started){started=true;cbStart()}}\n'
 +'function addMsg(t,who){var b=el("cb-body");var d=document.createElement("div");d.className="msg "+who;d.textContent=t;b.appendChild(d);b.scrollTop=b.scrollHeight}\n'
 +'function typing(on){var b=el("cb-body");var ex=el("typing-i");if(ex)ex.remove();if(on){var d=document.createElement("div");d.className="typing";d.id="typing-i";d.innerHTML="<span></span><span></span><span></span>";b.appendChild(d);b.scrollTop=b.scrollHeight}}\n'
 +'function botMsg(t,delay){delay=delay||900;typing(true);setTimeout(function(){typing(false);addMsg(t,"bot")},delay)}\n'
-+'function cbStart(){setTimeout(function(){botMsg("¡Hola! 👋 Soy el asistente virtual de {BIZ_NAME}. ¿En qué puedo ayudarte hoy?")},700)}\n'
++'function cbStart(){setTimeout(function(){var greet="¡Hola! 👋 Soy el asistente virtual de {BIZ_NAME}.";if(ESPECIALIDADES.length){greet+=" Somos especialistas en "+ESPECIALIDADES.map(function(e){return e.name}).join(", ")+" 🎯"}greet+=" ¿En qué puedo ayudarte?";botMsg(greet)},700)}\n'
 +'function showWA(){el("cb-wa-final").classList.add("show")}\n'
 +'function handle(t){\n'
 +'addMsg(t,"user");\n'
@@ -2695,6 +2812,7 @@ function _buildHTML(p){
 +'if(cbState==="await_name"){cbData.name=t;cbState="await_phone";botMsg("Encantado, "+t+". ¿Me dices un teléfono para que te llamemos?");return}\n'
 +'if(cbState==="await_phone"){cbData.phone=t;cbState="done";botMsg("Anotado, "+cbData.name+". Nuestro equipo te llamará al "+t+". Si lo prefieres, escríbenos directo por WhatsApp 👇");setTimeout(showWA,1100);return}\n'
 +'if(n.match(/cita|reserv|contacto|atencion|llama|telefono|presupuesto|consult|hablar/)){cbState="await_name";botMsg("Genial. ¿Me dices tu nombre?");return}\n'
++'for(var ei=0;ei<ESPECIALIDADES.length;ei++){var esp=ESPECIALIDADES[ei];var hit=false;for(var ki=0;ki<esp.kws.length;ki++){var kw=normalize(esp.kws[ki]);if(kw&&n.indexOf(kw)>-1){hit=true;break}}if(hit){botMsg("En {BIZ_NAME} somos especialistas en "+esp.name+" 🎯. ¿Quieres que te llamemos para una primera consulta sin compromiso?");cbState="await_name";return}}\n'
 +'var matched=null;for(var i=0;i<SERVICE_KEYS.length;i++){var k=normalize(SERVICE_KEYS[i]);if(n.indexOf(k.split(" ")[0])>-1){matched=SERVICE_KEYS[i];break}}\n'
 +'if(matched){botMsg("Te interesa "+matched+", perfecto. ¿Quieres pedir cita o tienes alguna pregunta concreta?");return}\n'
 +'if(n.match(/precio|cuanto|cuesta|tarif/)){botMsg("Cada caso es distinto. Lo mejor es que pidamos cita para darte presupuesto sin compromiso. ¿Te parece bien?");return}\n'
@@ -2712,24 +2830,30 @@ function _buildHTML(p){
 +'</html>';
 }
 
-function getTemplate(nicho){
+function getTemplate(nicho,d){
   switch(nicho){
-    case 'dental': return _buildHTML(SECTOR_PROFILES.dental);
-    case 'restaurante': return _buildHTML(SECTOR_PROFILES.restaurante);
-    case 'abogado': return _buildHTML(SECTOR_PROFILES.abogado);
-    case 'peluqueria': return _buildHTML(SECTOR_PROFILES.peluqueria);
-    case 'gestoria': return _buildHTML(SECTOR_PROFILES.gestoria);
-    case 'veterinaria': return _buildHTML(SECTOR_PROFILES.veterinaria);
-    case 'taller': return _buildHTML(SECTOR_PROFILES.taller);
-    case 'fisioterapia': return _buildHTML(SECTOR_PROFILES.fisioterapia);
-    default: return _buildHTML(SECTOR_PROFILES.generic);
+    case 'dental': return _buildHTML(SECTOR_PROFILES.dental,d);
+    case 'restaurante': return _buildHTML(SECTOR_PROFILES.restaurante,d);
+    case 'abogado': return _buildHTML(SECTOR_PROFILES.abogado,d);
+    case 'peluqueria': return _buildHTML(SECTOR_PROFILES.peluqueria,d);
+    case 'gestoria': return _buildHTML(SECTOR_PROFILES.gestoria,d);
+    case 'veterinaria': return _buildHTML(SECTOR_PROFILES.veterinaria,d);
+    case 'taller': return _buildHTML(SECTOR_PROFILES.taller,d);
+    case 'fisioterapia': return _buildHTML(SECTOR_PROFILES.fisioterapia,d);
+    default: return _buildHTML(SECTOR_PROFILES.generic,d);
   }
 }
 
 function injectData(html,d){
   var biz=d.bizName||d.domain;
   var wa=d.waNumber||(d.phones&&d.phones.length?d.phones[0].replace(/\D/g,''):'34600000000');
-  var svcsStr=d.services&&d.services.length?d.services.slice(0,8).join(', '):'';
+  var svcsList=(d.especialidades&&d.especialidades.length)?d.especialidades.map(function(e){return e.name}):(d.services&&d.services.length?d.services.slice(0,8):[]);
+  var svcsStr=svcsList.join(', ');
+  var espStr=d.especialidades&&d.especialidades.length?d.especialidades.map(function(e){return e.name}).join(', '):svcsStr;
+  var espList=d.especialidades&&d.especialidades.length?d.especialidades.map(function(e){return '• '+e.name}).join('\n'):'';
+  var equipoStr=d.equipo&&d.equipo.length?d.equipo.map(function(p){return p.nombre+(p.cargo?' — '+p.cargo:'')}).join(', '):'';
+  var ig=d.socialUrls&&d.socialUrls.instagram?d.socialUrls.instagram:'#';
+  var fb=d.socialUrls&&d.socialUrls.facebook?d.socialUrls.facebook:'#';
   var initial=(biz||'W').trim().charAt(0).toUpperCase();
   return html
     .replace(/\{BIZ_NAME_INITIAL\}/g,initial)
@@ -2742,13 +2866,18 @@ function injectData(html,d){
     .replace(/\{BIZ_WA\}/g,wa)
     .replace(/\{BIZ_DESC\}/g,d.description||'Especialistas en '+(d.sector||'nuestro sector').toLowerCase()+' con años de experiencia.')
     .replace(/\{BIZ_SERVICES\}/g,svcsStr)
+    .replace(/\{BIZ_ESPECIALIDADES\}/g,espStr)
+    .replace(/\{BIZ_ESPECIALIDADES_LIST\}/g,espList)
+    .replace(/\{BIZ_EQUIPO\}/g,equipoStr)
+    .replace(/\{BIZ_INSTAGRAM\}/g,ig)
+    .replace(/\{BIZ_FACEBOOK\}/g,fb)
     .replace(/\{BIZ_URL\}/g,d.url||'');
 }
 
 function generateWebDemo(idx){
   var d=prosResults[idx];
   if(!d){showToast('Prospecto no encontrado');return}
-  var template=getTemplate(d.nicho);
+  var template=getTemplate(d.nicho,d);
   var html=injectData(template,d);
   var biz=d.bizName||d.domain;
   var blob=new Blob([html],{type:'text/html;charset=utf-8'});
