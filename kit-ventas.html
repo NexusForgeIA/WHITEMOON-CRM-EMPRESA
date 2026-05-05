@@ -335,14 +335,48 @@ function calcROI(){
 }
 
 function pricePack(){
-  // Recomendado según situación
+  // Packs reales WhiteMoon
   var packs=[
-    {name:'Starter',price:79,feat:'Chatbot web + WA básico',sit:'sin-wa'},
-    {name:'Advance',price:149,feat:'+ Voz IA + agenda + recordatorios',sit:'sin-chatbot',feat_pack:true},
-    {name:'Pro',price:249,feat:'+ CRM + analítica + multi-canal',sit:'todo-mal'}
+    {
+      name:'Pack Advance',
+      price:'149€',period:'/mes',extra:'+ 299€ setup',
+      audience:'monthly',
+      bullets:[
+        'Chatbot IA conversacional 24/7',
+        'Captura de leads automática',
+        'Integración WhatsApp Business',
+        'Activación en 48h · Sin permanencia'
+      ],
+      sit:['sin-wa','sin-chatbot']
+    },
+    {
+      name:'Pack Pyme',
+      price:'1.800€',period:' pago único',extra:'',
+      audience:'oneoff',
+      bullets:[
+        'Web profesional completa',
+        'Dominio incluido 1 año',
+        'Chatbot IA integrado',
+        'Sistema de reservas online',
+        'SEO optimizado',
+        'Operativo en 5-7 días'
+      ],
+      sit:['todo-mal']
+    },
+    {
+      name:'Scout IA',
+      price:'desde 199€',period:'/mes',extra:'Para agencias',
+      audience:'agency',
+      bullets:[
+        'CRM de ventas IA',
+        'Análisis de prospectos ilimitado',
+        'Generador de webs demo',
+        'Pipeline + MRR'
+      ],
+      sit:[]
+    }
   ];
-  // marcar el recomendado
-  packs.forEach(function(p){p.feat_pack=p.sit===SIT});
+  packs.forEach(function(p){p.feat_pack=p.sit.indexOf(SIT)!==-1});
   return packs;
 }
 
@@ -400,16 +434,16 @@ function build(){
 
     // 5 — packs
     '<div class="slide-tag">Inversión</div>'+
-    '<h2>Tres packs, uno os encaja</h2>'+
+    '<h2>Planes WhiteMoon</h2>'+
     packs.map(function(p){
       return '<div class="pack'+(p.feat_pack?' feat':'')+'">'+
         (p.feat_pack?'<div class="pack-tag">Recomendado</div>':'')+
-        '<div class="pack-name">'+p.name+'</div>'+
-        '<div class="pack-price">'+p.price+'€<small>/mes</small></div>'+
-        '<div class="pack-feat">'+esc(p.feat)+'</div>'+
+        '<div class="pack-name">'+esc(p.name)+'</div>'+
+        '<div class="pack-price">'+p.price+'<small>'+esc(p.period)+'</small></div>'+
+        (p.extra?'<div class="muted" style="font-size:.78rem;margin-bottom:8px">'+esc(p.extra)+'</div>':'')+
+        '<ul class="list" style="margin:6px 0 0">'+p.bullets.map(function(b){return '<li>'+esc(b)+'</li>'}).join('')+'</ul>'+
       '</div>';
-    }).join('')+
-    '<p class="muted">Sin permanencia. Cancelas cuando quieras.</p>',
+    }).join(''),
 
     // 6 — objeciones
     '<div class="slide-tag">Lo que os preguntáis</div>'+

@@ -2325,11 +2325,11 @@ async function deleteProspect(domain,cardEl){
   }
   prosResults=prosResults.filter(function(r){return r.domain!==domain});
   try{localStorage.removeItem('scout_prospect_'+domain)}catch(e){}
-  if(cardEl&&cardEl.remove)cardEl.remove();
   S.analyzed=prosResults.length;
+  renderProsResults();
   updateCounters();
-  renderPipeline();
-  showToast('Prospecto eliminado');
+  if(typeof renderPipeline==='function')renderPipeline();
+  showToast('✓ Prospecto eliminado');
 }
 
 async function _syncProspectStatus(domain,status,notes,lastContact){
