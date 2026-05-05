@@ -1508,7 +1508,7 @@ async function generateKitVentas(idx){
   var score=d.score||45;
   var biz=d.bizName||d.domain;
   var sit=score<30?'todo-mal':score<50?'sin-chatbot':score<65?'sin-wa':'sin-chatbot';
-  var ticketMap={dental:280,restaurante:38,belleza:68,peluqueria:48,abogado:650,gestoria:210,taller:190,veterinaria:98,otro:150};
+  var ticketMap={dental:280,restaurante:38,belleza:68,peluqueria:48,abogado:650,gestoria:210,taller:190,veterinaria:98,cocinas:4500,muebles:800,otro:150};
   var ticket=ticketMap[sector]||150;
   var opCount=(d.probs&&d.probs.length)||(d.opportunities&&d.opportunities.length)||4;
   var calls=opCount>=6?20:opCount>=4?8:3;
@@ -3435,6 +3435,8 @@ var DEMO_REPOS={
   'academia':    'https://nexusforgeia.github.io/WHITEMOON-CENTROS-FORMACION/',
   'belleza':     'https://nexusforgeia.github.io/WHITEMOON-ESTETICA/',
   'fisioterapia':'https://nexusforgeia.github.io/WHITEMOON-PODOLOGOS/',
+  'cocinas':     'https://nexusforgeia.github.io/WHITEMOON-COCINAS/',
+  'muebles':     'https://nexusforgeia.github.io/WHITEMOON-MUEBLES/',
   'default':     'https://nexusforgeia.github.io/WHITEMOON-CLINICAS-DENTALES/'
 };
 
