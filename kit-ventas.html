@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b0d12">
+<title>WhiteMoon · Kit de Visita</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0b0d12;--bg2:#10131a;--card:#151923;--line:rgba(255,255,255,.08);
+  --text:#f4f4f5;--muted:#a1a1aa;--text2:#d4d4d8;
+  --orange:#f59e0b;--orange2:#d97706;--accent:#ff8c42;
+  --green:#22c55e;--red:#ef4444;--cyan:#06b6d4;
+}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5;min-height:100vh;overscroll-behavior:none}
+.app{max-width:560px;margin:0 auto;padding:18px;padding-bottom:120px}
+h1,h2,h3{margin:0 0 10px;font-weight:800;letter-spacing:-.02em}
+h1{font-size:1.6rem}
+h2{font-size:1.25rem}
+h3{font-size:1.05rem;color:var(--orange)}
+p{margin:0 0 10px;color:var(--text2)}
+.muted{color:var(--muted);font-size:.85rem}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.brand-logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--orange),var(--orange2));display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff}
+.brand-name{font-weight:800;font-size:1.05rem}
+.brand-sub{font-size:.7rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.input,.select{width:100%;background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:1rem;font-family:inherit;outline:none}
+.input:focus,.select:focus{border-color:var(--orange)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,var(--orange),var(--orange2));color:#fff;border:none;border-radius:12px;padding:14px 20px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;width:100%;transition:transform .12s,filter .12s}
+.btn:active{transform:scale(.98)}
+.btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+.btn-ghost:active{filter:brightness(1.2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.chip{padding:9px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg2);color:var(--text2);font-size:.85rem;cursor:pointer;font-weight:600}
+.chip.on{background:linear-gradient(135deg,var(--orange),var(--orange2));border-color:transparent;color:#fff}
+.steps{display:flex;gap:6px;justify-content:center;margin-bottom:14px}
+.step{width:28px;height:4px;border-radius:99px;background:var(--line)}
+.step.on{background:var(--orange)}
+.slide{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px;min-height:60vh;display:none;animation:fade .25s ease}
+.slide.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.slide-tag{display:inline-block;background:rgba(245,158,11,.12);color:var(--orange);font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:99px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.big{font-size:2.4rem;font-weight:900;letter-spacing:-.03em;line-height:1.05;margin-bottom:8px}
+.huge{font-size:3rem;font-weight:900;color:var(--orange);letter-spacing:-.04em;line-height:1}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.kpi-c{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi-l{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.kpi-v{font-size:1.3rem;font-weight:800}
+.kpi-v.green{color:var(--green)}
+.kpi-v.orange{color:var(--orange)}
+.list{margin:10px 0;padding:0;list-style:none}
+.list li{padding:8px 0 8px 28px;position:relative;color:var(--text2)}
+.list li::before{content:"";position:absolute;left:0;top:14px;width:14px;height:14px;border-radius:50%;background:rgba(34,197,94,.18);border:2px solid var(--green)}
+.list.bad li::before{background:rgba(239,68,68,.18);border-color:var(--red)}
+.pack{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:10px;position:relative}
+.pack.feat{border-color:var(--orange);background:linear-gradient(180deg,rgba(245,158,11,.08),var(--bg2))}
+.pack-tag{position:absolute;top:-10px;right:14px;background:var(--orange);color:#fff;font-size:.7rem;font-weight:700;padding:3px 10px;border-radius:99px}
+.pack-name{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.pack-price{font-size:1.6rem;font-weight:900;margin-bottom:2px}
+.pack-price small{font-size:.85rem;color:var(--muted);font-weight:600}
+.pack-feat{font-size:.85rem;color:var(--text2);margin-top:6px}
+.quote{border-left:3px solid var(--orange);padding:10px 14px;background:rgba(245,158,11,.05);border-radius:0 10px 10px 0;margin:12px 0;font-style:italic;color:var(--text2)}
+.q-card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px}
+.q-q{font-weight:700;color:#fff;margin-bottom:6px;font-size:.95rem}
+.q-q::before{content:"❓ ";color:var(--orange)}
+.q-a{color:var(--text2);font-size:.92rem}
+.q-a::before{content:"✓ ";color:var(--green);font-weight:800}
+.snav{position:fixed;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px 18px;background:linear-gradient(180deg,transparent,rgba(11,13,18,.92) 30%);backdrop-filter:blur(10px)}
+.snav .max{max-width:560px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nav-btn{background:var(--card);border:1px solid var(--line);color:var(--text);border-radius:12px;width:48px;height:48px;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.nav-btn:disabled{opacity:.35}
+.nav-btn.cta{background:linear-gradient(135deg,var(--orange),var(--orange2));border-color:transparent;width:auto;padding:0 18px;font-weight:700;font-size:.95rem;gap:6px}
+.dots{display:flex;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.dot.on{background:var(--orange);width:18px;border-radius:99px}
+.h-bar{height:1px;background:var(--line);margin:14px 0}
+.bz{font-weight:800;color:var(--orange)}
+.foot-mini{text-align:center;font-size:.72rem;color:var(--muted);margin-top:18px}
+.tap{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tap a{flex:1;min-width:140px;background:var(--bg2);border:1px solid var(--line);color:var(--text);text-decoration:none;padding:12px;border-radius:10px;text-align:center;font-weight:700;font-size:.88rem}
+.tap a.green{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.4);color:var(--green)}
+.tap a.cyan{background:rgba(6,182,212,.12);border-color:rgba(6,182,212,.4);color:var(--cyan)}
+@media(max-width:380px){.row{grid-template-columns:1fr}.huge{font-size:2.4rem}.big{font-size:2rem}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="brand">
+    <div class="brand-logo">W</div>
+    <div>
+      <div class="brand-name">WhiteMoon</div>
+      <div class="brand-sub">Kit de Visita</div>
+    </div>
+  </div>
+
+  <!-- ════════════════ SETUP ════════════════ -->
+  <div id="setup">
+    <div class="steps">
+      <div class="step on" id="s1"></div>
+      <div class="step" id="s2"></div>
+      <div class="step" id="s3"></div>
+    </div>
+
+    <div class="card" id="c1">
+      <h2>¿A quién visitas?</h2>
+      <p class="muted">Estos datos personalizan todo el kit.</p>
+      <label class="label">Negocio</label>
+      <input class="input" id="i-biz" placeholder="Ej. Clínica Dental Sonríe">
+      <div style="height:10px"></div>
+      <label class="label">Persona de contacto (opcional)</label>
+      <input class="input" id="i-contact" placeholder="Ej. Dra. García">
+      <div style="height:14px"></div>
+      <button class="btn" onclick="next(1)">Siguiente →</button>
+    </div>
+
+    <div class="card" id="c2" style="display:none">
+      <h2>Sector y situación</h2>
+      <label class="label">Sector</label>
+      <div class="chips" id="ch-sector">
+        <div class="chip" data-v="dental">Dental</div>
+        <div class="chip" data-v="restaurante">Restaurante</div>
+        <div class="chip" data-v="peluqueria">Peluquería</div>
+        <div class="chip" data-v="belleza">Belleza/Estética</div>
+        <div class="chip" data-v="abogado">Abogado</div>
+        <div class="chip" data-v="gestoria">Gestoría</div>
+        <div class="chip" data-v="taller">Taller</div>
+        <div class="chip" data-v="veterinaria">Veterinaria</div>
+        <div class="chip" data-v="otro">Otro</div>
+      </div>
+      <div style="height:6px"></div>
+      <label class="label">Situación detectada</label>
+      <div class="chips" id="ch-sit">
+        <div class="chip" data-v="todo-mal">Todo en rojo</div>
+        <div class="chip" data-v="sin-chatbot">Sin chatbot</div>
+        <div class="chip" data-v="sin-wa">Sin WhatsApp business</div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="row">
+        <button class="btn btn-ghost" onclick="back(0)">← Atrás</button>
+        <button class="btn" onclick="next(2)">Siguiente →</button>
+      </div>
+    </div>
+
+    <div class="card" id="c3" style="display:none">
+      <h2>Cifras del negocio</h2>
+      <p class="muted">Para calcular el ROI exacto.</p>
+      <label class="label">Ticket medio (€)</label>
+      <input class="input" id="i-ticket" type="number" min="1" placeholder="150">
+      <div style="height:10px"></div>
+      <label class="label">Llamadas perdidas estimadas / mes</label>
+      <input class="input" id="i-calls" type="number" min="0" placeholder="8">
+      <div style="height:14px"></div>
+      <div class="row">
+        <button class="btn btn-ghost" onclick="back(1)">← Atrás</button>
+        <button class="btn" onclick="finishSetup()">Generar kit ✨</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════ SLIDES ════════════════ -->
+  <div id="slides" style="display:none"></div>
+
+  <div class="foot-mini">WhiteMoon · Agentes IA para negocios locales</div>
+</div>
+
+<!-- ════════════════ NAV ════════════════ -->
+<div class="snav" id="snav">
+  <div class="max">
+    <button class="nav-btn" id="nav-prev" onclick="goTo(IDX-1)">←</button>
+    <div class="dots" id="dots"></div>
+    <button class="nav-btn cta" id="nav-next" onclick="goTo(IDX+1)">Siguiente →</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+//  Estado
+// ═══════════════════════════════════════
+var BIZ='', CONTACT='', SECTOR='otro', SIT='sin-chatbot', TICKET=150, CALLS=8;
+var IDX=0;
+var SLIDES=[];
+
+var SETUP_STEP=0;
+
+// ═══════════════════════════════════════
+//  Setup wizard
+// ═══════════════════════════════════════
+function $(id){return document.getElementById(id)}
+function next(step){
+  if(step===1){
+    var b=$('i-biz').value.trim();
+    if(!b){$('i-biz').focus();return}
+    BIZ=b;
+    CONTACT=$('i-contact').value.trim();
+    $('c1').style.display='none';$('c2').style.display='block';
+    $('s2').classList.add('on');
+    SETUP_STEP=1;
+  } else if(step===2){
+    if(!SECTOR){return}
+    if(!SIT){return}
+    $('c2').style.display='none';$('c3').style.display='block';
+    $('s3').classList.add('on');
+    SETUP_STEP=2;
+    // sugerir ticket por sector
+    if(!$('i-ticket').value)$('i-ticket').value=defaultTicket(SECTOR);
+    if(!$('i-calls').value)$('i-calls').value=8;
+  }
+}
+function back(step){
+  if(step===0){$('c2').style.display='none';$('c1').style.display='block';$('s2').classList.remove('on');SETUP_STEP=0}
+  else if(step===1){$('c3').style.display='none';$('c2').style.display='block';$('s3').classList.remove('on');SETUP_STEP=1}
+}
+function defaultTicket(s){
+  return ({dental:280,restaurante:38,belleza:68,peluqueria:48,abogado:650,gestoria:210,taller:190,veterinaria:98,otro:150})[s]||150
+}
+
+document.querySelectorAll('#ch-sector .chip').forEach(function(el){
+  el.onclick=function(){
+    document.querySelectorAll('#ch-sector .chip').forEach(function(x){x.classList.remove('on')});
+    el.classList.add('on');SECTOR=el.dataset.v;
+  }
+});
+document.querySelectorAll('#ch-sit .chip').forEach(function(el){
+  el.onclick=function(){
+    document.querySelectorAll('#ch-sit .chip').forEach(function(x){x.classList.remove('on')});
+    el.classList.add('on');SIT=el.dataset.v;
+  }
+});
+
+function finishSetup(){
+  var t=parseFloat($('i-ticket').value);
+  var c=parseInt($('i-calls').value,10);
+  if(!t||t<=0){$('i-ticket').focus();return}
+  if(isNaN(c)||c<0){$('i-calls').focus();return}
+  TICKET=t;CALLS=c;
+  build();
+  $('setup').style.display='none';
+  $('slides').style.display='block';
+  $('snav').style.display='flex';
+  mkDots();
+  goTo(0);
+}
+
+// ═══════════════════════════════════════
+//  Datos por sector
+// ═══════════════════════════════════════
+var SECTOR_DATA={
+  dental:{
+    label:'clínica dental',
+    pain:'Cada urgencia fuera de horario que no atendéis se va a la siguiente clínica.',
+    solution:'atender urgencias y agendar primeras visitas 24/7',
+    bullets:['Triaje automático de urgencias','Confirmación de citas por WhatsApp','Recordatorios de revisión semestral','Filtro de no-shows: hasta -35%']
+  },
+  restaurante:{
+    label:'restaurante',
+    pain:'Las reservas que entran cuando estáis en cocina se pierden.',
+    solution:'gestionar reservas por WhatsApp y teléfono fuera del servicio',
+    bullets:['Reservas 24/7 sin parar el servicio','Confirmación día previo (-40% no-shows)','Atención multi-idioma para turistas','Listas de espera automáticas']
+  },
+  peluqueria:{
+    label:'salón',
+    pain:'Las clientas reservan desde el sofá por la noche. Si no pueden, eligen otro.',
+    solution:'aceptar reservas y rellenar huecos cancelados',
+    bullets:['Reservas 24/7 desde WhatsApp','Recordatorio el día antes','Lista de espera: hueco que se cae lo rellena el bot','Captación de clientas nuevas desde Google']
+  },
+  belleza:{
+    label:'centro de estética',
+    pain:'Las consultas sobre tratamientos llegan a deshora — y se enfrían rápido.',
+    solution:'cualificar tratamientos y agendar primeras consultas',
+    bullets:['Información de tratamientos en segundos','Reservas y depósitos por WhatsApp','Recordatorios antes de cada cita','Recuperación de pacientes inactivos']
+  },
+  abogado:{
+    label:'despacho',
+    pain:'El cliente con problema legal urgente llama al primero que coge. Si no sois vosotros, perdéis el caso.',
+    solution:'cualificar consultas legales 24/7 y agendar con el letrado',
+    bullets:['Primer contacto en 30 segundos','Cualificación: solo casos viables al letrado','Recogida segura de datos básicos','Recordatorios de hitos procesales']
+  },
+  gestoria:{
+    label:'gestoría',
+    pain:'Los autónomos llaman al final del trimestre con prisas. Si no respondéis, encuentran otro asesor.',
+    solution:'cualificar autónomos y empresas y agendar reuniones',
+    bullets:['Alta y consultas en horas, no días','Recordatorios automáticos de modelos fiscales','Filtro: solo lo complejo llega al asesor','Onboarding de nuevos clientes guiado']
+  },
+  taller:{
+    label:'taller',
+    pain:'Coche averiado = llamada urgente. Si está ocupado, llaman al siguiente.',
+    solution:'coger llamadas mientras estáis en el coche y dar presupuesto inicial',
+    bullets:['Recogida de marca, modelo y avería','Presupuestos por WhatsApp con foto','Recordatorios de revisión y cambio de aceite','Recuperación de clientes antiguos']
+  },
+  veterinaria:{
+    label:'clínica veterinaria',
+    pain:'Una urgencia a medianoche se va a la primera clínica que coge el teléfono.',
+    solution:'cualificar urgencias y agendar consultas',
+    bullets:['Triaje automático: urgencia vs cita','Recordatorios de vacunación','Cualificación previa: especie, edad, síntomas','Solo despertáis a la guardia si toca']
+  },
+  otro:{
+    label:'negocio',
+    pain:'Cada llamada o consulta sin atender es un cliente que se va a la competencia.',
+    solution:'atender, cualificar y agendar 24/7',
+    bullets:['Atención 24/7 sin contratar','Cualificación automática','Recordatorios y seguimiento','Integración con vuestra agenda']
+  }
+};
+
+var SIT_DATA={
+  'todo-mal':{
+    title:'Está todo en rojo',
+    findings:['Sin chatbot ni atención automatizada','Sin WhatsApp Business','Sin reservas online','Sin recordatorios automáticos'],
+    impact:'Perdéis clientes en TODOS los puntos de contacto.'
+  },
+  'sin-chatbot':{
+    title:'Os falta el chatbot',
+    findings:['Sin atención fuera de horario','Llamadas perdidas no se recuperan','Consultas web sin respuesta inmediata','Coste oculto: cliente que se va sin avisar'],
+    impact:'Cada hora fuera de horario es facturación que se va a la competencia.'
+  },
+  'sin-wa':{
+    title:'WhatsApp sin automatizar',
+    findings:['Mensajes sin contestar acumulados','Sin confirmaciones automáticas','Sin recordatorios','Tiempo del equipo escribiendo lo mismo'],
+    impact:'El canal favorito de vuestros clientes está abandonado.'
+  }
+};
+
+// ═══════════════════════════════════════
+//  ROI
+// ═══════════════════════════════════════
+function calcROI(){
+  // 60% de las llamadas perdidas son recuperables; 35% conversión
+  var recovered=Math.round(CALLS*0.6*0.35);
+  var monthly=recovered*TICKET;
+  var yearly=monthly*12;
+  return{recovered:recovered,monthly:monthly,yearly:yearly}
+}
+
+function pricePack(){
+  // Recomendado según situación
+  var packs=[
+    {name:'Starter',price:79,feat:'Chatbot web + WA básico',sit:'sin-wa'},
+    {name:'Advance',price:149,feat:'+ Voz IA + agenda + recordatorios',sit:'sin-chatbot',feat_pack:true},
+    {name:'Pro',price:249,feat:'+ CRM + analítica + multi-canal',sit:'todo-mal'}
+  ];
+  // marcar el recomendado
+  packs.forEach(function(p){p.feat_pack=p.sit===SIT});
+  return packs;
+}
+
+// ═══════════════════════════════════════
+//  Construir slides
+// ═══════════════════════════════════════
+function build(){
+  var sd=SECTOR_DATA[SECTOR]||SECTOR_DATA.otro;
+  var st=SIT_DATA[SIT]||SIT_DATA['sin-chatbot'];
+  var roi=calcROI();
+  var packs=pricePack();
+  var hi=CONTACT?('Hola '+esc(CONTACT)+','):'Hola,';
+
+  SLIDES=[
+    // 0 — portada
+    '<div class="slide-tag">Visita personalizada</div>'+
+    '<div class="big">'+esc(BIZ)+'</div>'+
+    '<p class="muted">'+hi+' hemos analizado vuestra '+sd.label+' y traemos un plan concreto. Solo tarda 5 minutos.</p>'+
+    '<div class="h-bar"></div>'+
+    '<div class="kpi"><div class="kpi-c"><div class="kpi-l">Sector</div><div class="kpi-v">'+capitalize(SECTOR)+'</div></div>'+
+    '<div class="kpi-c"><div class="kpi-l">Situación</div><div class="kpi-v orange">'+st.title+'</div></div></div>'+
+    '<p class="muted">Lo que viene a continuación está calculado con vuestras propias cifras.</p>',
+
+    // 1 — diagnóstico
+    '<div class="slide-tag">Diagnóstico</div>'+
+    '<h2>'+st.title+'</h2>'+
+    '<p>Esto es lo que hemos visto en '+esc(BIZ)+':</p>'+
+    '<ul class="list bad">'+st.findings.map(function(f){return '<li>'+esc(f)+'</li>'}).join('')+'</ul>'+
+    '<div class="quote">'+esc(st.impact)+'</div>',
+
+    // 2 — el dolor real
+    '<div class="slide-tag">El dolor real</div>'+
+    '<h2>¿Cuánto cuesta no hacer nada?</h2>'+
+    '<p>'+esc(sd.pain)+'</p>'+
+    '<div class="kpi">'+
+      '<div class="kpi-c"><div class="kpi-l">Llamadas perdidas/mes</div><div class="kpi-v">'+CALLS+'</div></div>'+
+      '<div class="kpi-c"><div class="kpi-l">Ticket medio</div><div class="kpi-v">'+TICKET+'€</div></div>'+
+    '</div>'+
+    '<div class="quote">Si recuperamos solo el 60% (y de esas convertimos 1 de cada 3), son <b>'+roi.recovered+' clientes/mes</b> que ahora se van.</div>',
+
+    // 3 — solución
+    '<div class="slide-tag">Solución</div>'+
+    '<h2>Agentes IA que '+sd.solution+'</h2>'+
+    '<p>Trabajan 24/7, no se cansan y atienden en español, inglés y lo que haga falta:</p>'+
+    '<ul class="list">'+sd.bullets.map(function(b){return '<li>'+esc(b)+'</li>'}).join('')+'</ul>',
+
+    // 4 — ROI
+    '<div class="slide-tag">Vuestro ROI</div>'+
+    '<h2>Las cuentas claras</h2>'+
+    '<p>Con <b>'+CALLS+'</b> llamadas perdidas/mes y un ticket de <b>'+TICKET+'€</b>:</p>'+
+    '<div class="kpi"><div class="kpi-c"><div class="kpi-l">Clientes recuperables/mes</div><div class="kpi-v green">'+roi.recovered+'</div></div>'+
+    '<div class="kpi-c"><div class="kpi-l">Facturación extra/mes</div><div class="kpi-v green">'+fmt(roi.monthly)+'€</div></div></div>'+
+    '<div class="kpi-c" style="margin-top:6px"><div class="kpi-l">Facturación extra anual</div><div class="huge">'+fmt(roi.yearly)+'€</div></div>'+
+    '<p class="muted" style="margin-top:14px">Cifras conservadoras: 60% recuperación × 35% conversión.</p>',
+
+    // 5 — packs
+    '<div class="slide-tag">Inversión</div>'+
+    '<h2>Tres packs, uno os encaja</h2>'+
+    packs.map(function(p){
+      return '<div class="pack'+(p.feat_pack?' feat':'')+'">'+
+        (p.feat_pack?'<div class="pack-tag">Recomendado</div>':'')+
+        '<div class="pack-name">'+p.name+'</div>'+
+        '<div class="pack-price">'+p.price+'€<small>/mes</small></div>'+
+        '<div class="pack-feat">'+esc(p.feat)+'</div>'+
+      '</div>';
+    }).join('')+
+    '<p class="muted">Sin permanencia. Cancelas cuando quieras.</p>',
+
+    // 6 — objeciones
+    '<div class="slide-tag">Lo que os preguntáis</div>'+
+    '<h2>3 dudas frecuentes</h2>'+
+    objections().map(function(o){
+      return '<div class="q-card"><div class="q-q">'+esc(o.q)+'</div><div class="q-a">'+esc(o.a)+'</div></div>';
+    }).join(''),
+
+    // 7 — cierre
+    '<div class="slide-tag">Siguiente paso</div>'+
+    '<h2>¿Lo probamos 14 días?</h2>'+
+    '<p>Os montamos el agente IA configurado para '+esc(BIZ)+' y lo probáis sin compromiso. Si no recuperáis al menos 3 clientes, cero coste.</p>'+
+    '<div class="kpi"><div class="kpi-c"><div class="kpi-l">Setup</div><div class="kpi-v green">Gratis</div></div>'+
+    '<div class="kpi-c"><div class="kpi-l">Compromiso</div><div class="kpi-v green">14 días</div></div></div>'+
+    '<div class="tap">'+
+      '<a class="green" href="#" onclick="markDeal(\'demo\');return false">📅 Agendar demo</a>'+
+      '<a class="cyan" href="#" onclick="markDeal(\'send\');return false">📧 Enviar propuesta</a>'+
+    '</div>'+
+    '<div class="quote">«Si en 14 días no veis valor, lo apagamos. Sin discusiones.»</div>'
+  ];
+
+  var c=$('slides');
+  c.innerHTML=SLIDES.map(function(html,i){return '<div class="slide" data-i="'+i+'">'+html+'</div>'}).join('');
+}
+
+function objections(){
+  var common=[
+    {q:'Ya tenemos a alguien atendiendo',a:'No lo sustituye, lo complementa fuera de horario y cuando hay pico.'},
+    {q:'Mis clientes prefieren persona',a:'Y lo siguen teniendo. El agente recoge solo lo que ahora se pierde.'},
+    {q:'Suena caro',a:'Con '+Math.max(1,Math.ceil(149/Math.max(1,TICKET)))+' clientes/mes recuperados ya sale rentable.'}
+  ];
+  return common;
+}
+
+// ═══════════════════════════════════════
+//  Navegación
+// ═══════════════════════════════════════
+function mkDots(){
+  var d=$('dots');d.innerHTML='';
+  for(var i=0;i<SLIDES.length;i++){
+    var x=document.createElement('div');x.className='dot'+(i===IDX?' on':'');
+    d.appendChild(x);
+  }
+}
+function goTo(i){
+  if(i<0)i=0;if(i>=SLIDES.length)i=SLIDES.length-1;
+  IDX=i;
+  document.querySelectorAll('.slide').forEach(function(el){el.classList.toggle('on',Number(el.dataset.i)===IDX)});
+  document.querySelectorAll('#dots .dot').forEach(function(el,j){el.classList.toggle('on',j===IDX)});
+  $('nav-prev').disabled=IDX===0;
+  var nb=$('nav-next');
+  if(IDX===SLIDES.length-1){nb.innerHTML='Cerrar visita ✓'}
+  else{nb.innerHTML='Siguiente →'}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function markDeal(kind){
+  // visualmente marcar acción
+  var msg=kind==='demo'?'✓ Demo agendada — anota fecha':'✓ Propuesta enviada';
+  var el=document.createElement('div');
+  el.style.cssText='position:fixed;left:50%;top:24px;transform:translateX(-50%);background:#22c55e;color:#fff;padding:10px 18px;border-radius:99px;font-weight:700;z-index:99;box-shadow:0 8px 24px rgba(0,0,0,.4)';
+  el.textContent=msg;document.body.appendChild(el);
+  setTimeout(function(){el.style.opacity=0;el.style.transition='opacity .4s'},1800);
+  setTimeout(function(){el.remove()},2400);
+}
+
+// ═══════════════════════════════════════
+//  Helpers
+// ═══════════════════════════════════════
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmt(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
+function capitalize(s){return s?s.charAt(0).toUpperCase()+s.slice(1):''}
+
+// teclado y swipe
+document.addEventListener('keydown',function(e){
+  if($('slides').style.display!=='block')return;
+  if(e.key==='ArrowRight')goTo(IDX+1);
+  else if(e.key==='ArrowLeft')goTo(IDX-1);
+});
+var tx=0;
+document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+document.addEventListener('touchend',function(e){
+  if($('slides').style.display!=='block')return;
+  var dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>60){if(dx<0)goTo(IDX+1);else goTo(IDX-1)}
+},{passive:true});
+
+// ═══════════════════════════════════════
+//  Auto-arranque desde Scout (PRELOADED)
+// ═══════════════════════════════════════
+window.addEventListener('load',function(){
+  if(typeof PRELOADED!=='undefined'){
+    BIZ=PRELOADED.biz;
+    CONTACT=PRELOADED.contact;
+    SECTOR=PRELOADED.sector;
+    SIT=PRELOADED.sit;
+    TICKET=PRELOADED.ticket;
+    CALLS=PRELOADED.calls;
+    build();
+    $('setup').style.display='none';
+    $('slides').style.display='block';
+    $('snav').style.display='flex';
+    ['c1','c2','c3'].forEach(function(id){var el=$(id);if(el)el.style.opacity='0'});
+    mkDots();
+    goTo(0);
+  }
+});
+</script>
+</body>
+</html>
