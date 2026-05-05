@@ -1075,9 +1075,42 @@ function detectContactData(html){
   var reservationKeywords=['reserva','booking','reserve','appointment','cita online','pedir cita','book now','calendly','acuity','simplybook','setmore','booksy','fresha','treatwell'];
   result.hasReservations=reservationKeywords.some(function(k){return fullText.indexOf(k)!==-1});
 
-  // ═══ CHATBOT ═══
-  var chatbotKeywords=['chatbot','tawk.to','tidio','intercom','zendesk','crisp','hubspot chat','drift','livechat','chat en vivo','asistente virtual','widget chat','messenger bot','whatsapp business api','manychat','botpress','dialogflow','landbot','voiceflow','chat-widget','chatwidget'];
-  result.hasChatbot=chatbotKeywords.some(function(k){return fullText.indexOf(k)!==-1});
+  // ═══ CHATBOT — detección estricta (≠ WhatsApp) ═══
+  var chatbotIndicators=[
+    // Plataformas conocidas
+    'tawk.to','tawk_api','tawkto',
+    'tidio','tidio-chat',
+    'crisp.chat','crisp-chat','window.$crisp',
+    'intercom','intercomsettings',
+    'drift','driftt.com',
+    'hubspot','hs-chat',
+    'zendesk','zopim',
+    'freshchat','freshdesk',
+    'livechat','livechatinc',
+    'olark','manychat','chatfuel',
+    'botpress','landbot','typebot','kommunicate',
+    // Señales de chatbot propio
+    'chatbot','chat-bot','chat_bot',
+    'asistente virtual','asistente ia',
+    'bot de chat','agente virtual',
+    'window.botpresswebchat',
+    'webchat','web-chat',
+    // Scripts embed
+    'chat.js','chatwidget','chat-widget'
+  ];
+  // Tokens que NO son chatbot (filtrar falsos positivos)
+  var NOT_CHATBOT=['whatsapp','wa.me','api.whatsapp','facebook messenger','telegram','correo','email','telefono'];
+
+  result.hasChatbot=false;
+  var realIndicators=chatbotIndicators.filter(function(ind){
+    if(fullText.indexOf(ind)===-1)return false;
+    // Excluir si el indicador en sí contiene un token de NOT_CHATBOT
+    return !NOT_CHATBOT.some(function(nope){return ind.indexOf(nope)!==-1});
+  });
+  if(realIndicators.length>0){
+    result.hasChatbot=true;
+    try{console.log('[Scout] Chatbot detectado por:',realIndicators)}catch(e){}
+  }
 
   // ═══ REDES SOCIALES ═══
   var fbMatches=html.match(/href=["'](https?:\/\/(?:www\.)?facebook\.com\/[^"'\s?#]+)/gi)||[];
