@@ -1470,7 +1470,8 @@ function renderProsResults(){
     html+='<div class="card mb12" style="'+(hot?'border-color:rgba(255,140,66,.25);background:rgba(255,140,66,.02)':'')+'">';
     html+='<div class="flex jcb aic mb8">';
     html+='<div><div style="font-size:.88rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+r.sectorIco+' '+r.domain+'<span class="tag tag-g" style="margin-left:4px">HTML</span>'+(hot?'<span class="hot-badge">VENDER</span>':'')+'</div>';
-    html+='<div style="font-size:.68rem;color:var(--text2);margin-top:2px">'+r.sector+' · '+r.cms+' · '+r.probs.length+' oportunidades</div></div>';
+    html+='<div style="font-size:.68rem;color:var(--text2);margin-top:2px">'+r.sector+' · '+r.cms+' · '+r.probs.length+' oportunidades</div>';
+    html+='<div style="margin-top:4px">'+_sectorSelectHTML(r.nicho||'otro','updateSector('+i+',this.value)')+'</div></div>';
     html+='<div style="text-align:right"><div class="pros-score" style="color:'+sc+'">'+r.score+'%</div><div style="font-size:.56rem;color:var(--muted)">% venta</div></div></div>';
     // Flags
     html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+'</div>';
@@ -1813,6 +1814,7 @@ function updateProspectStatus(domain,newStatus,idx){
     var pack=getRecommendedPack(d);
     meta.mrr=pack.mrr;
     meta.sector=d.sector;
+    meta.nicho=d.nicho;
     meta.name=d.bizName||d.domain;
   }
   saveProspectMeta(domain,meta);
@@ -1869,7 +1871,21 @@ function renderPipeline(){
   all.forEach(function(m){
     var s=getPipelineState(m.status);
     var dim=(m.status==='lost')?' opacity':'';
-    listHTML+='<div class="pipe-item'+dim+'"><div style="flex:1;min-width:160px"><div class="pi-name">'+(m.name||m.domain)+'</div><div class="pi-domain">'+m.domain+(m.sector?' · '+m.sector:'')+'</div></div><span class="pi-status" style="color:'+s.color+';background:'+s.bg+'">'+s.label+'</span>'+(m.mrr?'<span class="pi-status" style="color:var(--accent);background:var(--accent-dim)">'+m.mrr+'€/mes</span>':'')+(m.lastContact?'<span class="ps-date">'+m.lastContact+'</span>':'')+(m.notes?'<div class="pi-notes">📝 '+m.notes+'</div>':'')+'</div>';
+    var nichoKey=m.nicho||_nichoFromSector(m.sector);
+    var domEsc=String(m.domain).replace(/'/g,'\\\'');
+    var selectHTML=_sectorSelectHTML(nichoKey,'updateProspectSector(\''+domEsc+'\',this.value)');
+    var deleteBtn='<button class="btn btn-ghost btn-xs" onclick="deleteProspect(\''+domEsc+'\')" style="color:var(--red2);font-size:.65rem;padding:2px 8px" title="Eliminar prospecto">🗑️</button>';
+    listHTML+='<div class="pipe-item'+dim+'">'+
+      '<div style="flex:1;min-width:160px">'+
+        '<div class="pi-name">'+(m.name||m.domain)+'</div>'+
+        '<div class="pi-domain">'+m.domain+'</div>'+
+        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+selectHTML+deleteBtn+'</div>'+
+      '</div>'+
+      '<span class="pi-status" style="color:'+s.color+';background:'+s.bg+'">'+s.label+'</span>'+
+      (m.mrr?'<span class="pi-status" style="color:var(--accent);background:var(--accent-dim)">'+m.mrr+'€/mes</span>':'')+
+      (m.lastContact?'<span class="ps-date">'+m.lastContact+'</span>':'')+
+      (m.notes?'<div class="pi-notes">📝 '+m.notes+'</div>':'')+
+    '</div>';
   });
   listEl.innerHTML=listHTML;
 }
@@ -2655,6 +2671,7 @@ async function loadProspectsFromBD(){
 }
 
 async function deleteProspect(domain,cardEl){
+  if(!domain){showToast('Dominio no válido');return}
   if(!confirm('¿Eliminar prospecto '+domain+'?'))return;
   var s=_initSb();
   if(currentUser&&s){
@@ -2668,6 +2685,62 @@ async function deleteProspect(domain,cardEl){
   updateCounters();
   if(typeof renderPipeline==='function')renderPipeline();
   showToast('✓ Prospecto eliminado');
+}
+
+// Mapa nicho → label/icon usando SECTORS
+var _SECTOR_OPTIONS=[
+  {n:'dental',l:'🦷 Dental'},{n:'restaurante',l:'🍽️ Restaurante'},
+  {n:'belleza',l:'💅 Estética'},{n:'peluqueria',l:'✂️ Peluquería'},
+  {n:'abogado',l:'⚖️ Abogado'},{n:'gestoria',l:'📊 Gestoría'},
+  {n:'taller',l:'🚗 Taller'},{n:'veterinaria',l:'🐾 Veterinaria'},
+  {n:'fisioterapia',l:'🦶 Fisioterapia'},{n:'muebles',l:'🪑 Muebles'},
+  {n:'cocinas',l:'🍳 Cocinas'},{n:'otro',l:'🏪 Otro'}
+];
+function _nichoFromSector(secStr){
+  if(!secStr)return 'otro';
+  for(var i=0;i<SECTORS.length;i++){if(SECTORS[i].s===secStr)return SECTORS[i].n}
+  return 'otro';
+}
+function _sectorSelectHTML(currentNicho,onchange){
+  var html='<select onchange="'+onchange+'" style="font-size:.65rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:2px 6px;cursor:pointer">';
+  _SECTOR_OPTIONS.forEach(function(o){html+='<option value="'+o.n+'"'+(currentNicho===o.n?' selected':'')+'>'+o.l+'</option>'});
+  html+='</select>';
+  return html;
+}
+function updateSector(idx,newSector){
+  if(!prosResults[idx])return;
+  var sec=getSectorByNicho(newSector)||SECTORS[0];
+  prosResults[idx].nicho=newSector;
+  prosResults[idx].sector=sec.s;
+  prosResults[idx].sectorIco=sec.ico;
+  var domain=prosResults[idx].domain;
+  if(domain){
+    var meta=getProspectMeta(domain);
+    meta.sector=sec.s;
+    meta.nicho=newSector;
+    saveProspectMeta(domain,meta);
+  }
+  renderProsResults();
+  if(typeof renderPipeline==='function')renderPipeline();
+  showToast('✓ Sector actualizado');
+}
+function updateProspectSector(domain,newSector){
+  if(!domain)return;
+  var sec=getSectorByNicho(newSector)||SECTORS[0];
+  var meta=getProspectMeta(domain);
+  meta.sector=sec.s;
+  meta.nicho=newSector;
+  saveProspectMeta(domain,meta);
+  for(var i=0;i<prosResults.length;i++){
+    if(prosResults[i].domain===domain){
+      prosResults[i].nicho=newSector;
+      prosResults[i].sector=sec.s;
+      prosResults[i].sectorIco=sec.ico;
+    }
+  }
+  renderPipeline();
+  if(typeof renderProsResults==='function')renderProsResults();
+  showToast('✓ Sector actualizado');
 }
 
 async function _syncProspectStatus(domain,status,notes,lastContact){
