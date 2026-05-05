@@ -769,6 +769,7 @@ var SECTORS=[
 {kws:['asesoria empresas','consultoria','consulting','consultant','business','negocio','emprendimiento','startup'],s:'Consultoría Empresarial',ico:'💼',n:'consultoria'},
 {kws:['mudanza','transporte','logistica','mensajeria','courier','paqueteria','almacen','distribucion','envio','shipping'],s:'Transporte / Logística',ico:'🚛',n:'transporte'},
 {kws:['limpieza','cleaning','servicio limpieza','limpieza oficina','desinfeccion','control plagas','fumigacion','mantenimiento'],s:'Limpieza / Mantenimiento',ico:'🧹',n:'limpieza'},
+{kws:['muebles','furniture','sofa','dormitorio','salon','comedor','silla','mesa','armario','estanteria','cama','tapizado','decoracion','interiorismo','madera','carpinteria','ebanisteria','lacado','barniz','roble','nogal','wood','timber','woodwork','maderas'],s:'Muebles / Madera',ico:'🪑',n:'muebles'},
 ];
 
 var DOMAIN_HINTS=[
@@ -853,6 +854,11 @@ var SECTOR_KEYWORDS={
     med:['vehiculo','coche','automovil','moto','furgoneta'],
     low:['reparacion','servicio','mantenimiento']
   },
+  muebles:{
+    high:['muebles','furniture','sofa','dormitorio','salon','comedor','silla','mesa','armario','estanteria','cama','tapizado','decoracion','interiorismo','madera','carpinteria','ebanisteria','lacado','barniz','roble','nogal','wood','timber','woodwork','maderas'],
+    med:['hogar','habitacion','living','diseno interior'],
+    low:['tienda','taller','fabricacion']
+  },
   inmobiliaria:{
     high:['inmobiliaria','agencia inmobiliaria','piso en venta','piso en alquiler','casa en venta','chalet','apartamento','local comercial','nave industrial','hipoteca','tasacion','alquiler vacacional','compraventa'],
     med:['vivienda','propiedad','inmueble','metros cuadrados'],
@@ -888,7 +894,8 @@ var DOMAIN_PATTERNS={
   taller:       ['taller','mecanico','automocion','neumatic','itv','coches'],
   inmobiliaria: ['inmobil','pisos','casas','alquiler','venta'],
   academia:     ['academia','autoescuela','formacion','cursos','idiomas'],
-  gimnasio:     ['gym','gimnasio','fitness','crossfit','yoga']
+  gimnasio:     ['gym','gimnasio','fitness','crossfit','yoga'],
+  muebles:      ['mueble','furniture','sofa','wood','madera','deco','interior','hogar','living','casa','home','stock-wood','woodstock','carpint','ebanist']
 };
 
 function detectSector(url,html,titleText){
@@ -917,6 +924,11 @@ function detectSector(url,html,titleText){
     });
   });
 
+  // Guard: taller solo si hay keyword automotriz específica (evita falsos positivos como wood-stock.es)
+  var tallerStrict=['taller mecanico','mecanico','itv','neumatic','frenos','motor','automocion','vehiculo','coche','automovil','furgoneta'];
+  var hasStrictTaller=tallerStrict.some(function(k){return text.indexOf(_normTxt(k))!==-1});
+  if(!hasStrictTaller)scores.taller=0;
+
   var maxScore=0,bestSector=null;
   Object.keys(scores).forEach(function(sector){
     if(scores[sector]>maxScore){maxScore=scores[sector];bestSector=sector}
@@ -936,7 +948,8 @@ function detectSector(url,html,titleText){
     podologia:'fisioterapia',fisioterapia:'fisioterapia',clinica_general:'fisioterapia',
     veterinaria:'veterinaria',belleza:'belleza',peluqueria:'peluqueria',
     restaurante:'restaurante',abogado:'abogado',gestoria:'gestoria',
-    taller:'taller',inmobiliaria:'inmobiliaria',academia:'academia',gimnasio:'gimnasio'
+    taller:'taller',inmobiliaria:'inmobiliaria',academia:'academia',gimnasio:'gimnasio',
+    muebles:'muebles'
   };
   return getSectorByNicho(nichoMap[bestSector]||'generic');
 }
@@ -1508,7 +1521,7 @@ async function generateKitVentas(idx){
   var score=d.score||45;
   var biz=d.bizName||d.domain;
   var sit=score<30?'todo-mal':score<50?'sin-chatbot':score<65?'sin-wa':'sin-chatbot';
-  var ticketMap={dental:280,restaurante:38,belleza:68,peluqueria:48,abogado:650,gestoria:210,taller:190,veterinaria:98,cocinas:4500,muebles:800,otro:150};
+  var ticketMap={dental:280,restaurante:38,belleza:68,peluqueria:48,abogado:650,gestoria:210,taller:190,veterinaria:98,cocinas:4500,muebles:600,otro:150};
   var ticket=ticketMap[sector]||150;
   var opCount=(d.probs&&d.probs.length)||(d.opportunities&&d.opportunities.length)||4;
   var calls=opCount>=6?20:opCount>=4?8:3;
