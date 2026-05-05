@@ -795,35 +795,220 @@ function domainHint(url){
   return null;
 }
 
-function scoreText(text){
-  var u=(text||'').toLowerCase().replace(/[-_\.\/]/g,' ');
-  var best=null,bestScore=0;
-  for(var i=0;i<SECTORS.length;i++){
-    var hits=0;
-    for(var j=0;j<SECTORS[i].kws.length;j++){
-      var kw=SECTORS[i].kws[j],pos=0,count=0;
-      while((pos=u.indexOf(kw,pos))!==-1){count++;pos+=kw.length}
-      hits+=count;
-    }
-    if(hits>bestScore){bestScore=hits;best=SECTORS[i]}
+function _normTxt(s){return String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'')}
+
+var SECTOR_KEYWORDS={
+  dental:{
+    high:['dentista','dental','clinica dental','odontolog','implante','ortodoncia','endodoncia','blanqueamiento','periodoncia','brackets','invisalign','protesis dental','higiene dental','empaste','extraccion'],
+    med:['boca','diente','muela','encia','caries','radiografia'],
+    low:['salud','clinica','doctor']
+  },
+  podologia:{
+    high:['podog','podolog','podoluz','clinica del pie','pie diabetico','onicocriptosis','fascitis','hallux','metatarsalgia','plantilla ortopedica','callista','quiropodista','una encarnada','verruga plantar','pie plano'],
+    med:['pie','talon','tobillo','pisada','biomecanic'],
+    low:['clinica','salud','tratamiento']
+  },
+  fisioterapia:{
+    high:['fisioterapia','fisioterapeuta','rehabilitacion','osteopatia','pilates clinico','kinesiologo','electroterapia','ultrasonido terapeutico','manipulacion vertebral','drenaje linfatico manual'],
+    med:['lesion','columna','lumbar','cervical','contractura','esguince','tendinitis','dolor muscular'],
+    low:['clinica','salud','tratamiento','recuperacion']
+  },
+  veterinaria:{
+    high:['veterinari','clinica veterinaria','hospital veterinario','clinica animal','perro','gato','mascota','felino','canino','vacuna animal','desparasitacion','peluqueria canina','urgencias veterinarias','cirujia veterinaria'],
+    med:['animal','cachorro','razas','adopcion','chip'],
+    low:['salud','clinica','doctor']
+  },
+  dental_estetica:{
+    high:['estetica dental','sonrisa perfecta','carilla','composite dental','diseno de sonrisa'],
+    med:['blanqueamiento','estetica','sonrisa'],
+    low:['dental','clinica']
+  },
+  belleza:{
+    high:['estetica','esteticista','centro de belleza','tratamiento facial','tratamiento corporal','depilacion laser','micropigmentacion','extension de pestanas','lifting','mesoterapia','radiofrecuencia','peeling','limpieza facial','manicura','pedicura','unas de gel','semipermanente'],
+    med:['belleza','facial','corporal','piel','hidratacion'],
+    low:['tratamiento','centro','salud']
+  },
+  peluqueria:{
+    high:['peluqueria','barberia','barbero','peluquero','corte de pelo','tinte','mechas','balayage','keratina','alisado','permanente','coloracion','peinado de novia','salon de belleza'],
+    med:['cabello','pelo','color','estilista'],
+    low:['salon','belleza','imagen']
+  },
+  restaurante:{
+    high:['restaurante','restauracion','gastronom','cocina','chef','menu del dia','carta','reserva mesa','terraza','tapas','bar restaurante','comida','pedido online','delivery','takeaway','sushi','pizzeria','hamburgueseria','marisqueria'],
+    med:['comer','cenar','almorzar','plato','bebida'],
+    low:['mesa','servicio','horario']
+  },
+  abogado:{
+    high:['abogado','bufete','despacho juridico','asesor juridico','derecho','juridico','letrado','procurador','derecho laboral','derecho civil','derecho penal','derecho mercantil','derecho familia','divorci','herencia','reclamacion','demanda','juicio'],
+    med:['legal','consulta juridica','asesoramiento'],
+    low:['servicio','profesional','consulta']
+  },
+  gestoria:{
+    high:['gestoria','asesoria fiscal','asesoria laboral','asesoria contable','contabilidad','declaracion renta','irpf','iva','autonomo','empresa','contrato laboral','nomina','seguridad social','hacienda','registro mercantil','constitucion sociedad','tramite administrativo'],
+    med:['fiscal','laboral','contable','impuesto','tributario'],
+    low:['asesor','servicio','gestion']
+  },
+  taller:{
+    high:['taller mecanico','taller de coches','mecanico','reparacion de vehiculos','itv','neumatico','frenos','embrague','motor','diagnosis','chapa y pintura','taller autorizado','revision coche','aceite motor','bateria coche','cambio de ruedas'],
+    med:['vehiculo','coche','automovil','moto','furgoneta'],
+    low:['reparacion','servicio','mantenimiento']
+  },
+  inmobiliaria:{
+    high:['inmobiliaria','agencia inmobiliaria','piso en venta','piso en alquiler','casa en venta','chalet','apartamento','local comercial','nave industrial','hipoteca','tasacion','alquiler vacacional','compraventa'],
+    med:['vivienda','propiedad','inmueble','metros cuadrados'],
+    low:['servicio','gestion','tramite']
+  },
+  academia:{
+    high:['academia','centro de formacion','autoescuela','cursos online','formacion profesional','oposicion','clases particulares','ingles','idiomas','informatica','certificacion','titulacion','master','grado'],
+    med:['aprender','estudiar','curso','clase','alumno'],
+    low:['formacion','educacion','ensenanza']
+  },
+  gimnasio:{
+    high:['gimnasio','gym','fitness','crossfit','yoga','pilates','musculacion','entrenamiento personal','spinning','zumba','boxeo','artes marciales','natacion','piscina'],
+    med:['deporte','ejercicio','entrenamiento','salud','bienestar'],
+    low:['actividad','sesion','clase']
+  },
+  clinica_general:{
+    high:['clinica medica','medicina general','medico de familia','consulta medica','pediatria','ginecologia','cardiologia','dermatologia','traumatologia','oftalmologia','neurologia','hospital','urgencias medicas','analisis clinicos'],
+    med:['medico','doctor','paciente','diagnostico','tratamiento medico'],
+    low:['clinica','salud','consulta']
   }
-  return {best:best,bestScore:bestScore};
-}
+};
+
+var DOMAIN_PATTERNS={
+  podologia:    ['podolog','podol','podoluz','clinicapie','elpie','tupie'],
+  dental:       ['dental','dent','odontolog','sonrisa','clinicadental'],
+  fisioterapia: ['fisio','rehabilit','osteopat','kinesio'],
+  veterinaria:  ['veterinar','vet','animal','mascota','clinicavet'],
+  belleza:      ['estetica','beauty','belleza','laser','lumiere','glamour'],
+  peluqueria:   ['peluquer','barber','salon','haircut','hairstyle'],
+  restaurante:  ['restaur','gastro','food','comida','sushi','pizza','cafe'],
+  abogado:      ['abogad','bufete','juridic','legal','derecho','letrado'],
+  gestoria:     ['gestor','asesoria','contabil','fiscal','autonomo'],
+  taller:       ['taller','mecanico','automocion','neumatic','itv','coches'],
+  inmobiliaria: ['inmobil','pisos','casas','alquiler','venta'],
+  academia:     ['academia','autoescuela','formacion','cursos','idiomas'],
+  gimnasio:     ['gym','gimnasio','fitness','crossfit','yoga']
+};
 
 function detectSector(url,html,titleText){
-  var hint=domainHint(url);
-  if(hint)return getSectorByNicho(hint);
-  var metaScore=scoreText(titleText);
-  if(metaScore.best&&metaScore.bestScore>=2)return metaScore.best;
-  var htmlScore=scoreText((html||'').substring(0,10000));
-  if(htmlScore.best)return htmlScore.best;
-  if(metaScore.best)return metaScore.best;
-  return {s:'Negocio local',ico:'🏪',n:'generic',kws:[]};
+  var text=_normTxt((html||'')+' '+(titleText||'')+' '+(url||''));
+  var urlLower=_normTxt(url||'');
+  var scores={};
+
+  Object.keys(SECTOR_KEYWORDS).forEach(function(sector){
+    var kw=SECTOR_KEYWORDS[sector];scores[sector]=0;
+    kw.high.forEach(function(k){if(text.indexOf(_normTxt(k))!==-1)scores[sector]+=10});
+    kw.med.forEach(function(k){if(text.indexOf(_normTxt(k))!==-1)scores[sector]+=4});
+    kw.low.forEach(function(k){if(text.indexOf(_normTxt(k))!==-1)scores[sector]+=1});
+  });
+
+  // URL bonus (peso x3 sobre keywords high/med)
+  Object.keys(SECTOR_KEYWORDS).forEach(function(sector){
+    var kw=SECTOR_KEYWORDS[sector];
+    kw.high.forEach(function(k){if(urlLower.indexOf(_normTxt(k))!==-1)scores[sector]+=20});
+    kw.med.forEach(function(k){if(urlLower.indexOf(_normTxt(k))!==-1)scores[sector]+=12});
+  });
+
+  // Patrones de dominio (máxima prioridad)
+  Object.keys(DOMAIN_PATTERNS).forEach(function(sector){
+    DOMAIN_PATTERNS[sector].forEach(function(pattern){
+      if(urlLower.indexOf(pattern)!==-1)scores[sector]=(scores[sector]||0)+50;
+    });
+  });
+
+  var maxScore=0,bestSector=null;
+  Object.keys(scores).forEach(function(sector){
+    if(scores[sector]>maxScore){maxScore=scores[sector];bestSector=sector}
+  });
+
+  try{
+    var dbg=Object.keys(scores).map(function(k){return [k,scores[k]]})
+      .sort(function(a,b){return b[1]-a[1]}).slice(0,5)
+      .map(function(e){return e[0]+':'+e[1]}).join(', ');
+    console.log('[Scout] Sector scores para '+url+' → '+dbg);
+  }catch(e){}
+
+  if(maxScore<10)return {s:'Negocio local',ico:'🏪',n:'generic',kws:[]};
+
+  var nichoMap={
+    dental:'dental',dental_estetica:'dental',
+    podologia:'fisioterapia',fisioterapia:'fisioterapia',clinica_general:'fisioterapia',
+    veterinaria:'veterinaria',belleza:'belleza',peluqueria:'peluqueria',
+    restaurante:'restaurante',abogado:'abogado',gestoria:'gestoria',
+    taller:'taller',inmobiliaria:'inmobiliaria',academia:'academia',gimnasio:'gimnasio'
+  };
+  return getSectorByNicho(nichoMap[bestSector]||'generic');
 }
 
 function getSectorByNicho(n){
   for(var i=0;i<SECTORS.length;i++) if(SECTORS[i].n===n) return SECTORS[i];
   return SECTORS[0];
+}
+
+function extractBizName(doc,url){
+  var candidates=[];
+
+  // 1. Schema.org JSON-LD
+  var schemas=doc.querySelectorAll('script[type="application/ld+json"]');
+  schemas.forEach(function(s){
+    try{
+      var data=JSON.parse(s.textContent);
+      var arr=Array.isArray(data)?data:[data];
+      arr.forEach(function(d){
+        if(d&&d.name&&typeof d.name==='string')candidates.push({v:d.name,w:100});
+        if(d&&d['@graph']&&Array.isArray(d['@graph'])){
+          d['@graph'].forEach(function(item){if(item&&item.name&&typeof item.name==='string')candidates.push({v:item.name,w:90})});
+        }
+      });
+    }catch(e){}
+  });
+
+  // 2. Logo alt text (suele ser el nombre limpio)
+  var logo=doc.querySelector('.logo img, #logo img, [class*="logo"] img, [id*="logo"] img, header img[alt]');
+  if(logo&&logo.alt&&logo.alt.length>2)candidates.push({v:logo.alt,w:80});
+
+  // 3. og:site_name
+  var ogSite=doc.querySelector('meta[property="og:site_name"]');
+  if(ogSite&&ogSite.content)candidates.push({v:ogSite.content,w:85});
+
+  // 4. og:title
+  var ogTitle=doc.querySelector('meta[property="og:title"]');
+  if(ogTitle&&ogTitle.content)candidates.push({v:ogTitle.content,w:75});
+
+  // 5. <title> limpiado
+  var title=doc.querySelector('title');
+  if(title){
+    var t=title.textContent.replace(/[\-|·–—].*/,'').replace(/inicio|home|bienvenido|principal/gi,'').trim();
+    if(t.length>2)candidates.push({v:t,w:70});
+  }
+
+  // 6. h1 principal
+  var h1=doc.querySelector('h1');
+  if(h1){
+    var h=h1.textContent.trim();
+    if(h.length>2&&h.length<60)candidates.push({v:h,w:60});
+  }
+
+  // 7. dominio fallback
+  var domain=(url||'').replace(/https?:\/\//,'').replace(/^www\./,'').split('/')[0].split('.')[0];
+  if(domain)candidates.push({v:domain,w:10});
+
+  // Limpiar cada candidato
+  candidates=candidates.map(function(c){
+    var v=String(c.v||'')
+      .replace(/https?:\/\/[^\s]+/g,'')
+      .replace(/\s*[\-|·–—]\s*(home|inicio|principal|web oficial).*$/gi,'')
+      .replace(/\.(com|es|org|net|eu)\b/gi,'')
+      .replace(/^www\./gi,'')
+      .replace(/\s+/g,' ').trim();
+    return {v:v,w:c.w};
+  }).filter(function(c){return c.v&&c.v.length>=3});
+
+  candidates.sort(function(a,b){return b.w-a.w});
+  var best=candidates[0]?candidates[0].v:domain;
+  if(best&&best.length>60)best=best.substring(0,60).trim()+'…';
+  return best||'';
 }
 
 function analyzeHTML(url,html){
@@ -880,13 +1065,7 @@ function analyzeHTML(url,html){
   };
 
   // Business data extraction
-  var bizName='';
-  var ogTitle=doc.querySelector('meta[property="og:title"]');
-  if(ogTitle)bizName=ogTitle.getAttribute('content')||'';
-  if(!bizName){var titleEl=doc.querySelector('title');if(titleEl)bizName=titleEl.textContent||'';}
-  if(!bizName){var h1El=doc.querySelector('h1');if(h1El)bizName=h1El.textContent||'';}
-  bizName=bizName.replace(/https?:\/\/[^\s]+/g,'').replace(/\|.*|—.*|–.*|\s*-\s*(Home|Inicio|Principal).*$/gi,'').replace(/\.com|\.es|\.org|\.net/gi,'').replace(/www\./gi,'').replace(/\s+/g,' ').trim().substring(0,80);
-  if(!bizName||bizName.length<3){var headings=doc.querySelectorAll('h1,h2');for(var hi=0;hi<headings.length;hi++){var ht=headings[hi].textContent.trim();if(ht.length>3&&ht.length<60&&!/cookie|menu|nav/i.test(ht)){bizName=ht;break}}}
+  var bizName=extractBizName(doc,url);
 
   var phones=[];
   doc.querySelectorAll('a[href^="tel:"]').forEach(function(a){var t=a.getAttribute('href').replace('tel:','').replace(/\s/g,'').trim();if(t.length>=9&&phones.indexOf(t)<0)phones.push(t);});
