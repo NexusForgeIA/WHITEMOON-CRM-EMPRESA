@@ -1011,11 +1011,128 @@ function extractBizName(doc,url){
   return best||'';
 }
 
+function detectContactData(html){
+  var result={
+    hasWhatsapp:false,waNumber:'',hasPhone:false,phones:[],
+    hasEmail:false,emails:[],hasReservations:false,hasChatbot:false,
+    hasFacebook:false,hasInstagram:false,fbUrl:'',igUrl:'',
+    hasGMB:false,address:'',hours:''
+  };
+  var doc=new DOMParser().parseFromString(html,'text/html');
+  var fullText=html.toLowerCase();
+
+  // ═══ WHATSAPP ═══
+  var waPatterns=[
+    /href=["']https?:\/\/(?:api\.)?whatsapp\.com\/send[^"']*/gi,
+    /href=["']https?:\/\/wa\.me\/([0-9]+)[^"']*/gi,
+    /href=["']whatsapp:\/\/send[^"']*/gi,
+    /wa\.me\/([0-9]+)/gi,
+    /api\.whatsapp\.com\/send\?phone=([0-9]+)/gi
+  ];
+  waPatterns.forEach(function(pattern){
+    var matches=html.match(pattern);
+    if(matches&&matches.length>0){
+      result.hasWhatsapp=true;
+      var numMatch=matches[0].match(/[0-9]{9,15}/);
+      if(numMatch&&!result.waNumber)result.waNumber=numMatch[0];
+    }
+  });
+  if(!result.hasWhatsapp){
+    if(fullText.indexOf('whatsapp')!==-1||fullText.indexOf('escríbenos por wa')!==-1||fullText.indexOf('contáctanos por whatsapp')!==-1)result.hasWhatsapp=true;
+  }
+
+  // ═══ TELÉFONOS ═══
+  var telLinks=html.match(/href=["']tel:([+0-9\s\-().]+)["']/gi)||[];
+  telLinks.forEach(function(link){
+    var num=link.replace(/href=["']tel:/i,'').replace(/["']/g,'').replace(/\s/g,'').trim();
+    if(num&&result.phones.indexOf(num)===-1){result.phones.push(num);result.hasPhone=true}
+  });
+  if(!result.hasPhone){
+    var phonePatterns=[
+      /(?:^|[\s>"\(])(\+34[\s\-]?[6789][0-9\s\-]{8,})/gm,
+      /(?:^|[\s>"\(])([6789][0-9]{8})(?:[^0-9]|$)/gm,
+      /(?:^|[\s>"\(])(9[0-9]{8})(?:[^0-9]|$)/gm
+    ];
+    phonePatterns.forEach(function(p){
+      var matches=html.match(p)||[];
+      matches.slice(0,3).forEach(function(m){
+        var clean=m.replace(/[^0-9+]/g,'');
+        if(clean.length>=9&&result.phones.indexOf(clean)===-1){result.phones.push(clean);result.hasPhone=true}
+      });
+    });
+  }
+
+  // ═══ EMAILS ═══
+  var emailPattern=/[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+  var emailMatches=html.match(emailPattern)||[];
+  emailMatches.forEach(function(email){
+    if(email.indexOf('example')===-1&&email.indexOf('jquery')===-1&&email.indexOf('sentry')===-1&&email.indexOf('@2x')===-1&&email.indexOf('wix')===-1&&email.indexOf('schema')===-1&&result.emails.indexOf(email)===-1){
+      result.emails.push(email);result.hasEmail=true;
+    }
+  });
+
+  // ═══ RESERVAS ═══
+  var reservationKeywords=['reserva','booking','reserve','appointment','cita online','pedir cita','book now','calendly','acuity','simplybook','setmore','booksy','fresha','treatwell'];
+  result.hasReservations=reservationKeywords.some(function(k){return fullText.indexOf(k)!==-1});
+
+  // ═══ CHATBOT ═══
+  var chatbotKeywords=['chatbot','tawk.to','tidio','intercom','zendesk','crisp','hubspot chat','drift','livechat','chat en vivo','asistente virtual','widget chat','messenger bot','whatsapp business api','manychat','botpress','dialogflow','landbot','voiceflow','chat-widget','chatwidget'];
+  result.hasChatbot=chatbotKeywords.some(function(k){return fullText.indexOf(k)!==-1});
+
+  // ═══ REDES SOCIALES ═══
+  var fbMatches=html.match(/href=["'](https?:\/\/(?:www\.)?facebook\.com\/[^"'\s?#]+)/gi)||[];
+  if(fbMatches.length>0){
+    result.hasFacebook=true;
+    result.fbUrl=fbMatches[0].replace(/href=["']/i,'').replace(/["']$/,'');
+  }
+  var igMatches=html.match(/href=["'](https?:\/\/(?:www\.)?instagram\.com\/[^"'\s?#]+)/gi)||[];
+  if(igMatches.length>0){
+    result.hasInstagram=true;
+    result.igUrl=igMatches[0].replace(/href=["']/i,'').replace(/["']$/,'');
+  }
+
+  // ═══ GOOGLE MY BUSINESS ═══
+  result.hasGMB=fullText.indexOf('maps.google')!==-1||fullText.indexOf('google.com/maps')!==-1||fullText.indexOf('goo.gl/maps')!==-1||fullText.indexOf('place_id')!==-1||fullText.indexOf('g.page')!==-1;
+
+  // ═══ DIRECCIÓN (schema.org) ═══
+  try{
+    var schemas=doc.querySelectorAll('script[type="application/ld+json"]');
+    schemas.forEach(function(s){
+      try{
+        var data=JSON.parse(s.textContent);
+        var arr=Array.isArray(data)?data:[data];
+        arr.forEach(function(d){
+          if(d&&d.address){
+            var addr=d.address;
+            if(typeof addr==='string')result.address=result.address||addr;
+            else result.address=result.address||((addr.streetAddress||'')+(addr.addressLocality?', '+addr.addressLocality:''));
+          }
+          if(d&&d.openingHours){
+            var oh=d.openingHours;
+            result.hours=result.hours||(Array.isArray(oh)?oh.join(' · '):String(oh));
+          }
+        });
+      }catch(e){}
+    });
+  }catch(e){}
+  if(!result.address){
+    var addrEl=doc.querySelector('[itemprop="streetAddress"],[itemprop="address"],.address,.direccion,[itemtype*="PostalAddress"],[class*="address"],[class*="direccion"]');
+    if(addrEl)result.address=addrEl.textContent.replace(/\s+/g,' ').trim().substring(0,120);
+  }
+  if(!result.hours){
+    var hoursEl=doc.querySelector('[class*="horario"],[class*="hora"],[class*="hour"],[class*="schedule"]');
+    if(hoursEl)result.hours=hoursEl.textContent.replace(/\s+/g,' ').trim().substring(0,120);
+  }
+
+  return result;
+}
+
 function analyzeHTML(url,html){
   var domain=url.replace(/https?:\/\//,'').split('/')[0].toLowerCase();
   var h=html.toLowerCase();
   var parser=new DOMParser();
   var doc=parser.parseFromString(html,'text/html');
+  var contact=detectContactData(html);
 
   var manualSector=$('scan-sector').value;
   var sec;
@@ -1039,25 +1156,20 @@ function analyzeHTML(url,html){
   else if(h.includes('joomla'))cms='Joomla';
   else if(h.includes('webflow'))cms='Webflow';
 
-  var scripts='';
-  doc.querySelectorAll('script,iframe,link[href],div[id],div[class]').forEach(function(el){scripts+=' '+(el.outerHTML||'').toLowerCase()});
-  var chat=scripts.includes('tidio')||scripts.includes('intercom')||scripts.includes('drift.com')||scripts.includes('hubspot.com/conversations')||scripts.includes('zendesk')||scripts.includes('crisp.chat')||scripts.includes('livechat')||scripts.includes('tawk.to')||scripts.includes('chat-widget')||scripts.includes('chatwidget')||scripts.includes('botpress')||scripts.includes('dialogflow')||scripts.includes('manychat')||scripts.includes('landbot')||scripts.includes('voiceflow');
-
-  var waLinks='';
-  doc.querySelectorAll('a[href]').forEach(function(a){waLinks+=' '+(a.getAttribute('href')||'').toLowerCase()});
-  var wa=waLinks.includes('wa.me')||waLinks.includes('api.whatsapp.com')||waLinks.includes('whatsapp.com/send');
-
-  var gmb=h.includes('google.com/maps')||h.includes('maps.google')||h.includes('maps.googleapis')||h.includes('postaladdress')||h.includes('streetaddress');
+  var chat=contact.hasChatbot;
+  var wa=contact.hasWhatsapp;
+  var gmb=contact.hasGMB;
+  // Fallback débil GMB: pistas de dirección textuales
   if(!gmb){gmb=h.includes('calle ')||h.includes('avenida ')||h.includes('c/ ')||h.includes('plaza ')||h.includes('dirección')||h.includes('cómo llegar')}
 
   var analytics=h.includes('google-analytics')||h.includes('googletagmanager')||h.includes('gtag')||h.includes('analytics.js')||h.includes('gtm.js')||h.includes('facebook.com/tr')||h.includes('hotjar')||h.includes('clarity.ms');
   var mobile=h.includes('viewport')||h.includes('responsive')||h.includes('bootstrap')||h.includes('tailwind')||h.includes('@media');
-  var booking=h.includes('booking')||h.includes('reserv')||h.includes('cita')||h.includes('appointment')||h.includes('calendly')||h.includes('setmore')||h.includes('acuity')||h.includes('booksy');
+  var booking=contact.hasReservations;
   var cta=h.includes('contacta')||h.includes('llámanos')||h.includes('pide cita')||h.includes('solicita')||h.includes('presupuesto')||h.includes('call now')||h.includes('book now')||h.includes('reservar');
 
   var rrss={
-    facebook:{ok:h.includes('facebook.com/'),active:true},
-    instagram:{ok:h.includes('instagram.com/'),active:true},
+    facebook:{ok:contact.hasFacebook,active:true},
+    instagram:{ok:contact.hasInstagram,active:true},
     tiktok:{ok:h.includes('tiktok.com/'),active:true},
     linkedin:{ok:h.includes('linkedin.com/'),active:true},
     youtube:{ok:h.includes('youtube.com/')||h.includes('youtu.be'),active:true},
@@ -1066,31 +1178,15 @@ function analyzeHTML(url,html){
 
   // Business data extraction
   var bizName=extractBizName(doc,url);
-
-  var phones=[];
-  doc.querySelectorAll('a[href^="tel:"]').forEach(function(a){var t=a.getAttribute('href').replace('tel:','').replace(/\s/g,'').trim();if(t.length>=9&&phones.indexOf(t)<0)phones.push(t);});
-  if(phones.length===0){var bodyText=doc.body?doc.body.textContent:'';var phoneRegex=/(?:\+34[\s.-]?)?(?:9\d{2}|6\d{2}|7[1-9]\d)[\s.-]?\d{2,3}[\s.-]?\d{2,3}[\s.-]?\d{0,2}/g;var phoneMatches=bodyText.match(phoneRegex);if(phoneMatches){phones=phoneMatches.map(function(p){return p.replace(/[\s.-]/g,'')}).filter(function(p){return p.length>=9&&p.length<=15}).filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,2);}}
-
-  var emails=[];
-  var emailRegex=/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-  var emailMatches=html.match(emailRegex);
-  if(emailMatches)emails=emailMatches.filter(function(v,i,a){return a.indexOf(v)===i&&!v.includes('wix')&&!v.includes('schema')&&!v.includes('example')}).slice(0,3);
-
-  var address='';
-  var addrEl=doc.querySelector('[itemtype*="PostalAddress"],[class*="address"],[class*="direccion"]');
-  if(addrEl)address=addrEl.textContent.replace(/\s+/g,' ').trim().substring(0,120);
+  var phones=contact.phones.slice(0,3);
+  var emails=contact.emails.slice(0,3);
+  var address=contact.address;
+  var hours=contact.hours;
+  var waNumber=contact.waNumber;
 
   var services=[];
   doc.querySelectorAll('h2,h3,h4,.service,.servicio,[class*="servic"]').forEach(function(el){var t=el.textContent.replace(/\s+/g,' ').trim();if(t.length>3&&t.length<80&&!/cookie|politic|legal|priv|©|menú|nav/i.test(t))services.push(t);});
   services=services.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,12);
-
-  var hours='';
-  var hoursEl=doc.querySelector('[class*="horario"],[class*="hora"],[class*="hour"],[class*="schedule"]');
-  if(hoursEl)hours=hoursEl.textContent.replace(/\s+/g,' ').trim().substring(0,120);
-
-  var waNumber='';
-  var waMatch=html.match(/wa\.me\/(\d+)/);
-  if(waMatch)waNumber=waMatch[1];
 
   var description='';
   var descMeta=doc.querySelector('meta[name="description"],meta[property="og:description"]');
@@ -1248,18 +1344,35 @@ function analyzeHTML(url,html){
   });
   equipo=equipo.slice(0,4);
 
-  // Social URLs (real links)
-  var socialUrls={instagram:'',facebook:'',linkedin:'',youtube:'',tiktok:''};
+  // Social URLs (real links) — fb/ig vienen ya extraídos, completar resto
+  var socialUrls={instagram:contact.igUrl||'',facebook:contact.fbUrl||'',linkedin:'',youtube:'',tiktok:''};
   doc.querySelectorAll('a[href]').forEach(function(a){
     var hrefL=(a.getAttribute('href')||'').toLowerCase();
-    if(!socialUrls.instagram && hrefL.indexOf('instagram.com/')>-1) socialUrls.instagram=a.getAttribute('href');
-    if(!socialUrls.facebook && hrefL.indexOf('facebook.com/')>-1) socialUrls.facebook=a.getAttribute('href');
     if(!socialUrls.linkedin && hrefL.indexOf('linkedin.com/')>-1) socialUrls.linkedin=a.getAttribute('href');
     if(!socialUrls.youtube && (hrefL.indexOf('youtube.com/')>-1 || hrefL.indexOf('youtu.be')>-1)) socialUrls.youtube=a.getAttribute('href');
     if(!socialUrls.tiktok && hrefL.indexOf('tiktok.com/')>-1) socialUrls.tiktok=a.getAttribute('href');
   });
 
-  return{url,domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score,ssl,mobile,chat,wa,gmb,analytics,cta,booking,seo,seoGrade,seoIssues,needsWebRedesign,cms,rrss,probs,bizName,phones,emails,address,services,hours,waNumber,description,pageContent,sections,especialidades,equipo,socialUrls};
+  try{
+    console.log('[Scout] Contacto detectado para '+url+':',{
+      whatsapp:contact.hasWhatsapp+(contact.waNumber?' ('+contact.waNumber+')':''),
+      phone:contact.phones.join(', '),
+      email:contact.emails.join(', '),
+      chatbot:contact.hasChatbot,
+      reservas:contact.hasReservations,
+      fb:contact.hasFacebook,
+      ig:contact.hasInstagram
+    });
+  }catch(e){}
+
+  return{
+    url,domain,sector:sec.s,sectorIco:sec.ico,nicho:sec.n,score,
+    ssl,mobile,chat,wa,gmb,analytics,cta,booking,seo,seoGrade,seoIssues,needsWebRedesign,cms,rrss,probs,
+    bizName,phones,emails,address,services,hours,waNumber,description,pageContent,sections,especialidades,equipo,socialUrls,
+    hasWhatsapp:contact.hasWhatsapp,hasPhone:contact.hasPhone,hasEmail:contact.hasEmail,
+    hasChatbot:contact.hasChatbot,hasReservations:contact.hasReservations,
+    hasFacebook:contact.hasFacebook,hasInstagram:contact.hasInstagram,hasGMB:contact.hasGMB
+  };
 }
 
 function promptBlock(ico,title,content){return'<div class="card mb12"><div class="flex jcb aic mb8"><div style="font-size:.82rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px"><span style="font-size:1.1rem">'+ico+'</span>'+title+'</div><button class="btn btn-p btn-sm" onclick="copyTxt(this.closest(\'.card\').querySelector(\'.prompt-display\').textContent)">Copiar</button></div><div class="prompt-display">'+content.replace(/\n/g,'<br>').replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')+'</div></div>'}
