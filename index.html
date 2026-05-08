@@ -88,6 +88,10 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 .nb-o{background:var(--orange-s);color:var(--orange2);border:1px solid rgba(255,140,66,.28)}
 .nb-c{background:var(--cyan-s);color:var(--cyan2);border:1px solid rgba(0,201,255,.25)}
 .nb-p{background:var(--purple-s);color:var(--purple2);border:1px solid rgba(124,92,252,.28)}
+.nb-leads{display:inline-flex;align-items:center;gap:5px}
+.nb-leads .nb-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange)}
+.nb-leads.has-pending .nb-dot{animation:pulse 1.6s ease-in-out infinite}
+.nb-leads.has-pending{animation:pulseBadge 2.4s ease-in-out infinite}
 
 /* Sidebar Pipeline mini-counters */
 .sb-pipe-mini{display:flex;flex-direction:column;gap:3px;padding:4px 0 2px}
@@ -460,6 +464,44 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 .cap-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:.78rem}
 .cap-empty b{display:block;color:var(--text);margin-bottom:6px;font-size:.86rem}
 
+/* Leads Web — bandeja de leads del chatbot whitemoon.es */
+.lw-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.lw-filters{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.lw-tab{padding:6px 12px;border-radius:8px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);font-size:.7rem;font-weight:700;font-family:'Sora',sans-serif;cursor:pointer;transition:all .16s;display:inline-flex;align-items:center;gap:6px}
+.lw-tab:hover{color:var(--text);border-color:var(--border)}
+.lw-tab.on{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent2)}
+.lw-tab .lw-tab-count{font-family:'Space Mono',monospace;font-size:.6rem;background:var(--bg2);color:var(--muted);padding:1px 6px;border-radius:8px;border:1px solid var(--border2)}
+.lw-tab.on .lw-tab-count{background:var(--accent);color:#fff;border-color:transparent}
+.lw-refresh{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted)}
+.lw-refresh .lw-live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+.lw-table{display:flex;flex-direction:column;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2)}
+.lw-row{display:grid;grid-template-columns:1.1fr 1.3fr 1.1fr 1fr .9fr 1.6fr;gap:10px;padding:11px 14px;align-items:center;border-bottom:1px solid var(--border2);font-size:.74rem}
+.lw-row:last-child{border-bottom:none}
+.lw-row.lw-head{background:var(--bg3);font-size:.58rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lw-row.lw-pending{background:linear-gradient(90deg,rgba(255,140,66,.06),transparent)}
+.lw-row.lw-attended{opacity:.62}
+.lw-name{font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
+.lw-name .lw-pulse-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);animation:pulse 1.6s ease-in-out infinite;flex-shrink:0}
+.lw-meta{font-size:.62rem;color:var(--muted);font-family:'Space Mono',monospace;margin-top:2px}
+.lw-phone{font-family:'Space Mono',monospace;color:var(--text2);font-size:.72rem}
+.lw-date{font-family:'Space Mono',monospace;color:var(--text2);font-size:.7rem}
+.lw-origin{font-size:.62rem;color:var(--muted);font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.06em}
+.lw-actions{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end}
+.lw-actions .btn{font-size:.65rem;padding:5px 9px}
+.lw-state-pill{font-size:.58rem;font-weight:800;padding:3px 8px;border-radius:9px;letter-spacing:.06em;text-transform:uppercase;display:inline-block;margin-left:6px}
+.lw-state-pill.s-pending{background:rgba(255,140,66,.14);color:var(--orange2);border:1px solid rgba(255,140,66,.3)}
+.lw-state-pill.s-attended{background:rgba(34,197,94,.14);color:var(--green2);border:1px solid rgba(34,197,94,.3)}
+.lw-state-pill.s-converted{background:var(--accent-dim);color:var(--accent2);border:1px solid var(--accent-border)}
+.lw-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:.78rem}
+.lw-empty b{display:block;color:var(--text);margin-bottom:6px;font-size:.92rem}
+.lw-error{padding:14px;border-radius:9px;background:var(--red-s);border:1px solid rgba(239,68,68,.25);color:var(--red2);font-size:.72rem;margin-bottom:12px}
+@media(max-width:900px){
+  .lw-row{grid-template-columns:1fr;gap:6px;padding:11px 12px;border:1px solid var(--border2);border-radius:8px;margin-bottom:8px;background:var(--card)}
+  .lw-row.lw-head{display:none}
+  .lw-table{background:transparent;border:none;gap:8px}
+  .lw-actions{justify-content:flex-start}
+}
+
 /* Conversión por sector */
 .cap-sector-row{display:grid;grid-template-columns:140px 1fr 80px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--border2)}
 .cap-sector-row:last-child{border-bottom:none}
@@ -629,6 +671,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg></div>
       Clientes
       <span class="nav-badge nb-g" id="sb-clients">0</span>
+    </button>
+    <button class="nav-item" onclick="goPage('p-leads-web',this);renderLeadsWeb()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+      📥 Leads Web
+      <span class="nav-badge nb-o nb-leads" id="sb-leads"><span class="nb-dot"></span><span id="sb-leads-num">0</span></span>
     </button>
     <button class="nav-item" onclick="goPage('p-pricing',this)">
       <div class="nav-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
@@ -836,6 +883,34 @@ Todos los planes: Sin permanencia · IVA no incluido
   <div class="card">
     <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>Prospectos en seguimiento</div>
     <div id="pipe-list" class="pipe-list"></div>
+  </div>
+</div>
+
+<!-- LEADS WEB — chatbot whitemoon.es -->
+<div class="page" id="p-leads-web">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>📥 Leads Web</div>
+    <div class="page-sub">Leads en tiempo real desde el chatbot de <b style="color:var(--accent2)">whitemoon.es</b>. Auto-refresh cada 60 segundos. Convierte en pipeline o atiende por WhatsApp con un clic.</div>
+  </div>
+
+  <div class="g4 mb16" id="lw-kpis"></div>
+
+  <div class="card mb16">
+    <div class="lw-toolbar">
+      <div class="lw-filters">
+        <button class="lw-tab on" data-filter="all" onclick="lwSetFilter('all',this)">Todos <span class="lw-tab-count" id="lw-c-all">0</span></button>
+        <button class="lw-tab" data-filter="pending" onclick="lwSetFilter('pending',this)">Sin atender <span class="lw-tab-count" id="lw-c-pending">0</span></button>
+        <button class="lw-tab" data-filter="attended" onclick="lwSetFilter('attended',this)">Atendidos <span class="lw-tab-count" id="lw-c-attended">0</span></button>
+        <select class="cap-select" id="lw-sector-filter" onchange="renderLeadsWebTable()" style="min-width:160px;font-size:.7rem"><option value="">Todos los sectores</option></select>
+      </div>
+      <div class="lw-refresh">
+        <span class="lw-live-dot"></span>
+        <span>Live · auto-refresh 60s</span>
+        <button class="btn btn-ghost btn-xs" onclick="loadLeadsWeb(true)" title="Refrescar ahora">↻ Actualizar</button>
+      </div>
+    </div>
+    <div id="lw-error-box"></div>
+    <div id="lw-table-wrap"></div>
   </div>
 </div>
 
@@ -4473,6 +4548,298 @@ async function generateWebDemo(idx){
     if(sb)sb.textContent=arr.length;
   },100);
 
+})();
+</script>
+
+<script>
+// ═══════════════════════════════════════
+// LEADS WEB — chatbot whitemoon.es (Supabase realtime polling)
+// ═══════════════════════════════════════
+(function(){
+  var TABLE='leads_web';
+  var REFRESH_MS=60000;
+  var leadsCache=[];
+  var lwFilter='all';
+  var lwTimer=null;
+  var lwLoading=false;
+  var lwLoaded=false;
+
+  function _esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function _phoneClean(p){return String(p||'').replace(/[^0-9+]/g,'')}
+  function _waLink(p){var c=_phoneClean(p);if(!c)return '';if(c.charAt(0)==='+')c=c.substring(1);return 'https://wa.me/'+c}
+  function _fmtDate(s){
+    if(!s)return '—';
+    try{
+      var d=new Date(s);
+      if(isNaN(d.getTime()))return _esc(s);
+      var now=new Date();
+      var diff=(now-d)/1000;
+      if(diff<60)return 'ahora';
+      if(diff<3600)return Math.floor(diff/60)+' min';
+      if(diff<86400)return Math.floor(diff/3600)+' h';
+      var dd=String(d.getDate()).padStart(2,'0');
+      var mm=String(d.getMonth()+1).padStart(2,'0');
+      var hh=String(d.getHours()).padStart(2,'0');
+      var mi=String(d.getMinutes()).padStart(2,'0');
+      return dd+'/'+mm+' '+hh+':'+mi;
+    }catch(e){return _esc(s)}
+  }
+
+  function _getSb(){
+    if(typeof _initSb==='function')return _initSb();
+    if(window.supabase&&typeof SUPABASE_URL!=='undefined'&&typeof SUPABASE_KEY!=='undefined'){
+      return window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    }
+    return null;
+  }
+
+  async function loadLeadsWeb(showSpinner){
+    if(lwLoading)return;
+    lwLoading=true;
+    var s=_getSb();
+    var errBox=document.getElementById('lw-error-box');
+    if(!s){
+      if(errBox)errBox.innerHTML='<div class="lw-error">Supabase no está disponible. Recarga la página.</div>';
+      lwLoading=false;
+      return;
+    }
+    try{
+      var resp=await s.from(TABLE).select('*').order('created_at',{ascending:false}).limit(500);
+      if(resp.error){
+        if(errBox)errBox.innerHTML='<div class="lw-error">Error al cargar leads: '+_esc(resp.error.message||'desconocido')+'</div>';
+        lwLoading=false;
+        return;
+      }
+      if(errBox)errBox.innerHTML='';
+      leadsCache=resp.data||[];
+      lwLoaded=true;
+      renderLeadsWebAll();
+      if(showSpinner&&typeof showToast==='function')showToast('Leads actualizados ('+leadsCache.length+')');
+    }catch(e){
+      if(errBox)errBox.innerHTML='<div class="lw-error">Error de red: '+_esc(e.message||'desconocido')+'</div>';
+    }finally{
+      lwLoading=false;
+    }
+  }
+
+  function _stateOf(lead){
+    if(lead.atendido===true)return 'attended';
+    return 'pending';
+  }
+
+  function renderLeadsWebKpis(){
+    var box=document.getElementById('lw-kpis');
+    if(!box)return;
+    var total=leadsCache.length;
+    var pending=0,converted=0;
+    leadsCache.forEach(function(l){
+      if(l.atendido!==true)pending++;
+      if(l.pipeline_added===true||l.converted===true)converted++;
+    });
+    var rate=total>0?Math.round(converted/total*100):0;
+    var kpis=[
+      {label:'Total leads',num:total,sub:'desde el chatbot',cls:''},
+      {label:'Sin atender',num:pending,sub:total>0?Math.round(pending/total*100)+'% del total':'pendientes',cls:pending>0?'k-rate':''},
+      {label:'Convertidos a pipeline',num:converted,sub:'añadidos al CRM',cls:'k-mrr'},
+      {label:'Tasa conversión',num:rate+'%',sub:'lead → pipeline',cls:'k-rate'}
+    ];
+    var html='';
+    kpis.forEach(function(k){
+      html+='<div class="cap-kpi '+k.cls+'"><div class="kpi-label">'+k.label+'</div><div class="kpi-num">'+k.num+'</div><div class="kpi-sub">'+k.sub+'</div></div>';
+    });
+    box.innerHTML=html;
+  }
+
+  function _populateSectorFilter(){
+    var sel=document.getElementById('lw-sector-filter');
+    if(!sel)return;
+    var current=sel.value;
+    var sectors={};
+    leadsCache.forEach(function(l){if(l.sector)sectors[String(l.sector).trim()]=true});
+    var keys=Object.keys(sectors).sort();
+    var html='<option value="">Todos los sectores</option>';
+    keys.forEach(function(k){html+='<option value="'+_esc(k)+'"'+(k===current?' selected':'')+'>'+_esc(k)+'</option>'});
+    sel.innerHTML=html;
+  }
+
+  function _filteredLeads(){
+    var sectorSel=document.getElementById('lw-sector-filter');
+    var sector=sectorSel?sectorSel.value:'';
+    return leadsCache.filter(function(l){
+      var st=_stateOf(l);
+      if(lwFilter==='pending'&&st!=='pending')return false;
+      if(lwFilter==='attended'&&st!=='attended')return false;
+      if(sector&&String(l.sector||'').trim()!==sector)return false;
+      return true;
+    });
+  }
+
+  function renderLeadsWebTable(){
+    var box=document.getElementById('lw-table-wrap');
+    if(!box)return;
+    var totalPending=0,totalAttended=0;
+    leadsCache.forEach(function(l){if(_stateOf(l)==='attended')totalAttended++;else totalPending++});
+    var cAll=document.getElementById('lw-c-all');if(cAll)cAll.textContent=leadsCache.length;
+    var cPend=document.getElementById('lw-c-pending');if(cPend)cPend.textContent=totalPending;
+    var cAtt=document.getElementById('lw-c-attended');if(cAtt)cAtt.textContent=totalAttended;
+
+    var rows=_filteredLeads();
+    if(!rows.length){
+      box.innerHTML='<div class="lw-empty"><b>Sin leads para mostrar</b>Cuando un visitante de <b style="display:inline;color:var(--accent2)">whitemoon.es</b> deje sus datos en el chatbot, aparecerá aquí en tiempo real.</div>';
+      return;
+    }
+    var html='<div class="lw-table">';
+    html+='<div class="lw-row lw-head"><div>Fecha</div><div>Nombre</div><div>Teléfono</div><div>Sector</div><div>Origen</div><div style="text-align:right">Acciones</div></div>';
+    rows.forEach(function(l){
+      var state=_stateOf(l);
+      var rowCls='lw-row '+(state==='attended'?'lw-attended':'lw-pending');
+      var name=_esc(l.nombre||l.name||'(sin nombre)');
+      var phone=l.telefono||l.phone||'';
+      var phoneEsc=_esc(phone);
+      var sector=_esc(l.sector||'—');
+      var origen=_esc(l.origen||l.source||'whitemoon.es');
+      var fecha=_fmtDate(l.created_at||l.fecha||l.createdAt);
+      var idEsc=_esc(l.id);
+      var pulse=state==='pending'?'<span class="lw-pulse-dot"></span>':'';
+      var statePill=state==='attended'
+        ? '<span class="lw-state-pill s-attended">✓ Atendido</span>'
+        : (l.pipeline_added===true?'<span class="lw-state-pill s-converted">↗ En pipeline</span>':'<span class="lw-state-pill s-pending">Sin atender</span>');
+
+      var waBtn=phone?'<a class="btn btn-p btn-xs" href="'+_esc(_waLink(phone))+'" target="_blank" rel="noopener">💬 WhatsApp</a>':'';
+      var pipeBtn='<button class="btn btn-ghost btn-xs" onclick="lwAddToPipeline(\''+idEsc+'\')">➕ Pipeline</button>';
+      var attendedBtn=state==='attended'
+        ? '<button class="btn btn-ghost btn-xs" onclick="lwToggleAttended(\''+idEsc+'\',false)" style="color:var(--muted)">↺ Reabrir</button>'
+        : '<button class="btn btn-ghost btn-xs" onclick="lwToggleAttended(\''+idEsc+'\',true)" style="color:var(--green2);border-color:rgba(34,197,94,.3)">✓ Atendido</button>';
+
+      html+='<div class="'+rowCls+'">';
+      html+='<div class="lw-date">'+_esc(fecha)+'</div>';
+      html+='<div><div class="lw-name">'+pulse+name+statePill+'</div>'+(l.email?'<div class="lw-meta">'+_esc(l.email)+'</div>':'')+'</div>';
+      html+='<div class="lw-phone">'+phoneEsc+'</div>';
+      html+='<div>'+sector+'</div>';
+      html+='<div class="lw-origin">'+origen+'</div>';
+      html+='<div class="lw-actions">'+waBtn+pipeBtn+attendedBtn+'</div>';
+      html+='</div>';
+    });
+    html+='</div>';
+    box.innerHTML=html;
+  }
+
+  function _updateSidebarBadge(){
+    var num=0;
+    leadsCache.forEach(function(l){if(_stateOf(l)==='pending')num++});
+    var badge=document.getElementById('sb-leads');
+    var numEl=document.getElementById('sb-leads-num');
+    if(numEl)numEl.textContent=num;
+    if(badge){
+      if(num>0)badge.classList.add('has-pending');
+      else badge.classList.remove('has-pending');
+    }
+  }
+
+  function renderLeadsWebAll(){
+    _populateSectorFilter();
+    renderLeadsWebKpis();
+    renderLeadsWebTable();
+    _updateSidebarBadge();
+  }
+
+  function _nichoFromSectorLW(sec){
+    if(!sec)return '';
+    var s=String(sec).toLowerCase();
+    if(s.indexOf('dental')>=0)return 'dental';
+    if(s.indexOf('restaur')>=0||s.indexOf('hostel')>=0)return 'restaurante';
+    if(s.indexOf('belle')>=0||s.indexOf('estetic')>=0)return 'belleza';
+    if(s.indexOf('peluquer')>=0||s.indexOf('barber')>=0)return 'peluqueria';
+    if(s.indexOf('taller')>=0||s.indexOf('mecanic')>=0)return 'taller';
+    if(s.indexOf('aboga')>=0||s.indexOf('legal')>=0)return 'abogado';
+    if(s.indexOf('inmobi')>=0)return 'inmobiliaria';
+    if(s.indexOf('academ')>=0||s.indexOf('formaci')>=0)return 'academia';
+    if(s.indexOf('gimnas')>=0||s.indexOf('fitness')>=0)return 'gimnasio';
+    if(s.indexOf('fontan')>=0||s.indexOf('reform')>=0)return 'fontanero';
+    if(s.indexOf('vetri')>=0||s.indexOf('veterin')>=0)return 'veterinaria';
+    if(s.indexOf('fisio')>=0)return 'fisioterapia';
+    if(s.indexOf('hotel')>=0)return 'hotel';
+    if(s.indexOf('optic')>=0)return 'optica';
+    if(s.indexOf('psico')>=0)return 'psicologia';
+    if(s.indexOf('farmac')>=0)return 'farmacia';
+    return '';
+  }
+
+  window.lwSetFilter=function(f,btn){
+    lwFilter=f;
+    var tabs=document.querySelectorAll('#p-leads-web .lw-tab');
+    tabs.forEach(function(t){t.classList.remove('on')});
+    if(btn)btn.classList.add('on');
+    renderLeadsWebTable();
+  };
+
+  window.lwToggleAttended=async function(id,val){
+    var s=_getSb();if(!s){if(typeof showToast==='function')showToast('Supabase no disponible');return}
+    try{
+      var resp=await s.from(TABLE).update({atendido:!!val}).eq('id',id);
+      if(resp.error){if(typeof showToast==='function')showToast('Error: '+(resp.error.message||''));return}
+      for(var i=0;i<leadsCache.length;i++){if(String(leadsCache[i].id)===String(id)){leadsCache[i].atendido=!!val;break}}
+      renderLeadsWebAll();
+      if(typeof showToast==='function')showToast(val?'Marcado como atendido':'Marcado como pendiente');
+    }catch(e){if(typeof showToast==='function')showToast('Error de red')}
+  };
+
+  window.lwAddToPipeline=async function(id){
+    var lead=null;
+    for(var i=0;i<leadsCache.length;i++){if(String(leadsCache[i].id)===String(id)){lead=leadsCache[i];break}}
+    if(!lead){if(typeof showToast==='function')showToast('Lead no encontrado');return}
+    if(typeof saveProspectMeta!=='function'){if(typeof showToast==='function')showToast('Pipeline no disponible');return}
+    var phone=_phoneClean(lead.telefono||lead.phone||'');
+    var key='lead-'+(phone||lead.id);
+    var meta={
+      status:'pending',
+      notes:'Lead web · '+(lead.origen||'whitemoon.es')+(lead.mensaje?(' · '+String(lead.mensaje).substring(0,140)):''),
+      lastContact:new Date().toISOString().substring(0,10),
+      mrr:0,
+      sector:lead.sector||'',
+      nicho:_nichoFromSectorLW(lead.sector||''),
+      name:lead.nombre||lead.name||('Lead '+phone),
+      phone:phone||'',
+      source:'leads_web',
+      leadId:lead.id
+    };
+    try{saveProspectMeta(key,meta)}catch(e){}
+    try{
+      var s=_getSb();
+      if(s){
+        var upd={pipeline_added:true};
+        if(lead.atendido!==true)upd.atendido=true;
+        await s.from(TABLE).update(upd).eq('id',id);
+        lead.pipeline_added=true;
+        if(lead.atendido!==true)lead.atendido=true;
+      }
+    }catch(e){}
+    if(typeof renderPipeline==='function')renderPipeline();
+    if(typeof updateCounters==='function')updateCounters();
+    renderLeadsWebAll();
+    if(typeof showToast==='function')showToast('Añadido al pipeline · '+(meta.name));
+  };
+
+  window.loadLeadsWeb=loadLeadsWeb;
+  window.renderLeadsWebTable=renderLeadsWebTable;
+
+  window.renderLeadsWeb=function(){
+    if(!lwLoaded)loadLeadsWeb(false);
+    else renderLeadsWebAll();
+    if(lwTimer)clearInterval(lwTimer);
+    lwTimer=setInterval(function(){loadLeadsWeb(false)},REFRESH_MS);
+  };
+
+  // Carga inicial silenciosa: para que el badge del sidebar muestre el nº de pendientes
+  // sin necesidad de entrar en la sección. Espera a que Supabase esté listo.
+  function _bootLeadsWeb(){
+    if(!_getSb()){setTimeout(_bootLeadsWeb,500);return}
+    loadLeadsWeb(false);
+    if(lwTimer)clearInterval(lwTimer);
+    lwTimer=setInterval(function(){loadLeadsWeb(false)},REFRESH_MS);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(_bootLeadsWeb,400)});
+  else setTimeout(_bootLeadsWeb,400);
 })();
 </script>
 
