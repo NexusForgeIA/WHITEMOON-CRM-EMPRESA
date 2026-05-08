@@ -405,6 +405,98 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 /* Section title polish */
 .sec-title{font-size:.92rem;font-weight:800}
 .sec-title svg{width:16px;height:16px}
+
+/* CAPTACIÓN */
+.cap-kpi{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--border);border-radius:12px;padding:14px 16px;transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease;position:relative;overflow:hidden}
+.cap-kpi:hover{transform:translateY(-2px);border-color:var(--accent-border);box-shadow:var(--shadow-hover)}
+.cap-kpi::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),transparent);opacity:.6}
+.cap-kpi .kpi-label{font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.cap-kpi .kpi-num{font-family:'Space Mono',monospace;font-size:1.65rem;font-weight:800;line-height:1;letter-spacing:-.02em;color:var(--text)}
+.cap-kpi .kpi-sub{font-size:.62rem;color:var(--text2);margin-top:6px;font-weight:600}
+.cap-kpi.k-mrr .kpi-num{background:linear-gradient(135deg,#86efac,#22c55e);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.cap-kpi.k-mrr::after{background:linear-gradient(90deg,#22c55e,transparent)}
+.cap-kpi.k-rate .kpi-num{background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* Funnel */
+.cap-funnel{display:flex;flex-direction:column;gap:9px}
+.cap-funnel-row{display:grid;grid-template-columns:140px 1fr 80px;align-items:center;gap:12px}
+.cap-funnel-label{font-size:.7rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.cap-funnel-label .cf-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;box-shadow:0 0 8px currentColor}
+.cap-funnel-bar{height:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:7px;overflow:hidden;position:relative}
+.cap-funnel-fill{height:100%;border-radius:6px;transition:width 1s cubic-bezier(.4,0,.2,1);position:relative;display:flex;align-items:center;padding:0 10px;font-family:'Space Mono',monospace;font-size:.65rem;font-weight:700;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4);min-width:30px}
+.cap-funnel-fill.f-contactado{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.cap-funnel-fill.f-respondio{background:linear-gradient(90deg,#06b6d4,#22d3ee)}
+.cap-funnel-fill.f-reunion{background:linear-gradient(90deg,#9d5fff,#c084fc)}
+.cap-funnel-fill.f-propuesta{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.cap-funnel-fill.f-cerrado{background:linear-gradient(90deg,#22c55e,#86efac)}
+.cap-funnel-rate{font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;color:var(--text2);text-align:right}
+.cap-funnel-rate b{color:var(--green2)}
+
+/* Captación tabla */
+.cap-table{display:flex;flex-direction:column;gap:0;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2)}
+.cap-row{display:grid;grid-template-columns:1.5fr 1fr 1fr .9fr 1.1fr 1.3fr 1.6fr .9fr .6fr;gap:10px;padding:11px 14px;align-items:center;border-bottom:1px solid var(--border2);font-size:.74rem}
+.cap-row:last-child{border-bottom:none}
+.cap-row.cap-head{background:var(--bg3);font-size:.58rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.cap-row .cap-name{font-weight:700;color:var(--text)}
+.cap-row .cap-meta{font-size:.62rem;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace}
+.cap-input{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Sora',sans-serif;font-size:.72rem;padding:5px 8px;border-radius:6px;outline:none;width:100%}
+.cap-input:focus{border-color:var(--accent)}
+.cap-select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Sora',sans-serif;font-size:.7rem;padding:5px 8px;border-radius:6px;cursor:pointer;outline:none;font-weight:600;width:100%;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239090b0' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;background-size:11px;padding-right:22px}
+.cap-select:focus{border-color:var(--accent)}
+.cap-state{font-size:.6rem;font-weight:800;padding:3px 8px;border-radius:9px;letter-spacing:.04em;text-transform:uppercase;display:inline-block}
+.cap-state.s-contactado{background:rgba(59,130,246,.14);color:#93c5fd;border:1px solid rgba(59,130,246,.28)}
+.cap-state.s-respondio{background:rgba(6,182,212,.14);color:#67e8f9;border:1px solid rgba(6,182,212,.28)}
+.cap-state.s-reunion{background:var(--accent-dim);color:var(--accent2);border:1px solid var(--accent-border)}
+.cap-state.s-propuesta{background:rgba(245,158,11,.14);color:#fcd34d;border:1px solid rgba(245,158,11,.32)}
+.cap-state.s-cerrado{background:rgba(34,197,94,.16);color:var(--green2);border:1px solid rgba(34,197,94,.32)}
+.cap-state.s-descartado{background:rgba(239,68,68,.12);color:var(--red2);border:1px solid rgba(239,68,68,.28)}
+.cap-d-row{display:flex;gap:4px}
+.cap-d{flex:1;font-size:.55rem;font-weight:800;letter-spacing:.04em;padding:4px 0;border-radius:5px;text-align:center;cursor:pointer;border:1px solid var(--border2);background:var(--bg3);color:var(--muted);transition:all .16s;font-family:'Space Mono',monospace}
+.cap-d:hover{color:var(--text);border-color:var(--border)}
+.cap-d.on{background:var(--accent-dim);border-color:var(--accent-border);color:var(--green2);box-shadow:0 0 8px rgba(124,58,237,.2)}
+.cap-del{background:transparent;border:1px solid var(--border2);color:var(--muted);width:28px;height:28px;border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .16s}
+.cap-del:hover{border-color:var(--red);color:var(--red2);background:var(--red-s)}
+.cap-del svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.cap-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:.78rem}
+.cap-empty b{display:block;color:var(--text);margin-bottom:6px;font-size:.86rem}
+
+/* Conversión por sector */
+.cap-sector-row{display:grid;grid-template-columns:140px 1fr 80px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px dashed var(--border2)}
+.cap-sector-row:last-child{border-bottom:none}
+.cap-sector-label{font-size:.74rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.cap-sector-bar{height:18px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;overflow:hidden}
+.cap-sector-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:5px;transition:width .8s ease;display:flex;align-items:center;padding:0 8px;font-family:'Space Mono',monospace;font-size:.6rem;font-weight:700;color:#fff;min-width:24px}
+.cap-sector-stat{font-family:'Space Mono',monospace;font-size:.7rem;font-weight:700;color:var(--text2);text-align:right}
+.cap-sector-stat b{color:var(--green2)}
+
+/* Mensajes por sector */
+.cap-msg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.cap-msg-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:14px;transition:border-color .2s ease,transform .2s ease}
+.cap-msg-card:hover{border-color:var(--accent-border);transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.cap-msg-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cap-msg-ico{width:30px;height:30px;border-radius:8px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;font-size:1rem;border:1px solid var(--accent-border)}
+.cap-msg-name{font-size:.84rem;font-weight:800;color:var(--text)}
+.cap-msg-tabs{display:flex;gap:3px;background:var(--bg2);border-radius:7px;padding:3px;margin-bottom:10px}
+.cap-msg-tab{flex:1;padding:5px 8px;border-radius:5px;border:none;background:transparent;color:var(--text2);font-family:'Sora',sans-serif;font-size:.65rem;font-weight:600;cursor:pointer;transition:all .16s;display:flex;align-items:center;justify-content:center;gap:4px}
+.cap-msg-tab.on{background:var(--card2);color:var(--text);box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.cap-msg-tab svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2}
+.cap-msg-body{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:11px;font-family:'Space Mono',monospace;font-size:.68rem;color:var(--text2);line-height:1.7;white-space:pre-wrap;max-height:220px;overflow-y:auto;margin-bottom:10px}
+.cap-msg-body b{color:var(--green2)}
+.cap-msg-foot{display:flex;gap:6px}
+.cap-msg-foot .btn{flex:1;justify-content:center}
+
+@media(max-width:900px){
+  .cap-row{grid-template-columns:1fr;gap:6px;padding:11px 12px}
+  .cap-row.cap-head{display:none}
+  .cap-row{border:1px solid var(--border2);border-radius:8px;margin-bottom:8px;background:var(--card)}
+  .cap-table{background:transparent;border:none;gap:8px}
+  .cap-funnel-row,.cap-sector-row{grid-template-columns:100px 1fr 70px;gap:8px}
+  .cap-msg-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .cap-funnel-row,.cap-sector-row{grid-template-columns:80px 1fr 56px;gap:6px}
+  .cap-funnel-label,.cap-sector-label{font-size:.66rem}
+}
 /* Responsive — Mobile + Tablet */
 .hamburger{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--text);align-items:center;justify-content:center;border-radius:8px;transition:background .18s}
 .hamburger:hover{background:var(--bg2)}
@@ -542,6 +634,14 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       <div class="nav-ico"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
       Mis Tarifas
       <span class="nav-badge nb-c">€</span>
+    </button>
+  </div>
+  <div class="sb-section">
+    <div class="sb-label">Captación</div>
+    <button class="nav-item" onclick="goPage('p-captacion',this);renderCaptacion()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+      🎯 Captación
+      <span class="nav-badge nb-p" id="sb-cap">0</span>
     </button>
   </div>
   <div class="sb-section">
@@ -686,6 +786,56 @@ Todos los planes: Sin permanencia · Activación 48h · IVA no incluido
   <div class="card">
     <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>Prospectos en seguimiento</div>
     <div id="pipe-list" class="pipe-list"></div>
+  </div>
+</div>
+
+<!-- CAPTACIÓN -->
+<div class="page" id="p-captacion">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>🎯 Captación</div>
+    <div class="page-sub">Funnel de captación en tiempo real, KPIs por etapa, conversión por sector y mensajes WhatsApp/Email listos para enviar. Datos guardados en tu navegador (localStorage).</div>
+  </div>
+
+  <!-- KPIs en tiempo real -->
+  <div class="g4 mb16" id="cap-kpis"></div>
+
+  <!-- Funnel visual + MRR potencial -->
+  <div class="card mb16">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>Funnel de captación</div>
+      <div style="font-size:.7rem;color:var(--text2);font-family:'Space Mono',monospace">MRR potencial este mes: <b id="cap-mrr-month" style="color:var(--green2);font-size:.86rem">0€</b></div>
+    </div>
+    <div class="cap-funnel" id="cap-funnel"></div>
+  </div>
+
+  <!-- Tabla de prospectos en captación -->
+  <div class="card mb16">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>Prospectos en captación</div>
+      <button class="btn btn-p btn-sm" onclick="capAdd()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Añadir prospecto
+      </button>
+    </div>
+    <div id="cap-table-wrap"></div>
+  </div>
+
+  <!-- Conversión por sector -->
+  <div class="card mb16">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg>Conversión por sector</div>
+      <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">% prospectos → cerrado</div>
+    </div>
+    <div id="cap-sectors"></div>
+  </div>
+
+  <!-- Mensajes por sector -->
+  <div class="card">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Mensajes listos para copiar</div>
+      <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">5 sectores · WhatsApp + Email</div>
+    </div>
+    <div class="cap-msg-grid" id="cap-messages"></div>
   </div>
 </div>
 
@@ -3936,6 +4086,327 @@ async function generateWebDemo(idx){
       setTimeout(setupReveal,100);
     }
   });
+
+  // ============================================================
+  // CAPTACIÓN — KPIs, Funnel, Tabla, Conversión, Mensajes
+  // ============================================================
+  var CAP_KEY='wm_captacion_prospectos';
+  var CAP_STAGES=[
+    {k:'contactado',label:'Contactados',color:'#3b82f6'},
+    {k:'respondio',label:'Respondieron',color:'#06b6d4'},
+    {k:'reunion',label:'Reuniones',color:'#9d5fff'},
+    {k:'propuesta',label:'Propuestas',color:'#f59e0b'},
+    {k:'cerrado',label:'Cierres',color:'#22c55e'}
+  ];
+  var CAP_SECTORS=['Peluquería','Taller Mecánico','Clínica Dental','Gestoría / Asesoría','Abogado','Restaurante','Centro de Belleza','Inmobiliaria','Gimnasio','Fontanero / Reformas','Otro'];
+  var CAP_CHANNELS=['WhatsApp','Email','LinkedIn','Llamada','Instagram','Presencial'];
+  var CAP_STATUS=[
+    {k:'contactado',label:'Contactado'},
+    {k:'respondio',label:'Respondió'},
+    {k:'reunion',label:'Reunión'},
+    {k:'propuesta',label:'Propuesta'},
+    {k:'cerrado',label:'Cerrado'},
+    {k:'descartado',label:'Descartado'}
+  ];
+
+  var CAP_MESSAGES={
+    'peluquerias':{
+      ico:'✂️',name:'Peluquerías',
+      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Vi la web de [PELUQUERÍA] y vi que recibís reservas por teléfono o Instagram.\n\nLo que hacemos: un chatbot IA que reserva citas 24/7 en WhatsApp (corte, color, mechas…), reduce huecos vacíos un 30% y libera al equipo para atender mejor en sala.\n\n¿Te enseño una demo de 2 min con tu propio salón? Sin compromiso.\n\nCris · whitemoon.es',
+      email:'Asunto: Cómo [PELUQUERÍA] puede llenar agenda automáticamente con IA\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon · Majadahonda). Hemos creado un asistente IA específico para peluquerías que:\n\n• Reserva citas por WhatsApp 24/7 (sin que cojas el teléfono)\n• Recuerda la cita 24h antes → reduce no-shows un 60%\n• Sugiere servicios extra (color, tratamiento) a clientas frecuentes\n\nDesde 149€/mes sin permanencia. Tengo una demo de tu salón lista en 48h.\n\n¿Probamos una llamada de 10 min esta semana?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'talleres':{
+      ico:'🚗',name:'Talleres mecánicos',
+      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. He visto la web del taller [NEGOCIO] y quería proponerte algo concreto:\n\nUn chatbot IA que da presupuestos rápidos por WhatsApp (chapa, ITV, neumáticos), agenda citas y filtra al curioso del cliente serio.\n\nResultado: menos llamadas absurdas y más coches entrando en el foso.\n\n¿Te paso una demo en 2 min con tu propio taller? Sin compromiso.\n\nCris · whitemoon.es',
+      email:'Asunto: Menos llamadas absurdas, más coches en el foso · IA para [NEGOCIO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon. Trabajamos con talleres en Madrid implantando un asistente IA que:\n\n• Da presupuestos orientativos por WhatsApp en segundos\n• Agenda citas según huecos reales de tu agenda\n• Avisa al cliente cuando el coche está listo (sin que llames tú)\n• Filtra clientes serios vs curiosos\n\nDesde 149€/mes. Demo personalizada de tu taller en 48h.\n\n¿Te llamo 10 min y te lo enseño en pantalla?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'clinicas':{
+      ico:'🦷',name:'Clínicas',
+      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Vi la web de [CLÍNICA] y veo que las reservas se gestionan por teléfono.\n\nTe propongo un asistente IA que:\n• Reserva primera visita por WhatsApp 24/7\n• Recuerda la cita y reduce no-shows un 60%\n• Filtra urgencias reales\n\nResultado: la recepcionista atiende mejor a quien está delante y la agenda se llena sola.\n\n¿Te enseño la demo con tu propia clínica? 2 min, sin compromiso.\n\nCris · whitemoon.es',
+      email:'Asunto: Reducir no-shows y llenar agenda · IA para [CLÍNICA]\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon, agencia IA en Majadahonda). Tenemos un chatbot específico para clínicas dentales y de estética que:\n\n• Captura primera visita 24/7 por WhatsApp\n• Confirma cita 24h antes → no-shows -60%\n• Avisa cuando hay hueco por cancelación a la lista de espera\n• Cumple RGPD (no almacena datos médicos sensibles)\n\nDesde 149€/mes. Demo lista en 48h con tu propia clínica.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'gestorias':{
+      ico:'📑',name:'Gestorías',
+      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Os he visto y quería proponeros algo:\n\nUn asistente IA para [GESTORÍA] que responde 24/7 las preguntas repetitivas de clientes (modelo 303, autónomo, IRPF, alta SS…) y deriva al humano solo cuando hace falta.\n\nResultado: menos interrupciones y más tiempo facturable para el equipo.\n\n¿Te paso una demo entrenada con vuestros servicios? 2 min.\n\nCris · whitemoon.es',
+      email:'Asunto: Menos consultas repetitivas, más tiempo facturable · IA para [GESTORÍA]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon. Trabajamos con gestorías y asesorías implantando un asistente IA que:\n\n• Responde 24/7 las dudas más repetitivas (303, 130, autónomo, alta SS, IRPF…)\n• Capta nuevos clientes desde la web\n• Deriva a un asesor humano cuando la consulta lo requiere\n• Se entrena con vuestros servicios y tarifas\n\nDesde 149€/mes. Demo personalizada en 48h.\n\n¿Te llamo 10 min y te lo enseño?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'abogados':{
+      ico:'⚖️',name:'Abogados',
+      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Vi la web de [DESPACHO] y quería plantearte algo:\n\nUn asistente IA que filtra los leads por WhatsApp 24/7: pregunta tipo de caso (laboral, civil, penal…), hace una primera cualificación y agenda consulta solo con casos viables.\n\nResultado: menos consultas perdedoras de tiempo y más clientes de calidad.\n\n¿Te enseño la demo? 2 min sin compromiso.\n\nCris · whitemoon.es',
+      email:'Asunto: Filtrar leads y captar mejores clientes · IA para [DESPACHO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon (agencia IA · Majadahonda). Hemos desarrollado un asistente específico para despachos que:\n\n• Cualifica leads 24/7 por WhatsApp (tipo de caso, urgencia, viabilidad)\n• Agenda consulta solo con casos que merece la pena coger\n• Ofrece info inicial (Ley Segunda Oportunidad, despido improcedente, etc.)\n• Cumple confidencialidad y RGPD\n\nDesde 149€/mes sin permanencia. Demo personalizada en 48h.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
+    }
+  };
+
+  function capLoad(){
+    try{var raw=localStorage.getItem(CAP_KEY);return raw?JSON.parse(raw):[]}catch(e){return []}
+  }
+  function capSave(arr){
+    try{localStorage.setItem(CAP_KEY,JSON.stringify(arr))}catch(e){}
+  }
+  function capUid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+
+  window.capAdd=function(){
+    var arr=capLoad();
+    arr.unshift({
+      id:capUid(),negocio:'',sector:'',zona:'',canal:'WhatsApp',
+      estado:'contactado',d1:false,d3:false,d7:false,
+      notas:'',importe:149,fecha:new Date().toISOString()
+    });
+    capSave(arr);
+    renderCaptacion();
+    setTimeout(function(){
+      var first=document.querySelector('#cap-table-wrap .cap-row:not(.cap-head) .cap-input');
+      if(first)first.focus();
+    },50);
+  };
+
+  window.capDel=function(id){
+    if(!confirm('¿Eliminar este prospecto?'))return;
+    var arr=capLoad().filter(function(p){return p.id!==id});
+    capSave(arr);
+    renderCaptacion();
+  };
+
+  window.capUpdate=function(id,field,value){
+    var arr=capLoad();
+    for(var i=0;i<arr.length;i++){
+      if(arr[i].id===id){
+        if(field==='importe')value=parseFloat(value)||0;
+        arr[i][field]=value;
+        break;
+      }
+    }
+    capSave(arr);
+    renderCapKpis();
+    renderCapFunnel();
+    renderCapSectors();
+    var sb=document.getElementById('sb-cap');
+    if(sb)sb.textContent=arr.length;
+  };
+
+  window.capToggleD=function(id,day){
+    var arr=capLoad();
+    for(var i=0;i<arr.length;i++){
+      if(arr[i].id===id){arr[i][day]=!arr[i][day];break}
+    }
+    capSave(arr);
+    renderCaptacion();
+  };
+
+  function _esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+  function renderCapKpis(){
+    var arr=capLoad();
+    var counts={contactado:0,respondio:0,reunion:0,propuesta:0,cerrado:0,descartado:0};
+    var mrrMonth=0;
+    var now=new Date();
+    var month=now.getMonth(),year=now.getFullYear();
+    arr.forEach(function(p){
+      if(counts[p.estado]!=null)counts[p.estado]++;
+      if(p.estado==='cerrado'){
+        var d=new Date(p.fecha||0);
+        if(d.getMonth()===month&&d.getFullYear()===year)mrrMonth+=parseFloat(p.importe)||0;
+      }
+    });
+    // Acumulados (cada etapa cuenta también las posteriores que ya pasaron por ahí)
+    var acc={
+      contactado:counts.contactado+counts.respondio+counts.reunion+counts.propuesta+counts.cerrado,
+      respondio:counts.respondio+counts.reunion+counts.propuesta+counts.cerrado,
+      reunion:counts.reunion+counts.propuesta+counts.cerrado,
+      propuesta:counts.propuesta+counts.cerrado,
+      cerrado:counts.cerrado
+    };
+    var rate=function(a,b){return b>0?Math.round(a/b*100):0};
+    var mrrPotencial=arr.filter(function(p){return p.estado==='propuesta'||p.estado==='reunion'}).reduce(function(s,p){return s+(parseFloat(p.importe)||0)},0);
+
+    var kpis=[
+      {label:'Contactados',num:acc.contactado,sub:'total prospectos',cls:''},
+      {label:'Respondieron',num:acc.respondio,sub:rate(acc.respondio,acc.contactado)+'% conversión',cls:'k-rate'},
+      {label:'Reuniones',num:acc.reunion,sub:rate(acc.reunion,acc.respondio)+'% de respondieron',cls:'k-rate'},
+      {label:'Propuestas',num:acc.propuesta,sub:rate(acc.propuesta,acc.reunion)+'% de reuniones',cls:'k-rate'},
+      {label:'Cierres',num:acc.cerrado,sub:rate(acc.cerrado,acc.contactado)+'% global',cls:'k-rate'},
+      {label:'MRR potencial',num:mrrPotencial.toLocaleString('es-ES')+'€',sub:'reuniones + propuestas',cls:'k-mrr'},
+      {label:'MRR cerrado mes',num:mrrMonth.toLocaleString('es-ES')+'€',sub:now.toLocaleString('es-ES',{month:'long'}),cls:'k-mrr'},
+      {label:'Descartados',num:counts.descartado,sub:'no encajan',cls:''}
+    ];
+    var html='';
+    kpis.forEach(function(k){
+      html+='<div class="cap-kpi '+k.cls+'"><div class="kpi-label">'+k.label+'</div><div class="kpi-num">'+k.num+'</div><div class="kpi-sub">'+k.sub+'</div></div>';
+    });
+    var box=document.getElementById('cap-kpis');
+    if(box)box.innerHTML=html;
+    var mm=document.getElementById('cap-mrr-month');
+    if(mm)mm.textContent=mrrMonth.toLocaleString('es-ES')+'€';
+  }
+
+  function renderCapFunnel(){
+    var arr=capLoad();
+    var counts={contactado:0,respondio:0,reunion:0,propuesta:0,cerrado:0};
+    arr.forEach(function(p){if(counts[p.estado]!=null)counts[p.estado]++});
+    var acc={
+      contactado:counts.contactado+counts.respondio+counts.reunion+counts.propuesta+counts.cerrado,
+      respondio:counts.respondio+counts.reunion+counts.propuesta+counts.cerrado,
+      reunion:counts.reunion+counts.propuesta+counts.cerrado,
+      propuesta:counts.propuesta+counts.cerrado,
+      cerrado:counts.cerrado
+    };
+    var max=Math.max(acc.contactado,1);
+    var html='';
+    CAP_STAGES.forEach(function(st,i){
+      var n=acc[st.k]||0;
+      var w=n/max*100;
+      var prev=i===0?n:(acc[CAP_STAGES[i-1].k]||0);
+      var rate=prev>0?Math.round(n/prev*100):0;
+      html+='<div class="cap-funnel-row">';
+      html+='<div class="cap-funnel-label"><span class="cf-dot" style="background:'+st.color+';color:'+st.color+'"></span>'+st.label+'</div>';
+      html+='<div class="cap-funnel-bar"><div class="cap-funnel-fill f-'+st.k+'" style="width:'+Math.max(w,2)+'%">'+(n>0?n:'')+'</div></div>';
+      html+='<div class="cap-funnel-rate">'+(i===0?'<b>'+n+'</b>':'<b>'+rate+'%</b>')+'</div>';
+      html+='</div>';
+    });
+    var box=document.getElementById('cap-funnel');
+    if(box)box.innerHTML=html;
+  }
+
+  function renderCapTable(){
+    var arr=capLoad();
+    var box=document.getElementById('cap-table-wrap');
+    if(!box)return;
+    if(arr.length===0){
+      box.innerHTML='<div class="cap-empty"><b>Sin prospectos en captación</b>Pulsa <b style="display:inline;color:var(--accent2)">"➕ Añadir prospecto"</b> para empezar a registrar tu trabajo de captación.</div>';
+      return;
+    }
+    var buildOpts=function(items,sel,placeholder){
+      var out=placeholder?'<option value="">'+placeholder+'</option>':'';
+      items.forEach(function(it){
+        var v=typeof it==='string'?it:it.k;
+        var lbl=typeof it==='string'?it:it.label;
+        out+='<option value="'+_esc(v)+'"'+(v===sel?' selected':'')+'>'+_esc(lbl)+'</option>';
+      });
+      return out;
+    };
+    var statusLabel=function(k){for(var i=0;i<CAP_STATUS.length;i++)if(CAP_STATUS[i].k===k)return CAP_STATUS[i].label;return k};
+
+    var html='<div class="cap-table">';
+    html+='<div class="cap-row cap-head"><div>Negocio</div><div>Sector</div><div>Zona</div><div>Canal</div><div>D1 / D3 / D7</div><div>Estado</div><div>Notas</div><div>Importe (€)</div><div></div></div>';
+    arr.forEach(function(p){
+      html+='<div class="cap-row">';
+      html+='<div><input class="cap-input" placeholder="Nombre del negocio" value="'+_esc(p.negocio)+'" onchange="capUpdate(\''+p.id+'\',\'negocio\',this.value)"></div>';
+      html+='<div><select class="cap-select" onchange="capUpdate(\''+p.id+'\',\'sector\',this.value)">'+buildOpts(CAP_SECTORS,p.sector,'—')+'</select></div>';
+      html+='<div><input class="cap-input" placeholder="Madrid…" value="'+_esc(p.zona)+'" onchange="capUpdate(\''+p.id+'\',\'zona\',this.value)"></div>';
+      html+='<div><select class="cap-select" onchange="capUpdate(\''+p.id+'\',\'canal\',this.value)">'+buildOpts(CAP_CHANNELS,p.canal,null)+'</select></div>';
+      html+='<div class="cap-d-row">';
+      html+='<button class="cap-d '+(p.d1?'on':'')+'" onclick="capToggleD(\''+p.id+'\',\'d1\')" title="Follow-up día 1">D1</button>';
+      html+='<button class="cap-d '+(p.d3?'on':'')+'" onclick="capToggleD(\''+p.id+'\',\'d3\')" title="Follow-up día 3">D3</button>';
+      html+='<button class="cap-d '+(p.d7?'on':'')+'" onclick="capToggleD(\''+p.id+'\',\'d7\')" title="Follow-up día 7">D7</button>';
+      html+='</div>';
+      html+='<div><select class="cap-select" onchange="capUpdate(\''+p.id+'\',\'estado\',this.value)">'+buildOpts(CAP_STATUS,p.estado,null)+'</select><div style="margin-top:4px"><span class="cap-state s-'+p.estado+'">'+statusLabel(p.estado)+'</span></div></div>';
+      html+='<div><input class="cap-input" placeholder="Notas…" value="'+_esc(p.notas)+'" onchange="capUpdate(\''+p.id+'\',\'notas\',this.value)"></div>';
+      html+='<div><input class="cap-input" type="number" min="0" step="10" value="'+(parseFloat(p.importe)||0)+'" onchange="capUpdate(\''+p.id+'\',\'importe\',this.value)" style="font-family:Space Mono,monospace"></div>';
+      html+='<div><button class="cap-del" onclick="capDel(\''+p.id+'\')" title="Eliminar"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 01-2 2H9a2 2 0 01-2-2L5 6"/></svg></button></div>';
+      html+='</div>';
+    });
+    html+='</div>';
+    box.innerHTML=html;
+  }
+
+  function renderCapSectors(){
+    var arr=capLoad();
+    var bySector={};
+    arr.forEach(function(p){
+      var s=p.sector||'Sin sector';
+      if(!bySector[s])bySector[s]={total:0,cerrados:0};
+      bySector[s].total++;
+      if(p.estado==='cerrado')bySector[s].cerrados++;
+    });
+    var rows=Object.keys(bySector).map(function(k){
+      var d=bySector[k];
+      return {sector:k,total:d.total,cerrados:d.cerrados,rate:d.total>0?Math.round(d.cerrados/d.total*100):0};
+    }).sort(function(a,b){return b.rate-a.rate||b.total-a.total});
+
+    var box=document.getElementById('cap-sectors');
+    if(!box)return;
+    if(rows.length===0){
+      box.innerHTML='<div style="font-size:.74rem;color:var(--muted);padding:14px;text-align:center">Aún no hay datos. Añade prospectos para ver qué sector convierte mejor.</div>';
+      return;
+    }
+    var html='';
+    rows.forEach(function(r){
+      var w=Math.max(r.rate,3);
+      html+='<div class="cap-sector-row">';
+      html+='<div class="cap-sector-label">'+_esc(r.sector)+'</div>';
+      html+='<div class="cap-sector-bar"><div class="cap-sector-fill" style="width:'+w+'%">'+(r.rate>0?r.rate+'%':'')+'</div></div>';
+      html+='<div class="cap-sector-stat"><b>'+r.cerrados+'</b>/'+r.total+'</div>';
+      html+='</div>';
+    });
+    box.innerHTML=html;
+  }
+
+  function renderCapMessages(){
+    var box=document.getElementById('cap-messages');
+    if(!box||box.dataset.rendered==='1')return;
+    var html='';
+    Object.keys(CAP_MESSAGES).forEach(function(k){
+      var m=CAP_MESSAGES[k];
+      var idW='msg-w-'+k,idE='msg-e-'+k;
+      html+='<div class="cap-msg-card">';
+      html+='<div class="cap-msg-head"><div class="cap-msg-ico">'+m.ico+'</div><div class="cap-msg-name">'+m.name+'</div></div>';
+      html+='<div class="cap-msg-tabs">';
+      html+='<button class="cap-msg-tab on" onclick="capSwitchMsg(this,\''+idW+'\',\''+idE+'\')"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>WhatsApp</button>';
+      html+='<button class="cap-msg-tab" onclick="capSwitchMsg(this,\''+idE+'\',\''+idW+'\')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</button>';
+      html+='</div>';
+      html+='<div class="cap-msg-body" id="'+idW+'">'+_esc(m.whatsapp)+'</div>';
+      html+='<div class="cap-msg-body" id="'+idE+'" style="display:none">'+_esc(m.email)+'</div>';
+      html+='<div class="cap-msg-foot">';
+      html+='<button class="btn btn-p btn-xs" onclick="capCopyMsg(this,\''+k+'\')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar</button>';
+      html+='</div>';
+      html+='</div>';
+    });
+    box.innerHTML=html;
+    box.dataset.rendered='1';
+  }
+
+  window.capSwitchMsg=function(tab,showId,hideId){
+    tab.parentNode.querySelectorAll('.cap-msg-tab').forEach(function(t){t.classList.remove('on')});
+    tab.classList.add('on');
+    var sh=document.getElementById(showId),hi=document.getElementById(hideId);
+    if(sh)sh.style.display='';
+    if(hi)hi.style.display='none';
+  };
+
+  window.capCopyMsg=function(btn,key){
+    var card=btn.closest('.cap-msg-card');
+    if(!card)return;
+    var activeTab=card.querySelector('.cap-msg-tab.on');
+    var isWhatsapp=activeTab&&activeTab.textContent.toLowerCase().indexOf('whatsapp')>=0;
+    var m=CAP_MESSAGES[key];
+    if(!m)return;
+    var text=isWhatsapp?m.whatsapp:m.email;
+    navigator.clipboard.writeText(text).then(function(){
+      var orig=btn.innerHTML;
+      btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:3"><polyline points="20 6 9 17 4 12"/></svg>Copiado';
+      setTimeout(function(){btn.innerHTML=orig},1600);
+      if(typeof showToast==='function')showToast('Mensaje '+(isWhatsapp?'WhatsApp':'Email')+' copiado');
+    });
+  };
+
+  window.renderCaptacion=function(){
+    renderCapKpis();
+    renderCapFunnel();
+    renderCapTable();
+    renderCapSectors();
+    renderCapMessages();
+    var arr=capLoad();
+    var sb=document.getElementById('sb-cap');
+    if(sb)sb.textContent=arr.length;
+  };
+
+  // Render inicial al cargar (para que el contador del sidebar esté actualizado)
+  setTimeout(function(){
+    var arr=capLoad();
+    var sb=document.getElementById('sb-cap');
+    if(sb)sb.textContent=arr.length;
+  },100);
+
 })();
 </script>
 
