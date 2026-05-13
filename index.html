@@ -972,6 +972,7 @@ Todos los planes: Sin permanencia · IVA no incluido
         <span class="lw-live-dot"></span>
         <span>Live · auto-refresh 60s</span>
         <button class="btn btn-ghost btn-xs" onclick="loadLeadsWeb(true)" title="Refrescar ahora">↻ Actualizar</button>
+        <button class="btn btn-xs" onclick="window.open('https://calendar.google.com','_blank','noopener')" title="Abrir Google Calendar" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent">📅 Ver mi agenda hoy</button>
       </div>
     </div>
     <div id="lw-error-box"></div>
@@ -4772,6 +4773,7 @@ async function generateWebDemo(idx){
 
       var waBtn=phone?'<a class="btn btn-p btn-xs" href="'+_esc(_waLink(phone))+'" target="_blank" rel="noopener">💬 WhatsApp</a>':'';
       var pipeBtn='<button class="btn btn-ghost btn-xs" onclick="lwAddToPipeline(\''+idEsc+'\')">➕ Pipeline</button>';
+      var calBtn=state==='attended'?'':'<button class="btn btn-xs" onclick="lwCalendar(\''+idEsc+'\')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent" title="Crear recordatorio en Google Calendar">📅 Agendar llamada</button>';
       var attendedBtn=state==='attended'
         ? '<button class="btn btn-ghost btn-xs" onclick="lwToggleAttended(\''+idEsc+'\',false)" style="color:var(--muted)">↺ Reabrir</button>'
         : '<button class="btn btn-ghost btn-xs" onclick="lwToggleAttended(\''+idEsc+'\',true)" style="color:var(--green2);border-color:rgba(34,197,94,.3)">✓ Atendido</button>';
@@ -4782,7 +4784,7 @@ async function generateWebDemo(idx){
       html+='<div class="lw-phone">'+phoneEsc+'</div>';
       html+='<div>'+sector+'</div>';
       html+='<div class="lw-origin">'+origen+'</div>';
-      html+='<div class="lw-actions">'+waBtn+pipeBtn+attendedBtn+'</div>';
+      html+='<div class="lw-actions">'+waBtn+calBtn+pipeBtn+attendedBtn+'</div>';
       html+='</div>';
     });
     html+='</div>';
@@ -4883,6 +4885,28 @@ async function generateWebDemo(idx){
     if(typeof updateCounters==='function')updateCounters();
     renderLeadsWebAll();
     if(typeof showToast==='function')showToast('Añadido al pipeline · '+(meta.name));
+  };
+
+  window.lwCalendar=function(id){
+    var lead=null;
+    for(var i=0;i<leadsCache.length;i++){if(String(leadsCache[i].id)===String(id)){lead=leadsCache[i];break}}
+    if(!lead){if(typeof showToast==='function')showToast('Lead no encontrado');return}
+    var fecha=new Date();
+    fecha.setHours(fecha.getHours()+1);
+    var start=fecha.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+    var end=new Date(fecha.getTime()+30*60000).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+    var nombre=lead.nombre||lead.name||'lead';
+    var texto=encodeURIComponent('📞 Llamar a '+nombre+' — WhiteMoon Lead');
+    var detalle=encodeURIComponent(
+      'Teléfono: '+(lead.telefono||lead.phone||'—')+
+      '\nSector: '+(lead.sector||'—')+
+      '\nInterés: '+(lead.interes||'—')+
+      '\nMensaje: '+(lead.mensaje||'—')+
+      '\nOrigen: '+(lead.origen||lead.source||'whitemoon.es')
+    );
+    var url='https://calendar.google.com/calendar/render?action=TEMPLATE&text='+texto+'&dates='+start+'/'+end+'&details='+detalle;
+    window.open(url,'_blank','noopener');
+    if(typeof showToast==='function')showToast('Abriendo Google Calendar…');
   };
 
   window.loadLeadsWeb=loadLeadsWeb;
