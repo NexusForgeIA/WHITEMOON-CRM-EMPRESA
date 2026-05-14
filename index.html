@@ -5104,14 +5104,21 @@ async function generateWebDemo(idx){
     if(!confirm('¿Eliminar este lead? Esta acción no se puede deshacer.'))return;
     var s=_getSb();
     if(!s){if(typeof showToast==='function')showToast('Supabase no disponible');return}
+    console.log('Intentando borrar lead:',id);
     try{
-      var resp=await s.from(TABLE).delete().eq('id',id);
+      var resp=await s.from(TABLE).delete().eq('id',id).select();
+      console.log('Resultado delete:',resp.data,resp.error);
       if(resp.error){if(typeof showToast==='function')showToast('Error: '+(resp.error.message||''));return}
+      var rows=resp.data||[];
+      if(!rows.length){
+        if(typeof showToast==='function')showToast('No se borró ninguna fila — revisa permisos');
+        return;
+      }
       leadsCache=leadsCache.filter(function(l){return String(l.id)!==String(id)});
       renderLeadsWebAll();
       if(typeof showToast==='function')showToast('🗑️ Lead eliminado');
-      loadLeadsWeb(false);
-    }catch(e){if(typeof showToast==='function')showToast('Error de red')}
+      await loadLeadsWeb(false);
+    }catch(e){console.error('lwDeleteLead error',e);if(typeof showToast==='function')showToast('Error de red')}
   };
 
   window.lwToggleAttended=async function(id,val){
@@ -5211,6 +5218,7 @@ async function generateWebDemo(idx){
           if(typeof showToast==='function')showToast('🔔 Nuevo lead: '+n);
         })
         .on('postgres_changes',{event:'UPDATE',schema:'public',table:TABLE},function(){loadLeadsWeb(false)})
+        .on('postgres_changes',{event:'DELETE',schema:'public',table:TABLE},function(){loadLeadsWeb(false)})
         .subscribe();
       return true;
     }catch(e){lwChannel=null;return false}
