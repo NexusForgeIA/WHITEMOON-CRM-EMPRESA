@@ -1855,29 +1855,54 @@ function prosAnalyzeHTML(){
 
 function exportPros(){copyTxt(prosResults.map(function(r){return r.domain+' | '+r.sector+' | Score:'+r.score+' | '+r.probs.length+' oportunidades'}).join('\n'))}
 
-function analyzeByUrl(){
+async function analyzeByUrl(){
   var input=$('prospect-url');
   if(!input)return;
   var url=String(input.value||'').trim();
-  if(!url){showToast('Introduce una URL');return}
+  if(!url){showToast('⚠️ Introduce una URL válida');return}
   if(!/^https?:\/\//i.test(url))url='https://'+url;
-  var proxy='https://api.allorigins.win/get?url='+encodeURIComponent(url);
-  showToast('🔍 Analizando '+url+'…');
-  fetch(proxy).then(function(r){
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    return r.json();
-  }).then(function(data){
-    if(!data||!data.contents)throw new Error('respuesta vacía');
-    var paste=$('pros-html-paste');
-    var urlField=$('pros-html-url');
-    if(urlField)urlField.value=url;
-    if(paste)paste.value=data.contents;
+
+  showToast('🔍 Analizando '+url+'...');
+
+  var proxies=[
+    'https://api.allorigins.win/get?url=',
+    'https://corsproxy.io/?',
+    'https://api.codetabs.com/v1/proxy?quest='
+  ];
+
+  var html=null;
+
+  for(var i=0;i<proxies.length;i++){
+    var proxy=proxies[i];
+    try{
+      var res=await fetch(proxy+encodeURIComponent(url),{signal:AbortSignal.timeout(8000)});
+      if(!res.ok)continue;
+      var data;
+      try{ data=await res.clone().json(); }
+      catch(_){ data={contents:await res.text()}; }
+      html=data.contents||data;
+      if(typeof html!=='string')html=String(html||'');
+      if(html&&html.length>100)break;
+      html=null;
+    }catch(e){
+      continue;
+    }
+  }
+
+  if(!html||html.length<100){
+    showToast('⚠️ No se pudo obtener la web automáticamente. Abre la web → Ctrl+U → copia el HTML aquí');
+    return;
+  }
+
+  var paste=$('pros-html-paste');
+  var urlField=$('pros-html-url');
+  if(urlField)urlField.value=url;
+  if(paste){
+    paste.value=html;
     prosAnalyzeHTML();
     input.value='';
-  }).catch(function(err){
-    console.warn('analyzeByUrl fallo:',err);
-    showToast('⚠️ No se pudo obtener automáticamente. Copia el HTML manualmente con Ctrl+U');
-  });
+    showToast('✅ Web analizada: '+url);
+  }
 }
 
 function renderProsResults(){
