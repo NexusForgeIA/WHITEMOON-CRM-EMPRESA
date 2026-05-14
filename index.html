@@ -492,6 +492,37 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 .lw-state-pill.s-pending{background:rgba(255,140,66,.14);color:var(--orange2);border:1px solid rgba(255,140,66,.3)}
 .lw-state-pill.s-attended{background:rgba(34,197,94,.14);color:var(--green2);border:1px solid rgba(34,197,94,.3)}
 .lw-state-pill.s-converted{background:var(--accent-dim);color:var(--accent2);border:1px solid var(--accent-border)}
+.lw-pref-pill{font-size:.58rem;font-weight:800;padding:3px 8px;border-radius:9px;letter-spacing:.04em;display:inline-block;margin-left:6px;white-space:nowrap}
+.lw-pref-pill.p-video{background:rgba(59,130,246,.14);color:#60a5fa;border:1px solid rgba(59,130,246,.35)}
+.lw-pref-pill.p-call{background:rgba(34,197,94,.14);color:var(--green2);border:1px solid rgba(34,197,94,.35)}
+.lw-pref-pill.p-wa{background:rgba(157,95,255,.14);color:#c084fc;border:1px solid rgba(157,95,255,.35)}
+.lw-cita{color:var(--text2);margin-top:4px;font-weight:600}
+@keyframes hc-new-pulse{0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.55)}50%{box-shadow:0 0 0 8px rgba(239,68,68,0)}}
+/* Score bar */
+.score-bar{position:relative;height:8px;background:var(--bg3);border-radius:6px;overflow:hidden;margin-top:6px;border:1px solid var(--border2)}
+.score-fill{height:100%;border-radius:6px;transition:width .5s ease-out}
+.score-fill.sf-red{background:linear-gradient(90deg,#ef4444,#f87171)}
+.score-fill.sf-orange{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.score-fill.sf-blue{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.score-fill.sf-green{background:linear-gradient(90deg,#22c55e,#86efac)}
+.score-vender-badge{display:inline-block;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:.6rem;font-weight:900;letter-spacing:.1em;padding:3px 8px;border-radius:8px;margin-left:6px;animation:hc-new-pulse 1.8s ease-in-out infinite}
+/* Sidebar MRR bar */
+.sb-mrr-card{margin:8px 14px 4px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px}
+.sb-mrr-head{display:flex;justify-content:space-between;align-items:baseline;font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.sb-mrr-vals{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--text);font-weight:700;margin-bottom:6px}
+.sb-mrr-vals .sb-mrr-now{color:var(--accent2)}
+.sb-mrr-vals .sb-mrr-goal{color:var(--muted)}
+.sb-mrr-bar{height:7px;background:var(--bg2);border-radius:5px;overflow:hidden;border:1px solid var(--border)}
+.sb-mrr-fill{height:100%;transition:width .6s ease-out;background:linear-gradient(90deg,#9d5fff,#e91e8c)}
+.sb-mrr-fill.sf-red{background:linear-gradient(90deg,#ef4444,#f87171)}
+.sb-mrr-fill.sf-orange{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.sb-mrr-fill.sf-blue{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
+.sb-mrr-fill.sf-green{background:linear-gradient(90deg,#22c55e,#86efac)}
+/* Drag & Drop pipeline */
+.pipe-item[draggable=true]{cursor:grab}
+.pipe-item.dragging{opacity:.45;cursor:grabbing}
+.pipe-dropzone{border:2px dashed var(--border2);border-radius:10px;padding:8px 12px;margin:6px 0;font-size:.7rem;color:var(--muted);text-align:center;letter-spacing:.06em;text-transform:uppercase;transition:all .2s}
+.pipe-dropzone.drag-over{border-color:var(--accent);background:var(--accent-dim);color:var(--accent2)}
 .lw-empty{padding:40px 20px;text-align:center;color:var(--muted);font-size:.78rem}
 .lw-empty b{display:block;color:var(--text);margin-bottom:6px;font-size:.92rem}
 .lw-error{padding:14px;border-radius:9px;background:var(--red-s);border:1px solid rgba(239,68,68,.25);color:var(--red2);font-size:.72rem;margin-bottom:12px}
@@ -638,6 +669,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       <div class="pill-icobox"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
       <span><span class="pill-label">Meta</span> <b id="hc-goal">0%</b></span>
     </div>
+    <button type="button" id="hc-new-leads" onclick="goPage('p-leads-web',null);if(typeof renderLeadsWeb==='function')renderLeadsWeb()" title="Leads nuevos sin atender" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:.72rem;font-weight:700;cursor:pointer;animation:hc-new-pulse 1.6s ease-in-out infinite;font-family:'Sora',sans-serif">🔔 <span id="hc-new-leads-num">0</span> leads nuevos</button>
   </div>
   <div class="header-right">
     <span id="hc-user" class="hc-user" style="font-size:.7rem;color:var(--text2);font-weight:500;margin-right:4px"></span>
@@ -672,6 +704,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       Clientes
       <span class="nav-badge nb-g" id="sb-clients">0</span>
     </button>
+    <div class="sb-mrr-card" id="sb-mrr-card" title="Progreso al objetivo MRR">
+      <div class="sb-mrr-head"><span>Objetivo MRR</span><span id="sb-mrr-pct">0%</span></div>
+      <div class="sb-mrr-vals"><span class="sb-mrr-now" id="sb-mrr-now">0€</span> / <span class="sb-mrr-goal" id="sb-mrr-goal">0€</span></div>
+      <div class="sb-mrr-bar"><div class="sb-mrr-fill" id="sb-mrr-fill" style="width:0%"></div></div>
+    </div>
     <button class="nav-item" onclick="goPage('p-leads-web',this);renderLeadsWeb()">
       <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
       📥 Leads Web
@@ -742,6 +779,14 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       <span class="icobolt"><svg viewBox="0 0 24 24" style="width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>
       <span>Analizar y generar web demo</span>
     </button>
+    <div style="margin-top:14px;padding-top:14px;border-top:1px dashed var(--border)">
+      <div style="font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-weight:700">O introduce la URL directamente</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input class="input mono" id="prospect-url" type="url" placeholder="https://negocio.com" style="flex:1;min-width:200px;font-size:.78rem">
+        <button class="btn btn-cyan" onclick="analyzeByUrl()" style="font-size:.74rem">🌐 Analizar URL</button>
+      </div>
+      <div style="font-size:.62rem;color:var(--muted);margin-top:6px">Usa un proxy CORS público. Si falla, copia el HTML manualmente con Ctrl+U.</div>
+    </div>
   </div>
   <div id="pros-counter" style="display:none" class="flex jcb aic mb12">
     <div style="font-size:.78rem;color:var(--text2)"><b style="color:var(--text)" id="pros-total">0</b> prospectos analizados</div>
@@ -1810,6 +1855,31 @@ function prosAnalyzeHTML(){
 
 function exportPros(){copyTxt(prosResults.map(function(r){return r.domain+' | '+r.sector+' | Score:'+r.score+' | '+r.probs.length+' oportunidades'}).join('\n'))}
 
+function analyzeByUrl(){
+  var input=$('prospect-url');
+  if(!input)return;
+  var url=String(input.value||'').trim();
+  if(!url){showToast('Introduce una URL');return}
+  if(!/^https?:\/\//i.test(url))url='https://'+url;
+  var proxy='https://api.allorigins.win/get?url='+encodeURIComponent(url);
+  showToast('🔍 Analizando '+url+'…');
+  fetch(proxy).then(function(r){
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    return r.json();
+  }).then(function(data){
+    if(!data||!data.contents)throw new Error('respuesta vacía');
+    var paste=$('pros-html-paste');
+    var urlField=$('pros-html-url');
+    if(urlField)urlField.value=url;
+    if(paste)paste.value=data.contents;
+    prosAnalyzeHTML();
+    input.value='';
+  }).catch(function(err){
+    console.warn('analyzeByUrl fallo:',err);
+    showToast('⚠️ No se pudo obtener automáticamente. Copia el HTML manualmente con Ctrl+U');
+  });
+}
+
 function renderProsResults(){
   var results=prosResults.slice().sort(function(a,b){return b.score-a.score});
   var c=$('pros-results-list');
@@ -1818,17 +1888,20 @@ function renderProsResults(){
   if(!results.length){c.innerHTML='';return}
   var html='';
   results.forEach(function(r,i){
-    var sc=r.score>=67?'var(--green2)':r.score>=34?'var(--orange2)':'var(--red2)';
-    var hot=r.score>=50;
+    var scoreNum=Math.max(0,Math.min(100,r.score|0));
+    var sc=scoreNum>=90?'#22c55e':scoreNum>=71?'#3b82f6':scoreNum>=41?'#f59e0b':'#ef4444';
+    var sfCls=scoreNum>=90?'sf-green':scoreNum>=71?'sf-blue':scoreNum>=41?'sf-orange':'sf-red';
+    var venderYa=scoreNum>=90;
+    var hot=scoreNum>=50;
     var noChat=!r.chat,noWa=!r.wa,noFb=!r.rrss.facebook.ok,noIg=!r.rrss.instagram.ok;
     var cid='pc-'+i;
     html+='<div class="card mb12" style="'+(hot?'border-color:rgba(255,140,66,.25);background:rgba(255,140,66,.02)':'')+'">';
     html+='<div class="flex jcb aic mb8">';
     var ico=(SECTOR_ICONS&&SECTOR_ICONS[r.nicho])||r.sectorIco||'🏪';
-    html+='<div><div style="font-size:.88rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+ico+' '+r.domain+'<span class="tag tag-g" style="margin-left:4px">HTML</span>'+(hot?'<span class="hot-badge">VENDER</span>':'')+'</div>';
+    html+='<div style="flex:1;min-width:0"><div style="font-size:.88rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px;flex-wrap:wrap">'+ico+' '+r.domain+'<span class="tag tag-g" style="margin-left:4px">HTML</span>'+(hot&&!venderYa?'<span class="hot-badge">VENDER</span>':'')+(venderYa?'<span class="score-vender-badge">🔥 VENDER YA</span>':'')+'</div>';
     html+='<div style="font-size:.68rem;color:var(--text2);margin-top:2px">'+r.sector+' · '+r.cms+' · '+r.probs.length+' oportunidades</div>';
     html+='<div style="margin-top:4px">'+_sectorSelectHTML(r.nicho||'otro','updateSector('+i+',this.value)')+'</div></div>';
-    html+='<div style="text-align:right"><div class="pros-score" style="color:'+sc+'">'+r.score+'%</div><div style="font-size:.56rem;color:var(--muted)">% venta</div></div></div>';
+    html+='<div style="text-align:right;min-width:90px"><div class="pros-score" style="color:'+sc+'">'+scoreNum+'%</div><div style="font-size:.56rem;color:var(--muted)">% venta</div><div class="score-bar" title="Probabilidad de cierre"><div class="score-fill '+sfCls+'" style="width:'+scoreNum+'%"></div></div></div></div>';
     // Flags
     html+='<div class="flag-row mb8">'+(noChat?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Sin chatbot</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Chatbot</span>')+(noWa?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin WA</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WA</span>')+(noFb?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin FB</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>FB</span>')+(noIg?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin IG</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>IG</span>')+(!r.booking?'<span class="flag f-no"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/></svg>Sin reservas</span>':'<span class="flag f-yes"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Reservas</span>')+'</div>';
     // Actions
@@ -1941,7 +2014,7 @@ arguments:[
 objections:[
 {q:'Ya tenemos teléfono y WhatsApp',a:'Sí, y cuando estáis en cocina nadie contesta. El agente sí.'},
 {q:'Mis clientes quieren persona',a:'En servicio sí. Para reservas y consultas, prefieren rapidez.'},
-{q:'Es caro',a:'2 reservas extra al día = 30€ x 30 = 900€/mes. El pack Spark son 149€.'}
+{q:'Es caro',a:'2 reservas extra al día = 30€ x 30 = 900€/mes. El pack Spark son 499€ setup + 199€/mes.'}
 ],
 solution:'gestionan reservas por WhatsApp y teléfono fuera del servicio',
 callHours:'entre 10:00-12:00 o 16:00-18:00'
@@ -2172,12 +2245,13 @@ function saveProspectMeta(domain,meta){
 }
 
 function getRecommendedPack(d){
-  if(d.score>=60) return {name:'Spark',mrr:149,setup:0,type:'monthly',desc:'Chatbot IA conversacional · activo en 48h'};
+  if(d.score>=60) return {name:'Spark',mrr:199,setup:499,type:'setup+monthly',desc:'Chatbot IA conversacional · activo en 5-7 días laborables'};
   return {name:'Core',mrr:199,setup:1800,type:'setup+monthly',desc:'Web profesional + Chatbot IA + Reservas + SEO básico'};
 }
 
 function updateProspectStatus(domain,newStatus,idx){
   var meta=getProspectMeta(domain);
+  var prevStatus=meta.status;
   meta.status=newStatus;
   meta.lastContact=new Date().toISOString().substring(0,10);
   if(idx!=null && prosResults[idx]){
@@ -2191,8 +2265,40 @@ function updateProspectStatus(domain,newStatus,idx){
   saveProspectMeta(domain,meta);
   if(typeof _syncProspectStatus==='function')_syncProspectStatus(domain,newStatus,meta.notes,new Date().toISOString());
   showToast('Estado: '+getPipelineState(newStatus).label);
+  if(newStatus==='demo' && prevStatus!=='demo'){
+    promptScheduleDemo(meta.name||domain,domain);
+  }
   if(idx!=null) renderProsResults();
   renderPipeline();
+}
+
+function agendarDemoCalendar(nombre,dominio){
+  var now=new Date();
+  now.setDate(now.getDate()+1);
+  now.setHours(10,0,0,0);
+  var start=now.toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  var end=new Date(now.getTime()+30*60000).toISOString().replace(/[-:]/g,'').split('.')[0]+'Z';
+  var texto=encodeURIComponent('🤖 Demo WhiteMoon — '+nombre);
+  var detalle=encodeURIComponent(
+    'Demo personalizada WhiteMoon\n'+
+    'Web: '+dominio+'\n'+
+    'Preparar: Kit Visita + Demo sector'
+  );
+  var url='https://calendar.google.com/calendar/render?action=TEMPLATE'+
+    '&text='+texto+
+    '&dates='+start+'/'+end+
+    '&details='+detalle;
+  window.open(url,'_blank','noopener');
+}
+
+function promptScheduleDemo(nombre,dominio){
+  var t=document.getElementById('toast');
+  var msg=document.getElementById('toast-msg');
+  if(!t||!msg)return;
+  msg.innerHTML='📅 ¿Quieres agendar la demo de <b>'+nombre+'</b> en Google Calendar? <button onclick="agendarDemoCalendar(\''+String(nombre).replace(/\\/g,'\\\\').replace(/\'/g,'\\\'')+'\',\''+String(dominio).replace(/\\/g,'\\\\').replace(/\'/g,'\\\'')+'\');document.getElementById(\'toast\').classList.remove(\'show\')" style="margin-left:8px;background:#fff;color:#7c3aed;border:none;padding:4px 10px;border-radius:6px;font-weight:700;cursor:pointer;font-size:.7rem">Sí, agendar</button>';
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(function(){t.classList.remove('show');msg.textContent='';},8000);
 }
 
 function updateProspectNotes(domain,notes){
@@ -2239,18 +2345,25 @@ function renderPipeline(){
   var orderId={pending:0,contacted:1,demo:2,proposal:3,negotiating:4,won:5,lost:6};
   all.sort(function(a,b){return (orderId[a.status]||0)-(orderId[b.status]||0)});
   var listHTML='';
+  var lastStatus=null;
   all.forEach(function(m){
     var s=getPipelineState(m.status);
+    if(m.status!==lastStatus){
+      listHTML+='<div class="pipe-dropzone" data-target-status="'+m.status+'">Suelta aquí para "'+s.label+'"</div>';
+      lastStatus=m.status;
+    }
     var dim=(m.status==='lost')?' opacity':'';
     var nichoKey=m.nicho||_nichoFromSector(m.sector);
     var domEsc=String(m.domain).replace(/'/g,'\\\'');
+    var nameEsc=String(m.name||m.domain).replace(/'/g,'\\\'');
     var selectHTML=_sectorSelectHTML(nichoKey,'updateProspectSector(\''+domEsc+'\',this.value)');
     var deleteBtn='<button class="btn btn-ghost btn-xs" onclick="deleteProspect(\''+domEsc+'\')" style="color:var(--red2);font-size:.65rem;padding:2px 8px" title="Eliminar prospecto">🗑️</button>';
-    listHTML+='<div class="pipe-item'+dim+'">'+
+    var calBtn='<button class="btn btn-xs" onclick="agendarDemoCalendar(\''+nameEsc+'\',\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Agendar demo en Google Calendar">📅 Agendar demo</button>';
+    listHTML+='<div class="pipe-item'+dim+'" draggable="true" data-domain="'+domEsc+'" data-status="'+m.status+'">'+
       '<div style="flex:1;min-width:160px">'+
         '<div class="pi-name">'+(m.name||m.domain)+'</div>'+
         '<div class="pi-domain">'+m.domain+'</div>'+
-        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+selectHTML+deleteBtn+'</div>'+
+        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+selectHTML+calBtn+deleteBtn+'</div>'+
       '</div>'+
       '<span class="pi-status" style="color:'+s.color+';background:'+s.bg+'">'+s.label+'</span>'+
       (m.mrr?'<span class="pi-status" style="color:var(--accent);background:var(--accent-dim)">'+m.mrr+'€/mes</span>':'')+
@@ -2258,7 +2371,44 @@ function renderPipeline(){
       (m.notes?'<div class="pi-notes">📝 '+m.notes+'</div>':'')+
     '</div>';
   });
+  // Dropzones para estados sin elementos
+  PIPELINE_STATES.forEach(function(st){
+    if(!counts[st.id]){
+      listHTML+='<div class="pipe-dropzone" data-target-status="'+st.id+'" style="opacity:.55">Suelta aquí para "'+st.label+'"</div>';
+    }
+  });
   listEl.innerHTML=listHTML;
+  _bindPipelineDnD(listEl);
+}
+
+function _bindPipelineDnD(listEl){
+  var dragging=null;
+  listEl.querySelectorAll('.pipe-item[draggable=true]').forEach(function(it){
+    it.addEventListener('dragstart',function(e){
+      dragging=it;
+      it.classList.add('dragging');
+      try{e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',it.getAttribute('data-domain')||'')}catch(_){}
+    });
+    it.addEventListener('dragend',function(){
+      if(dragging)dragging.classList.remove('dragging');
+      dragging=null;
+      listEl.querySelectorAll('.pipe-dropzone.drag-over').forEach(function(z){z.classList.remove('drag-over')});
+    });
+  });
+  listEl.querySelectorAll('.pipe-dropzone').forEach(function(zone){
+    zone.addEventListener('dragover',function(e){e.preventDefault();zone.classList.add('drag-over');try{e.dataTransfer.dropEffect='move'}catch(_){}});
+    zone.addEventListener('dragleave',function(){zone.classList.remove('drag-over')});
+    zone.addEventListener('drop',function(e){
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      if(!dragging)return;
+      var dom=dragging.getAttribute('data-domain');
+      var target=zone.getAttribute('data-target-status');
+      var cur=dragging.getAttribute('data-status');
+      if(!dom||!target||cur===target)return;
+      updateProspectStatus(dom,target,null);
+    });
+  });
 }
 
 // FICHA DE VISITA — print
@@ -2331,7 +2481,7 @@ function openCallScript(idx){
   modal.onclick=function(e){if(e.target===modal)closeCallScript()};
   function buildScript(name){
     var n=name||'[TU NOMBRE]';
-    return 'Hola, ¿hablo con <b>'+biz+'</b>?\n\nBuenos días/tardes, soy '+n+' de WhiteMoon, una agencia de IA de Madrid.\n\nTe llamo porque he visto vuestra web en <b>'+d.url+'</b> y he detectado que <b>'+prob.toLowerCase()+'</b>.\n\nNosotros instalamos agentes de IA que <b>'+pb.solution+'</b> en menos de 48 horas.\n\n¿Tenéis 5 minutos esta semana para que os haga una demo en vivo? Es completamente gratuita y sin compromiso.';
+    return 'Hola, ¿hablo con <b>'+biz+'</b>?\n\nBuenos días/tardes, soy '+n+' de WhiteMoon, una agencia de IA de Madrid.\n\nTe llamo porque he visto vuestra web en <b>'+d.url+'</b> y he detectado que <b>'+prob.toLowerCase()+'</b>.\n\nNosotros instalamos agentes de IA que <b>'+pb.solution+'</b> en 5-7 días laborables.\n\n¿Tenéis 5 minutos esta semana para que os haga una demo en vivo? Es completamente gratuita y sin compromiso.';
   }
   modal.innerHTML='<div class="modal-box"><div class="modal-title">📞 Script de llamada · '+biz+'<button class="modal-close" onclick="closeCallScript()">×</button></div>'
 +'<div style="font-size:.74rem;color:var(--text2);margin-bottom:12px">Hora recomendada: <b style="color:var(--accent)">'+pb.callHours+'</b></div>'
@@ -2350,7 +2500,7 @@ function _updateScript(idx){
   var biz=d.bizName||d.domain;
   var prob=d.probs[0]||'oportunidades de mejora en vuestra atención al cliente';
   var n=name||'[TU NOMBRE]';
-  var txt='Hola, ¿hablo con <b>'+biz+'</b>?\n\nBuenos días/tardes, soy '+n+' de WhiteMoon, una agencia de IA de Madrid.\n\nTe llamo porque he visto vuestra web en <b>'+d.url+'</b> y he detectado que <b>'+prob.toLowerCase()+'</b>.\n\nNosotros instalamos agentes de IA que <b>'+pb.solution+'</b> en menos de 48 horas.\n\n¿Tenéis 5 minutos esta semana para que os haga una demo en vivo? Es completamente gratuita y sin compromiso.';
+  var txt='Hola, ¿hablo con <b>'+biz+'</b>?\n\nBuenos días/tardes, soy '+n+' de WhiteMoon, una agencia de IA de Madrid.\n\nTe llamo porque he visto vuestra web en <b>'+d.url+'</b> y he detectado que <b>'+prob.toLowerCase()+'</b>.\n\nNosotros instalamos agentes de IA que <b>'+pb.solution+'</b> en 5-7 días laborables.\n\n¿Tenéis 5 minutos esta semana para que os haga una demo en vivo? Es completamente gratuita y sin compromiso.';
   $('script-text').innerHTML=txt.replace(/\n/g,'<br>');
 }
 
@@ -2439,7 +2589,7 @@ function _recalcROI(idx){
 +'<div style="background:rgba(124,58,237,.05);border:1px solid var(--accent-border);border-radius:8px;padding:12px"><div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:5px">Leads extra/mes</div><div style="font-family:\'Space Mono\',monospace;font-size:1.4rem;font-weight:700;color:var(--accent)">+'+fmtL(r.extra)+'</div></div>'
 +'<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:12px"><div style="font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green2);margin-bottom:5px">Ingresos extra/mes</div><div style="font-family:\'Space Mono\',monospace;font-size:1.4rem;font-weight:700;color:var(--green2)">'+fmt(r.revenue)+'€</div></div>'
 +'</div>'
-+'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:14px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:.74rem;color:var(--text2)">Coste WhiteMoon</span><b style="color:#fff;font-family:\'Space Mono\',monospace">Spark · 149€/mes (sin setup)</b></div>'
++'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:14px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:.74rem;color:var(--text2)">Coste WhiteMoon</span><b style="color:#fff;font-family:\'Space Mono\',monospace">Spark · 499€ setup + 199€/mes</b></div>'
 +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:.74rem;color:var(--text2)">ROI mes 1</span><b style="color:'+col(r.roi1)+';font-family:\'Space Mono\',monospace">'+(r.roi1>=0?'+':'')+fmt(r.roi1)+'€</b></div>'
 +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:.74rem;color:var(--text2)">ROI mes 2 en adelante</span><b style="color:'+col(r.roi2)+';font-family:\'Space Mono\',monospace">'+(r.roi2>=0?'+':'')+fmt(r.roi2)+'€/mes</b></div>'
 +'<div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:.74rem;color:var(--text2)">Payback (recuperación)</span><b style="color:var(--accent);font-family:\'Space Mono\',monospace">'+(r.payback?r.payback+' '+(r.payback===1?'mes':'meses'):'No alcanza ROI')+'</b></div>'
@@ -2466,7 +2616,7 @@ function _copyROISummary(idx){
 +'Leads extra:            +'+r.extra.toFixed(1)+'/mes\n'
 +'Ingresos extra:         '+fmt(r.revenue)+'€/mes\n\n'
 +'━━━ INVERSIÓN ━━━\n'
-+'Pack Spark:             149€/mes (sin setup)\n'
++'Pack Spark:             499€ setup + 199€/mes\n'
 +'ROI mes 1:              '+(r.roi1>=0?'+':'')+fmt(r.roi1)+'€\n'
 +'ROI mes 2+:             '+(r.roi2>=0?'+':'')+fmt(r.roi2)+'€/mes\n'
 +'Payback:                '+(r.payback?r.payback+' meses':'no alcanzable con datos actuales')+'\n\n'
@@ -2497,7 +2647,7 @@ function openComparative(idx){
   beforeRows.push('CMS: '+d.cms);
   afterRows.push('Mismo CMS · capa IA encima');
   beforeRows.push('Score actual: '+d.score+'%');
-  afterRows.push('Operativo en 48h · sin permanencia');
+  afterRows.push('Operativo en 5-7 días laborables · sin permanencia');
 
   var beforeHTML=beforeRows.map(function(r){return '<li><span class="cmp-ico cmp-no">✗</span><span>'+r+'</span></li>'}).join('');
   var afterHTML=afterRows.map(function(r){return '<li><span class="cmp-ico cmp-yes">✓</span><span>'+r+'</span></li>'}).join('');
@@ -2509,7 +2659,7 @@ function openComparative(idx){
 +'<div class="cmp-col cmp-before"><div class="cmp-head" style="color:var(--red2)">Web actual</div><ul class="cmp-list">'+beforeHTML+'</ul></div>'
 +'<div class="cmp-col cmp-after"><div class="cmp-head" style="color:var(--green2)">Con WhiteMoon</div><ul class="cmp-list">'+afterHTML+'</ul></div>'
 +'</div>'
-+'<div style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-radius:10px;padding:14px;margin:14px 0 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Pack Spark</div><div style="font-size:1.4rem;font-weight:800">149€<span style="font-size:.86rem;font-weight:500;opacity:.85">/mes</span></div></div><div style="font-size:.78rem;text-align:right;opacity:.95">Sin setup · Sin permanencia<br>Operativo en 48h</div></div>'
++'<div style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-radius:10px;padding:14px;margin:14px 0 12px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div><div style="font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Pack Spark</div><div style="font-size:1.4rem;font-weight:800">499€<span style="font-size:.86rem;font-weight:500;opacity:.85"> setup</span> + 199€<span style="font-size:.86rem;font-weight:500;opacity:.85">/mes</span></div></div><div style="font-size:.78rem;text-align:right;opacity:.95">Sin permanencia<br>Operativo en 5-7 días laborables</div></div>'
 +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p btn-sm" onclick="_downloadComparative('+idx+')">Descargar comparativa</button><button class="btn btn-orange btn-sm" onclick="_addComparativeToProposal('+idx+')">Añadir a propuesta</button><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'cmp-modal\')">Cerrar</button></div>'
 +'</div>';
   document.body.appendChild(modal);
@@ -2528,7 +2678,7 @@ function _buildComparativeHTML(idx){
   if(rrssMissing>=2)rows.push([rrssMissing+' redes sin presencia','RRSS principales activadas con IA']);
   if(!d.gmb)rows.push(['Sin Google My Business','Primero en Google Maps zona local']);
   if(!d.analytics)rows.push(['Sin tracking — no medís nada','Analytics completo — sabéis qué funciona']);
-  rows.push(['Score actual: '+d.score+'%','Operativo en 48h · sin permanencia']);
+  rows.push(['Score actual: '+d.score+'%','Operativo en 5-7 días laborables · sin permanencia']);
   var rowsHTML=rows.map(function(r){return '<tr><td><span style="color:#dc2626;font-weight:700;margin-right:8px">✗</span>'+r[0]+'</td><td><span style="color:#16a34a;font-weight:700;margin-right:8px">✓</span>'+r[1]+'</td></tr>'}).join('');
   var today=new Date().toLocaleDateString('es-ES');
   return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><title>Antes/Después · '+biz+'</title><style>'
@@ -2551,7 +2701,7 @@ function _buildComparativeHTML(idx){
 +'<header><div class="brand">WhiteMoon<small>Antes vs Después</small></div><div class="date">Comparativa<b>'+today+'</b></div></header>'
 +'<h2>'+biz+'</h2><div class="sub">'+d.sector+' · '+d.url+'</div>'
 +'<table><thead><tr><th>Web actual</th><th>Con WhiteMoon</th></tr></thead><tbody>'+rowsHTML+'</tbody></table>'
-+'<div class="price"><div style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Pack Spark</div><div class="num">149€<span style="font-size:1rem;font-weight:500;opacity:.85">/mes</span></div><small>Sin setup · sin permanencia · operativo en 48h</small></div>'
++'<div class="price"><div style="font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85">Pack Spark</div><div class="num">499€<span style="font-size:1rem;font-weight:500;opacity:.85"> setup</span> + 199€<span style="font-size:1rem;font-weight:500;opacity:.85">/mes</span></div><small>Sin permanencia · operativo en 5-7 días laborables</small></div>'
 +'<footer>WhiteMoon · whitemoon.es · Majadahonda, Madrid</footer>'
 +'</div></body></html>';
 }
@@ -2609,13 +2759,13 @@ function _buildEmail(d,tab,contactName){
     if(prob3)probsBlock+='\n• '+prob3.toLowerCase();
     return {
       subject:'Resumen de nuestra reunión — '+biz,
-      body:greeting+'\n\nGracias por el tiempo de esta mañana/tarde. Como hablamos, te dejo aquí el resumen de lo que vimos en la web de '+biz+':\n\n'+probsBlock+'\n\nNuestra propuesta es instalar agentes de IA que '+pb.solution+' en menos de 48 horas. Esto transforma cada visita perdida en un lead cualificado.\n\nLa inversión es <b>149€/mes (pack Spark, sin setup ni permanencia)</b>.\n\n¿Confirmamos la demo en directo esta semana? Te bloqueo 30 minutos cuando mejor te venga.\n\nUn saludo,\n[TU NOMBRE]\nWhiteMoon · whitemoon.es\nMajadahonda, Madrid'
+      body:greeting+'\n\nGracias por el tiempo de esta mañana/tarde. Como hablamos, te dejo aquí el resumen de lo que vimos en la web de '+biz+':\n\n'+probsBlock+'\n\nNuestra propuesta es instalar agentes de IA que '+pb.solution+' en 5-7 días laborables. Esto transforma cada visita perdida en un lead cualificado.\n\nLa inversión es <b>499€ setup + 199€/mes (pack Spark, sin permanencia)</b>.\n\n¿Confirmamos la demo en directo esta semana? Te bloqueo 30 minutos cuando mejor te venga.\n\nUn saludo,\n[TU NOMBRE]\nWhiteMoon · whitemoon.es\nMajadahonda, Madrid'
     };
   }
   if(tab===2){
     return {
       subject:'He visto vuestra web — '+biz,
-      body:greeting+'\n\nSoy [TU NOMBRE] de WhiteMoon, una agencia de IA en Madrid.\n\nHe estado mirando '+d.url+' y he detectado que '+prob1.toLowerCase()+'. Para un '+d.sector.toLowerCase()+' eso suele significar leads que se pierden cada semana.\n\nNosotros instalamos agentes de IA que '+pb.solution+' en 48h. Sin que tengáis que tocar la web.\n\n¿Tenéis 15 minutos esta semana para enseñaros cómo funciona en negocios parecidos al vuestro? Sin compromiso.\n\nUn saludo,\n[TU NOMBRE]\nWhiteMoon · whitemoon.es'
+      body:greeting+'\n\nSoy [TU NOMBRE] de WhiteMoon, una agencia de IA en Madrid.\n\nHe estado mirando '+d.url+' y he detectado que '+prob1.toLowerCase()+'. Para un '+d.sector.toLowerCase()+' eso suele significar leads que se pierden cada semana.\n\nNosotros instalamos agentes de IA que '+pb.solution+' en 5-7 días laborables. Sin que tengáis que tocar la web.\n\n¿Tenéis 15 minutos esta semana para enseñaros cómo funciona en negocios parecidos al vuestro? Sin compromiso.\n\nUn saludo,\n[TU NOMBRE]\nWhiteMoon · whitemoon.es'
     };
   }
   return {
@@ -2708,7 +2858,7 @@ function openClientModal(existingId){
 +'</div>'
 +'<div class="g2 mb12">'
 +'<div class="field-group"><span class="field-label">Pack contratado</span><select class="select" id="cl-pack" onchange="_onPackChange()">'
-+'<option value="spark"'+(c.pack==='spark'?' selected':'')+'>Spark — 149€/mes (sin setup)</option>'
++'<option value="spark"'+(c.pack==='spark'?' selected':'')+'>Spark — 499€ setup + 199€/mes</option>'
 +'<option value="core"'+(c.pack==='core'?' selected':'')+'>Core — 1.800€ setup + 199€/mes</option>'
 +'<option value="scale"'+(c.pack==='scale'?' selected':'')+'>Scale — 4.500€ setup + 449€/mes</option>'
 +'<option value="elite"'+(c.pack==='elite'?' selected':'')+'>Elite — 8.500€ setup + 799€/mes</option>'
@@ -2902,9 +3052,21 @@ function _saveCmConfig(){
 function updateHeaderMRR(){
   var mrr=getMRR();var goal=getMRRGoal();
   var pct=goal>0?Math.min(999,Math.round(mrr*100/goal)):0;
-  var el1=$('hc-mrr');if(el1)el1.textContent=(mrr>=1000?(mrr/1000).toFixed(1)+'k':mrr)+'€';
+  var fmt=function(n){return n>=1000?(n/1000).toFixed(1)+'k':n};
+  var el1=$('hc-mrr');if(el1)el1.textContent=fmt(mrr)+'€';
   var el2=$('hc-goal');if(el2)el2.textContent=pct+'%';
   var elSb=$('sb-clients');if(elSb)elSb.textContent=getActiveClientCount();
+  // Sidebar MRR bar
+  var now=$('sb-mrr-now'),g=$('sb-mrr-goal'),f=$('sb-mrr-fill'),p=$('sb-mrr-pct');
+  if(now)now.textContent=fmt(mrr)+'€';
+  if(g)g.textContent=fmt(goal)+'€';
+  if(p)p.textContent=pct+'%';
+  if(f){
+    f.style.width=Math.min(100,pct)+'%';
+    f.classList.remove('sf-red','sf-orange','sf-blue','sf-green');
+    var cls=pct>=100?'sf-green':pct>=70?'sf-blue':pct>=40?'sf-orange':'sf-red';
+    f.classList.add(cls);
+  }
 }
 
 // Init on load
@@ -4319,28 +4481,38 @@ async function generateWebDemo(idx){
   var CAP_MESSAGES={
     'peluquerias':{
       ico:'✂️',name:'Peluquerías',
-      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Vi la web de [PELUQUERÍA] y vi que recibís reservas por teléfono o Instagram.\n\nLo que hacemos: un chatbot IA que reserva citas 24/7 en WhatsApp (corte, color, mechas…), reduce huecos vacíos un 30% y libera al equipo para atender mejor en sala.\n\n¿Te enseño una demo de 2 min con tu propio salón? Sin compromiso.\n\nCris · whitemoon.es',
-      email:'Asunto: Cómo [PELUQUERÍA] puede llenar agenda automáticamente con IA\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon · Majadahonda). Hemos creado un asistente IA específico para peluquerías que:\n\n• Reserva citas por WhatsApp 24/7 (sin que cojas el teléfono)\n• Recuerda la cita 24h antes → reduce no-shows un 60%\n• Sugiere servicios extra (color, tratamiento) a clientas frecuentes\n\nDesde 149€/mes sin permanencia. Tengo una demo de tu salón lista en 48h.\n\n¿Probamos una llamada de 10 min esta semana?\n\nUn saludo,\nCris · whitemoon.es'
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien intenta reservar en [PELUQUERÍA] fuera de horario o cuando estáis con clienta en silla?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los clientes que no reciben respuesta en 5 minutos llaman al siguiente salón.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una peluquería en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Cómo [PELUQUERÍA] puede llenar agenda automáticamente con IA\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon · Majadahonda). Hemos creado un asistente IA específico para peluquerías que:\n\n• Reserva citas por WhatsApp 24/7 (sin que cojas el teléfono)\n• Recuerda la cita 24h antes → reduce no-shows un 60%\n• Sugiere servicios extra (color, tratamiento) a clientas frecuentes\n\nDesde 499€ setup + 199€/mes sin permanencia. Tengo una demo de tu salón lista en 5-7 días laborables.\n\n¿Probamos una llamada de 10 min esta semana?\n\nUn saludo,\nCris · whitemoon.es'
     },
     'talleres':{
       ico:'🚗',name:'Talleres mecánicos',
-      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. He visto la web del taller [NEGOCIO] y quería proponerte algo concreto:\n\nUn chatbot IA que da presupuestos rápidos por WhatsApp (chapa, ITV, neumáticos), agenda citas y filtra al curioso del cliente serio.\n\nResultado: menos llamadas absurdas y más coches entrando en el foso.\n\n¿Te paso una demo en 2 min con tu propio taller? Sin compromiso.\n\nCris · whitemoon.es',
-      email:'Asunto: Menos llamadas absurdas, más coches en el foso · IA para [NEGOCIO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon. Trabajamos con talleres en Madrid implantando un asistente IA que:\n\n• Da presupuestos orientativos por WhatsApp en segundos\n• Agenda citas según huecos reales de tu agenda\n• Avisa al cliente cuando el coche está listo (sin que llames tú)\n• Filtra clientes serios vs curiosos\n\nDesde 149€/mes. Demo personalizada de tu taller en 48h.\n\n¿Te llamo 10 min y te lo enseño en pantalla?\n\nUn saludo,\nCris · whitemoon.es'
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien pide presupuesto al taller [NEGOCIO] fuera de horario o cuando estáis con un coche en el foso?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los clientes que no reciben respuesta en 5 minutos llaman al siguiente taller.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy un taller mecánico".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Menos llamadas absurdas, más coches en el foso · IA para [NEGOCIO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon. Trabajamos con talleres en Madrid implantando un asistente IA que:\n\n• Da presupuestos orientativos por WhatsApp en segundos\n• Agenda citas según huecos reales de tu agenda\n• Avisa al cliente cuando el coche está listo (sin que llames tú)\n• Filtra clientes serios vs curiosos\n\nDesde 499€ setup + 199€/mes. Demo personalizada de tu taller en 5-7 días laborables.\n\n¿Te llamo 10 min y te lo enseño en pantalla?\n\nUn saludo,\nCris · whitemoon.es'
     },
     'clinicas':{
       ico:'🦷',name:'Clínicas',
-      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Vi la web de [CLÍNICA] y veo que las reservas se gestionan por teléfono.\n\nTe propongo un asistente IA que:\n• Reserva primera visita por WhatsApp 24/7\n• Recuerda la cita y reduce no-shows un 60%\n• Filtra urgencias reales\n\nResultado: la recepcionista atiende mejor a quien está delante y la agenda se llena sola.\n\n¿Te enseño la demo con tu propia clínica? 2 min, sin compromiso.\n\nCris · whitemoon.es',
-      email:'Asunto: Reducir no-shows y llenar agenda · IA para [CLÍNICA]\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon, agencia IA en Majadahonda). Tenemos un chatbot específico para clínicas dentales y de estética que:\n\n• Captura primera visita 24/7 por WhatsApp\n• Confirma cita 24h antes → no-shows -60%\n• Avisa cuando hay hueco por cancelación a la lista de espera\n• Cumple RGPD (no almacena datos médicos sensibles)\n\nDesde 149€/mes. Demo lista en 48h con tu propia clínica.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien intenta reservar primera visita en [CLÍNICA] fuera de horario o por la noche?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los pacientes que no reciben respuesta en 5 minutos llaman a la siguiente clínica.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una clínica dental en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Reducir no-shows y llenar agenda · IA para [CLÍNICA]\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon, agencia IA en Majadahonda). Tenemos un chatbot específico para clínicas dentales y de estética que:\n\n• Captura primera visita 24/7 por WhatsApp\n• Confirma cita 24h antes → no-shows -60%\n• Avisa cuando hay hueco por cancelación a la lista de espera\n• Cumple RGPD (no almacena datos médicos sensibles)\n\nDesde 499€ setup + 199€/mes. Demo lista en 5-7 días laborables con tu propia clínica.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
     },
     'gestorias':{
       ico:'📑',name:'Gestorías',
-      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Os he visto y quería proponeros algo:\n\nUn asistente IA para [GESTORÍA] que responde 24/7 las preguntas repetitivas de clientes (modelo 303, autónomo, IRPF, alta SS…) y deriva al humano solo cuando hace falta.\n\nResultado: menos interrupciones y más tiempo facturable para el equipo.\n\n¿Te paso una demo entrenada con vuestros servicios? 2 min.\n\nCris · whitemoon.es',
-      email:'Asunto: Menos consultas repetitivas, más tiempo facturable · IA para [GESTORÍA]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon. Trabajamos con gestorías y asesorías implantando un asistente IA que:\n\n• Responde 24/7 las dudas más repetitivas (303, 130, autónomo, alta SS, IRPF…)\n• Capta nuevos clientes desde la web\n• Deriva a un asesor humano cuando la consulta lo requiere\n• Se entrena con vuestros servicios y tarifas\n\nDesde 149€/mes. Demo personalizada en 48h.\n\n¿Te llamo 10 min y te lo enseño?\n\nUn saludo,\nCris · whitemoon.es'
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando un cliente de [GESTORÍA] os escribe fuera de horario con una duda repetitiva (303, IRPF, alta SS…)?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los autónomos que no reciben respuesta en 5 minutos preguntan a la siguiente asesoría.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una gestoría".\n\nAsí quedaría en TU web, entrenado con vuestros servicios. ¿Qué te parece?',
+      email:'Asunto: Menos consultas repetitivas, más tiempo facturable · IA para [GESTORÍA]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon. Trabajamos con gestorías y asesorías implantando un asistente IA que:\n\n• Responde 24/7 las dudas más repetitivas (303, 130, autónomo, alta SS, IRPF…)\n• Capta nuevos clientes desde la web\n• Deriva a un asesor humano cuando la consulta lo requiere\n• Se entrena con vuestros servicios y tarifas\n\nDesde 599€ setup + 299€/mes (pack Gestoría IA). Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min y te lo enseño?\n\nUn saludo,\nCris · whitemoon.es'
     },
     'abogados':{
       ico:'⚖️',name:'Abogados',
-      whatsapp:'Hola [NOMBRE] 👋\n\nSoy Cris de WhiteMoon. Vi la web de [DESPACHO] y quería plantearte algo:\n\nUn asistente IA que filtra los leads por WhatsApp 24/7: pregunta tipo de caso (laboral, civil, penal…), hace una primera cualificación y agenda consulta solo con casos viables.\n\nResultado: menos consultas perdedoras de tiempo y más clientes de calidad.\n\n¿Te enseño la demo? 2 min sin compromiso.\n\nCris · whitemoon.es',
-      email:'Asunto: Filtrar leads y captar mejores clientes · IA para [DESPACHO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon (agencia IA · Majadahonda). Hemos desarrollado un asistente específico para despachos que:\n\n• Cualifica leads 24/7 por WhatsApp (tipo de caso, urgencia, viabilidad)\n• Agenda consulta solo con casos que merece la pena coger\n• Ofrece info inicial (Ley Segunda Oportunidad, despido improcedente, etc.)\n• Cumple confidencialidad y RGPD\n\nDesde 149€/mes sin permanencia. Demo personalizada en 48h.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando un posible cliente contacta con [DESPACHO] fuera de horario con un caso urgente?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los leads que no reciben respuesta en 5 minutos llaman al siguiente despacho.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy un despacho de abogados".\n\nAsí quedaría en TU web, cualificando casos. ¿Qué te parece?',
+      email:'Asunto: Filtrar leads y captar mejores clientes · IA para [DESPACHO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon (agencia IA · Majadahonda). Hemos desarrollado un asistente específico para despachos que:\n\n• Cualifica leads 24/7 por WhatsApp (tipo de caso, urgencia, viabilidad)\n• Agenda consulta solo con casos que merece la pena coger\n• Ofrece info inicial (Ley Segunda Oportunidad, despido improcedente, etc.)\n• Cumple confidencialidad y RGPD\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
     }
   };
 
@@ -4426,12 +4598,18 @@ async function generateWebDemo(idx){
     var rate=function(a,b){return b>0?Math.round(a/b*100):0};
     var mrrPotencial=arr.filter(function(p){return p.estado==='propuesta'||p.estado==='reunion'}).reduce(function(s,p){return s+(parseFloat(p.importe)||0)},0);
 
+    // Tasa de cierre real: leads captados → clientes activos
+    var activeClients=(typeof getActiveClientCount==='function')?getActiveClientCount():0;
+    var totalLeads=acc.contactado;
+    var closeRate=totalLeads>0?Math.round(activeClients/totalLeads*100):0;
+
     var kpis=[
       {label:'Contactados',num:acc.contactado,sub:'total prospectos',cls:''},
       {label:'Respondieron',num:acc.respondio,sub:rate(acc.respondio,acc.contactado)+'% conversión',cls:'k-rate'},
       {label:'Reuniones',num:acc.reunion,sub:rate(acc.reunion,acc.respondio)+'% de respondieron',cls:'k-rate'},
       {label:'Propuestas',num:acc.propuesta,sub:rate(acc.propuesta,acc.reunion)+'% de reuniones',cls:'k-rate'},
       {label:'Cierres',num:acc.cerrado,sub:rate(acc.cerrado,acc.contactado)+'% global',cls:'k-rate'},
+      {label:'Tasa de cierre',num:closeRate+'%',sub:totalLeads+' leads → '+activeClients+' clientes',cls:'k-rate'},
       {label:'MRR potencial',num:mrrPotencial.toLocaleString('es-ES')+'€',sub:'reuniones + propuestas',cls:'k-mrr'},
       {label:'MRR cerrado mes',num:mrrMonth.toLocaleString('es-ES')+'€',sub:now.toLocaleString('es-ES',{month:'long'}),cls:'k-mrr'},
       {label:'Descartados',num:counts.descartado,sub:'no encajan',cls:''}
@@ -4552,17 +4730,24 @@ async function generateWebDemo(idx){
     var box=document.getElementById('cap-messages');
     if(!box||box.dataset.rendered==='1')return;
     var html='';
+    var TABS=[
+      {f:'whatsapp',   label:'WA · Inicial (AIDA)'},
+      {f:'seguimiento',label:'WA · Seguimiento'},
+      {f:'cierre',     label:'WA · Cierre + demo'},
+      {f:'email',      label:'Email'}
+    ];
     Object.keys(CAP_MESSAGES).forEach(function(k){
       var m=CAP_MESSAGES[k];
-      var idW='msg-w-'+k,idE='msg-e-'+k;
       html+='<div class="cap-msg-card">';
       html+='<div class="cap-msg-head"><div class="cap-msg-ico">'+m.ico+'</div><div class="cap-msg-name">'+m.name+'</div></div>';
       html+='<div class="cap-msg-tabs">';
-      html+='<button class="cap-msg-tab on" onclick="capSwitchMsg(this,\''+idW+'\',\''+idE+'\')"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>WhatsApp</button>';
-      html+='<button class="cap-msg-tab" onclick="capSwitchMsg(this,\''+idE+'\',\''+idW+'\')"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email</button>';
+      TABS.forEach(function(t,i){
+        html+='<button class="cap-msg-tab'+(i===0?' on':'')+'" data-field="'+t.f+'" onclick="capSwitchMsg(this)">'+t.label+'</button>';
+      });
       html+='</div>';
-      html+='<div class="cap-msg-body" id="'+idW+'">'+_esc(m.whatsapp)+'</div>';
-      html+='<div class="cap-msg-body" id="'+idE+'" style="display:none">'+_esc(m.email)+'</div>';
+      TABS.forEach(function(t,i){
+        html+='<div class="cap-msg-body" data-field="'+t.f+'"'+(i===0?'':' style="display:none"')+'>'+_esc(m[t.f]||'')+'</div>';
+      });
       html+='<div class="cap-msg-foot">';
       html+='<button class="btn btn-p btn-xs" onclick="capCopyMsg(this,\''+k+'\')"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>Copiar</button>';
       html+='</div>';
@@ -4572,27 +4757,31 @@ async function generateWebDemo(idx){
     box.dataset.rendered='1';
   }
 
-  window.capSwitchMsg=function(tab,showId,hideId){
-    tab.parentNode.querySelectorAll('.cap-msg-tab').forEach(function(t){t.classList.remove('on')});
+  window.capSwitchMsg=function(tab){
+    var card=tab.closest('.cap-msg-card');
+    if(!card)return;
+    var field=tab.getAttribute('data-field');
+    card.querySelectorAll('.cap-msg-tab').forEach(function(t){t.classList.remove('on')});
     tab.classList.add('on');
-    var sh=document.getElementById(showId),hi=document.getElementById(hideId);
-    if(sh)sh.style.display='';
-    if(hi)hi.style.display='none';
+    card.querySelectorAll('.cap-msg-body').forEach(function(b){
+      b.style.display=b.getAttribute('data-field')===field?'':'none';
+    });
   };
 
   window.capCopyMsg=function(btn,key){
     var card=btn.closest('.cap-msg-card');
     if(!card)return;
     var activeTab=card.querySelector('.cap-msg-tab.on');
-    var isWhatsapp=activeTab&&activeTab.textContent.toLowerCase().indexOf('whatsapp')>=0;
+    var field=activeTab?activeTab.getAttribute('data-field'):'whatsapp';
     var m=CAP_MESSAGES[key];
     if(!m)return;
-    var text=isWhatsapp?m.whatsapp:m.email;
+    var text=m[field]||'';
+    var label=activeTab?activeTab.textContent.trim():'mensaje';
     navigator.clipboard.writeText(text).then(function(){
       var orig=btn.innerHTML;
       btn.innerHTML='<svg viewBox="0 0 24 24" style="width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:3"><polyline points="20 6 9 17 4 12"/></svg>Copiado';
       setTimeout(function(){btn.innerHTML=orig},1600);
-      if(typeof showToast==='function')showToast('Mensaje '+(isWhatsapp?'WhatsApp':'Email')+' copiado');
+      if(typeof showToast==='function')showToast(label+' copiado');
     });
   };
 
@@ -4771,6 +4960,21 @@ async function generateWebDemo(idx){
         ? '<span class="lw-state-pill s-attended">✓ Atendido</span>'
         : (l.pipeline_added===true?'<span class="lw-state-pill s-converted">↗ En pipeline</span>':'<span class="lw-state-pill s-pending">Sin atender</span>');
 
+      // Badges de preferencia + cita
+      var prefBadges='';
+      var pref=String(l.preferencia||'').toLowerCase().trim();
+      if(pref==='videollamada'){
+        prefBadges+='<span class="lw-pref-pill p-video">📅 Videollamada</span>';
+      }else if(pref==='llamada'){
+        prefBadges+='<span class="lw-pref-pill p-call">📞 Llamada</span>';
+      }else if(pref==='whatsapp'||pref==='wa'){
+        prefBadges+='<span class="lw-pref-pill p-wa">💬 WhatsApp</span>';
+      }
+      var citaTxt='';
+      if(l.cita_dia||l.cita_hora){
+        citaTxt='<div class="lw-meta lw-cita">🗓️ '+_esc(l.cita_dia||'')+(l.cita_hora?' · '+_esc(l.cita_hora):'')+'</div>';
+      }
+
       var waBtn=phone?'<a class="btn btn-p btn-xs" href="'+_esc(_waLink(phone))+'" target="_blank" rel="noopener">💬 WhatsApp</a>':'';
       var pipeBtn='<button class="btn btn-ghost btn-xs" onclick="lwAddToPipeline(\''+idEsc+'\')">➕ Pipeline</button>';
       var calBtn=state==='attended'?'':'<button class="btn btn-xs" onclick="lwCalendar(\''+idEsc+'\')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent" title="Crear recordatorio en Google Calendar">📅 Agendar llamada</button>';
@@ -4780,7 +4984,7 @@ async function generateWebDemo(idx){
 
       html+='<div class="'+rowCls+'">';
       html+='<div class="lw-date">'+_esc(fecha)+'</div>';
-      html+='<div><div class="lw-name">'+pulse+name+statePill+'</div>'+(l.email?'<div class="lw-meta">'+_esc(l.email)+'</div>':'')+'</div>';
+      html+='<div><div class="lw-name">'+pulse+name+statePill+prefBadges+'</div>'+(l.email?'<div class="lw-meta">'+_esc(l.email)+'</div>':'')+citaTxt+'</div>';
       html+='<div class="lw-phone">'+phoneEsc+'</div>';
       html+='<div>'+sector+'</div>';
       html+='<div class="lw-origin">'+origen+'</div>';
@@ -4912,18 +5116,49 @@ async function generateWebDemo(idx){
   window.loadLeadsWeb=loadLeadsWeb;
   window.renderLeadsWebTable=renderLeadsWebTable;
 
+  // Header / sidebar: badge "Nuevos" en tiempo real
+  function _updateNewLeadsHeader(){
+    var num=0;
+    leadsCache.forEach(function(l){if(_stateOf(l)==='pending')num++});
+    var hBadge=document.getElementById('hc-new-leads');
+    var hNum=document.getElementById('hc-new-leads-num');
+    if(hNum)hNum.textContent=num;
+    if(hBadge)hBadge.style.display=num>0?'inline-flex':'none';
+  }
+  var _origRenderAll=renderLeadsWebAll;
+  renderLeadsWebAll=function(){_origRenderAll();_updateNewLeadsHeader()};
+
+  // Realtime channel (con fallback a polling cada 60s)
+  var lwChannel=null;
+  function _subscribeRealtime(){
+    var s=_getSb();
+    if(!s||!s.channel||lwChannel)return false;
+    try{
+      lwChannel=s.channel('leads_web_changes')
+        .on('postgres_changes',{event:'INSERT',schema:'public',table:TABLE},function(payload){
+          loadLeadsWeb(false);
+          var n=payload&&payload.new?(payload.new.nombre||payload.new.name||'lead'):'lead';
+          if(typeof showToast==='function')showToast('🔔 Nuevo lead: '+n);
+        })
+        .on('postgres_changes',{event:'UPDATE',schema:'public',table:TABLE},function(){loadLeadsWeb(false)})
+        .subscribe();
+      return true;
+    }catch(e){lwChannel=null;return false}
+  }
+
   window.renderLeadsWeb=function(){
     if(!lwLoaded)loadLeadsWeb(false);
     else renderLeadsWebAll();
+    _subscribeRealtime();
     if(lwTimer)clearInterval(lwTimer);
     lwTimer=setInterval(function(){loadLeadsWeb(false)},REFRESH_MS);
   };
 
-  // Carga inicial silenciosa: para que el badge del sidebar muestre el nº de pendientes
-  // sin necesidad de entrar en la sección. Espera a que Supabase esté listo.
+  // Carga inicial silenciosa: realtime + polling como fallback.
   function _bootLeadsWeb(){
     if(!_getSb()){setTimeout(_bootLeadsWeb,500);return}
     loadLeadsWeb(false);
+    _subscribeRealtime();
     if(lwTimer)clearInterval(lwTimer);
     lwTimer=setInterval(function(){loadLeadsWeb(false)},REFRESH_MS);
   }
