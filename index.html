@@ -1158,6 +1158,12 @@ var SECTORS=[
 {kws:['muebles','furniture','sofa','dormitorio','salon','comedor','silla','mesa','armario','estanteria','cama','tapizado','decoracion','interiorismo','madera','carpinteria','ebanisteria','lacado','barniz','roble','nogal','wood','timber','woodwork','maderas'],s:'Muebles / Hogar',ico:'🛋️',n:'muebles'},
 {kws:['cocina','cocinas','muebles cocina','cocina a medida','encimera','silestone','isla cocina','reforma cocina','cocina integral','electrodomestico'],s:'Cocinas a Medida',ico:'🍳',n:'cocinas'},
 {kws:['reforma','reformas','obra','construccion','albanil','pintor','fontanero','electricista','rehabilitacion','reforma integral','reforma piso','reforma bano','presupuesto obra'],s:'Reformas / Construcción',ico:'🔨',n:'reformas'},
+{ s: 'Automoción / Concesionario',
+  ico: '🚗',
+  n: 'automocion',
+  kw: ['concesionario','automovil','coches',
+       'vehiculos','motor','cars','automocion']
+},
 ];
 
 var DOMAIN_HINTS=[
@@ -2239,6 +2245,26 @@ objections:[
 ],
 solution:'atienden clientes 24/7 y agendan',
 callHours:'entre 10:00-13:00'
+},
+automocion: {
+  nicho: 'Automoción / Concesionario',
+  ico: '🚗',
+  dolor: 'Los compradores visitan la web fuera de horario y no encuentran a nadie que les responda. El lead se pierde.',
+  args: [
+    'Un comprador que visita tu web a las 23h y ve el coche que quiere — si no hay nadie que le responda se va a la competencia.',
+    'Nuestro agente cualifica al comprador: presupuesto, financiación o contado, modelo de interés. Te manda el lead listo para llamar.',
+    'Calculadora de financiación integrada — el comprador ve su cuota mensual al instante. Eso convierte.'
+  ],
+  objections: [
+    {q: 'Ya tenemos web', a: 'Tu web informa. Nuestro agente convierte — hay una diferencia brutal entre las dos cosas.'},
+    {q: 'Es caro', a: 'Con 1 coche vendido gracias al agente recuperas la inversión del año entero.'},
+    {q: 'Los clientes prefieren llamar', a: 'Los que llaman ya te conocen. Los nuevos clientes buscan online a las 23h — ahí es donde te pierdes leads.'}
+  ],
+  solution: 'cualifican compradores 24/7 y calculan financiación al instante',
+  callHours: 'entre 10:00-13:00',
+  ticket: 'Scale (4.500€ + 449€/mes) o Elite (8.500€ + 799€/mes)',
+  emailSubject: '¿Cuántos compradores pierde tu concesionario fuera de horario?',
+  emailBody: 'Hola [nombre],\n\nSoy Cristobal de WhiteMoon.\n\nUna pregunta directa: ¿qué pasa cuando un comprador visita vuestra web a las 23h, ve el coche que quiere y no encuentra a nadie?\n\nSe va a la competencia.\n\nHemos desarrollado un agente IA específico para concesionarios que:\n✅ Cualifica al comprador — presupuesto, financiación o contado\n✅ Calcula la cuota mensual al instante\n✅ Informa del Plan Auto+ 2026 (hasta 4.500€ de ayuda)\n✅ Te manda el lead por WhatsApp listo para llamar\n\nPuedes ver la demo en vivo:\n👉 https://nexusforgeia.github.io/WHITEMOON-AUTOMOVILES/\n\nEscribe "BMW" en el chat y verás exactamente lo que recibiría tu equipo comercial.\n\n¿Tienes 10 minutos esta semana?\n\nSaludos,\nCristobal\nWhiteMoon · 643 199 580'
 }
 };
 
@@ -2547,7 +2573,8 @@ dental:350,restaurante:45,abogado:800,peluqueria:60,taller:200,gestoria:300,
 fisioterapia:55,veterinaria:80,inmobiliaria:5000,academia:120,gimnasio:50,
 farmacia:30,hotel:120,optica:250,psicologia:70,belleza:90,fontanero:180,
 hosteleria:50,'servicio-tecnico':150,marketing:600,consultoria:800,
-seguros:400,transporte:250,limpieza:200,rrhh:400,logistica:600,generic:150};
+seguros:400,transporte:250,limpieza:200,rrhh:400,logistica:600,generic:150,
+automocion:25000};
 
 function getDefaultTicket(nicho){return SECTOR_TICKET[nicho]||SECTOR_TICKET.generic}
 
@@ -4095,6 +4122,9 @@ var DEMO_REPOS={
   'abogado':     'https://nexusforgeia.github.io/WHITEMOON-ABOGADOS/',
   'gestoria':    'https://nexusforgeia.github.io/WHITEMOON-GESTORIAS/',
   'taller':      'https://nexusforgeia.github.io/WHITEMOON-TALLERES-COCHES/',
+  'automocion':  'https://nexusforgeia.github.io/WHITEMOON-AUTOMOVILES/',
+  'concesionario':'https://nexusforgeia.github.io/WHITEMOON-AUTOMOVILES/',
+  'automovil':   'https://nexusforgeia.github.io/WHITEMOON-AUTOMOVILES/',
   'veterinaria': 'https://nexusforgeia.github.io/WHITEMOON-VETERINARIOS/',
   'academia':    'https://nexusforgeia.github.io/WHITEMOON-CENTROS-FORMACION/',
   'fisioterapia':'https://nexusforgeia.github.io/WHITEMOON-PODOLOGOS/',
