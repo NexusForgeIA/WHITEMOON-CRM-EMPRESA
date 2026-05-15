@@ -2293,6 +2293,12 @@ function getProspectMeta(domain){
 
 function saveProspectMeta(domain,meta){
   try{localStorage.setItem('scout_prospect_'+domain,JSON.stringify(meta))}catch(e){}
+  if(typeof savePipeline==='function')savePipeline(domain,meta);
+}
+function deleteProspectMeta(domain){
+  try{localStorage.removeItem('scout_prospect_'+domain)}catch(e){}
+  var s=(typeof _initSb==='function')?_initSb():null;
+  if(s){try{s.from('wm_pipeline').delete().eq('id',domain)}catch(e){}}
 }
 
 function getRecommendedPack(d){
@@ -4576,6 +4582,7 @@ async function generateWebDemo(idx){
   }
   function capSave(arr){
     try{localStorage.setItem(CAP_KEY,JSON.stringify(arr))}catch(e){}
+    if(typeof saveCapItem==='function')arr.forEach(saveCapItem);
   }
   function capUid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 
@@ -4598,6 +4605,8 @@ async function generateWebDemo(idx){
     if(!confirm('¿Eliminar este prospecto?'))return;
     var arr=capLoad().filter(function(p){return p.id!==id});
     capSave(arr);
+    var sb=(typeof _initSb==='function')?_initSb():null;
+    if(sb){try{sb.from('wm_captacion').delete().eq('id',id)}catch(e){}}
     renderCaptacion();
   };
 
@@ -5242,6 +5251,168 @@ async function generateWebDemo(idx){
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(_bootLeadsWeb,400)});
   else setTimeout(_bootLeadsWeb,400);
+})();
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// PIPELINE + CAPTACIÓN — Persistencia en Supabase
+// (localStorage actúa como caché síncrono local; el upsert
+// a Supabase ocurre como side-effect en saveProspectMeta y capSave)
+// ═══════════════════════════════════════════════════════════
+async function savePipeline(domain,data){
+  var s=(typeof _initSb==='function')?_initSb():null;
+  if(!s||!domain)return;
+  try{
+    await s.from('wm_pipeline').upsert({
+      id:domain,
+      domain:domain,
+      name:data.name||null,
+      sector:data.sector||null,
+      nicho:data.nicho||null,
+      status:data.status||'pending',
+      notes:data.notes||'',
+      last_contact:data.lastContact||null,
+      mrr:parseInt(data.mrr,10)||0,
+      phone:data.phone||null,
+      source:data.source||null,
+      lead_id:data.leadId||null,
+      updated_at:new Date().toISOString()
+    });
+  }catch(e){console.warn('savePipeline:',e)}
+}
+
+async function loadPipeline(){
+  var s=(typeof _initSb==='function')?_initSb():null;
+  if(!s)return null;
+  try{
+    var resp=await s.from('wm_pipeline').select('*').order('updated_at',{ascending:false});
+    if(resp.error){console.warn('loadPipeline:',resp.error);return null}
+    var rows=resp.data||[];
+    rows.forEach(function(r){
+      var meta={
+        status:r.status||'pending',
+        notes:r.notes||'',
+        lastContact:r.last_contact||'',
+        mrr:r.mrr||0,
+        sector:r.sector||'',
+        nicho:r.nicho||'',
+        name:r.name||'',
+        phone:r.phone||'',
+        source:r.source||'',
+        leadId:r.lead_id||''
+      };
+      try{localStorage.setItem('scout_prospect_'+r.domain,JSON.stringify(meta))}catch(e){}
+    });
+    return rows;
+  }catch(e){console.warn('loadPipeline:',e);return null}
+}
+
+async function saveCapItem(item){
+  var s=(typeof _initSb==='function')?_initSb():null;
+  if(!s||!item||!item.id)return;
+  try{
+    await s.from('wm_captacion').upsert({
+      id:item.id,
+      negocio:item.negocio||'',
+      sector:item.sector||'',
+      zona:item.zona||'',
+      canal:item.canal||'WhatsApp',
+      estado:item.estado||'contactado',
+      d1:!!item.d1,
+      d3:!!item.d3,
+      d7:!!item.d7,
+      notas:item.notas||'',
+      importe:parseInt(item.importe,10)||0,
+      fecha:item.fecha||new Date().toISOString(),
+      updated_at:new Date().toISOString()
+    });
+  }catch(e){console.warn('saveCapItem:',e)}
+}
+
+async function loadCap(){
+  var s=(typeof _initSb==='function')?_initSb():null;
+  if(!s)return null;
+  try{
+    var resp=await s.from('wm_captacion').select('*').order('fecha',{ascending:false});
+    if(resp.error){console.warn('loadCap:',resp.error);return null}
+    var rows=resp.data||[];
+    try{localStorage.setItem('wm_captacion_prospectos',JSON.stringify(rows))}catch(e){}
+    return rows;
+  }catch(e){console.warn('loadCap:',e);return null}
+}
+
+async function _migrateLocalToSupabase(){
+  var s=(typeof _initSb==='function')?_initSb():null;
+  if(!s)return;
+  try{
+    // Pipeline
+    var pipeCount=await s.from('wm_pipeline').select('id',{count:'exact',head:true});
+    if(!pipeCount.error && (pipeCount.count===0||pipeCount.count==null)){
+      var localKeys=[];
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i);
+        if(k&&k.indexOf('scout_prospect_')===0)localKeys.push(k);
+      }
+      if(localKeys.length){
+        var rows=localKeys.map(function(k){
+          var domain=k.replace('scout_prospect_','');
+          var m={};try{m=JSON.parse(localStorage.getItem(k))||{}}catch(e){}
+          return {
+            id:domain,domain:domain,
+            name:m.name||null,sector:m.sector||null,nicho:m.nicho||null,
+            status:m.status||'pending',notes:m.notes||'',
+            last_contact:m.lastContact||null,mrr:parseInt(m.mrr,10)||0,
+            phone:m.phone||null,source:m.source||null,lead_id:m.leadId||null
+          };
+        });
+        var up=await s.from('wm_pipeline').upsert(rows);
+        if(!up.error){
+          localKeys.forEach(function(k){try{localStorage.removeItem(k)}catch(e){}});
+          console.log('[migrate] '+localKeys.length+' pipeline → Supabase');
+        }
+      }
+    }
+    // Captación
+    var capCount=await s.from('wm_captacion').select('id',{count:'exact',head:true});
+    if(!capCount.error && (capCount.count===0||capCount.count==null)){
+      var capRaw=localStorage.getItem('wm_captacion_prospectos');
+      if(capRaw){
+        var arr=[];try{arr=JSON.parse(capRaw)||[]}catch(e){}
+        if(arr.length){
+          var capRows=arr.map(function(it){
+            return {
+              id:it.id,negocio:it.negocio||'',sector:it.sector||'',zona:it.zona||'',
+              canal:it.canal||'WhatsApp',estado:it.estado||'contactado',
+              d1:!!it.d1,d3:!!it.d3,d7:!!it.d7,
+              notas:it.notas||'',importe:parseInt(it.importe,10)||0,
+              fecha:it.fecha||new Date().toISOString()
+            };
+          });
+          var up2=await s.from('wm_captacion').upsert(capRows);
+          if(!up2.error){
+            try{localStorage.removeItem('wm_captacion_prospectos')}catch(e){}
+            console.log('[migrate] '+capRows.length+' captacion → Supabase');
+          }
+        }
+      }
+    }
+  }catch(e){console.warn('_migrateLocalToSupabase:',e)}
+}
+
+(function _bootSupabasePipeline(){
+  function tick(){
+    if(typeof _initSb!=='function'||!_initSb()){setTimeout(tick,500);return}
+    _migrateLocalToSupabase().then(function(){
+      return Promise.all([loadPipeline(),loadCap()]);
+    }).then(function(){
+      if(typeof renderPipeline==='function')renderPipeline();
+      if(typeof renderCaptacion==='function')renderCaptacion();
+      if(typeof updateCounters==='function')updateCounters();
+    }).catch(function(e){console.warn('boot supabase pipeline:',e)});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(tick,600)});
+  else setTimeout(tick,600);
 })();
 </script>
 
