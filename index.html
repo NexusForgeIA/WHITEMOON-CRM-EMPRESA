@@ -5285,8 +5285,12 @@ async function generateWebDemo(idx){
       lwChannel=s.channel('leads_web_changes')
         .on('postgres_changes',{event:'INSERT',schema:'public',table:TABLE},function(payload){
           loadLeadsWeb(false);
-          var n=payload&&payload.new?(payload.new.nombre||payload.new.name||'lead'):'lead';
+          var row=payload&&payload.new?payload.new:{};
+          var n=row.nombre||row.name||'lead';
+          var sec=row.sector||'';
           if(typeof showToast==='function')showToast('🔔 Nuevo lead: '+n);
+          if(typeof _playBeep==='function')_playBeep();
+          if(typeof _pushNotif==='function')_pushNotif('🔔 Nuevo lead WhiteMoon',(n||'Lead nuevo')+(sec?(' — '+sec):''));
         })
         .on('postgres_changes',{event:'UPDATE',schema:'public',table:TABLE},function(){loadLeadsWeb(false)})
         .on('postgres_changes',{event:'DELETE',schema:'public',table:TABLE},function(){loadLeadsWeb(false)})
@@ -5310,6 +5314,12 @@ async function generateWebDemo(idx){
     _subscribeRealtime();
     if(lwTimer)clearInterval(lwTimer);
     lwTimer=setInterval(function(){loadLeadsWeb(false)},REFRESH_MS);
+    // Pedir permiso de notificaciones del SO una vez por sesión.
+    try{
+      if('Notification' in window && Notification.permission==='default'){
+        Notification.requestPermission();
+      }
+    }catch(e){}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(_bootLeadsWeb,400)});
   else setTimeout(_bootLeadsWeb,400);
@@ -5461,6 +5471,45 @@ async function _migrateLocalToSupabase(){
     }
   }catch(e){console.warn('_migrateLocalToSupabase:',e)}
 }
+
+// ═══════════════════════════════════════════════════════════
+// Notificaciones SO + beep para nuevo lead
+// ═══════════════════════════════════════════════════════════
+window._playBeep=function(){
+  try{
+    var Ctx=window.AudioContext||window.webkitAudioContext;
+    if(!Ctx)return;
+    var ctx=new Ctx();
+    var o=ctx.createOscillator();
+    var g=ctx.createGain();
+    o.connect(g);g.connect(ctx.destination);
+    o.type='sine';
+    o.frequency.value=880;
+    g.gain.setValueAtTime(0.3,ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.4);
+    o.start(ctx.currentTime);
+    o.stop(ctx.currentTime+0.4);
+    o.onended=function(){try{ctx.close()}catch(e){}};
+  }catch(e){}
+};
+
+window._pushNotif=function(title,body){
+  try{
+    if(!('Notification' in window))return;
+    if(Notification.permission==='granted'){
+      new Notification(title,{
+        body:body,
+        icon:'https://whitemoon.es/logo.webp',
+        badge:'https://whitemoon.es/logo.webp',
+        tag:'wm-lead'
+      });
+    }else if(Notification.permission!=='denied'){
+      Notification.requestPermission().then(function(p){
+        if(p==='granted')window._pushNotif(title,body);
+      });
+    }
+  }catch(e){}
+};
 
 (function _bootSupabasePipeline(){
   function tick(){
