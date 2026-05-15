@@ -2015,7 +2015,32 @@ async function generateKitVentas(idx){
   a.download='kit-visita-'+(d.domain||'negocio').replace(/[^a-z0-9]/gi,'-')+'.html';
   a.click();
   URL.revokeObjectURL(url);
-  showToast('✅ Kit descargado — ábrelo en el móvil para la visita');
+
+  // Mensaje WhatsApp preformateado al contacto del negocio.
+  var waMsg=encodeURIComponent(
+    'Hola '+(biz||'')+', soy Cristóbal de WhiteMoon Agencia IA. '+
+    'He preparado un análisis de tu negocio online y creo que podemos ayudarte '+
+    'a conseguir más clientes con IA. ¿Tienes 10 minutos esta semana?'
+  );
+  var phone=(d.contact&&d.contact.waNumber)||(d.waNumber)||'34643199580';
+  var waUrl='https://wa.me/'+String(phone).replace(/[^0-9]/g,'')+'?text='+waMsg;
+  _showKitToast(biz,waUrl);
+}
+
+function _showKitToast(biz,waUrl){
+  var t=document.getElementById('toast');
+  var msg=document.getElementById('toast-msg');
+  if(!t||!msg){showToast('✅ Kit descargado');return}
+  var label='Enviar WhatsApp a '+(biz||'cliente');
+  msg.innerHTML='✅ Kit descargado · <a href="'+waUrl+'" target="_blank" rel="noopener" '+
+    'style="margin-left:8px;background:#25d366;color:#fff;border:none;padding:5px 12px;'+
+    'border-radius:6px;font-weight:700;font-size:.7rem;text-decoration:none;display:inline-flex;'+
+    'align-items:center;gap:5px" '+
+    'onclick="document.getElementById(\'toast\').classList.remove(\'show\')">'+
+    '📱 '+label+'</a>';
+  t.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(function(){t.classList.remove('show');msg.textContent=''},10000);
 }
 
 // ═══════════════════════════════════════
