@@ -1011,6 +1011,7 @@ Todos los planes: Sin permanencia · IVA no incluido
         <button class="lw-tab" data-filter="all" onclick="lwSetFilter('all',this)">📥 Todos <span class="lw-tab-count" id="lw-c-all">0</span></button>
         <button class="lw-tab on" data-filter="pending" onclick="lwSetFilter('pending',this)">🔔 Pendientes <span class="lw-tab-count" id="lw-c-pending">0</span></button>
         <button class="lw-tab" data-filter="attended" onclick="lwSetFilter('attended',this)">✅ Atendidos <span class="lw-tab-count" id="lw-c-attended">0</span></button>
+        <button class="lw-tab" data-filter="newsletter" onclick="lwSetFilter('newsletter',this)">📧 Newsletter <span class="lw-tab-count" id="lw-c-newsletter">0</span></button>
         <select class="cap-select" id="lw-sector-filter" onchange="renderLeadsWebTable()" style="min-width:160px;font-size:.7rem"><option value="">Todos los sectores</option></select>
       </div>
       <div class="lw-refresh">
@@ -4981,11 +4982,23 @@ async function generateWebDemo(idx){
     sel.innerHTML=html;
   }
 
+  function _isNewsletter(l){
+    return String(l.origen||l.source||'').toLowerCase().indexOf('newsletter')>=0;
+  }
+  function _extractEmail(l){
+    if(l.email)return String(l.email).trim();
+    var src=String(l.mensaje||l.message||'');
+    var m=src.match(/[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}/);
+    return m?m[0]:'';
+  }
   function _filteredLeads(){
     var sectorSel=document.getElementById('lw-sector-filter');
     var sector=sectorSel?sectorSel.value:'';
     return leadsCache.filter(function(l){
       var st=_stateOf(l);
+      var nl=_isNewsletter(l);
+      if(lwFilter==='newsletter'){if(!nl)return false}
+      else if(nl)return false; // newsletter no aparece en otros tabs
       if(lwFilter==='pending'&&st!=='pending')return false;
       if(lwFilter==='attended'&&st!=='attended')return false;
       if(sector&&String(l.sector||'').trim()!==sector)return false;
@@ -4996,13 +5009,46 @@ async function generateWebDemo(idx){
   function renderLeadsWebTable(){
     var box=document.getElementById('lw-table-wrap');
     if(!box)return;
-    var totalPending=0,totalAttended=0;
-    leadsCache.forEach(function(l){if(_stateOf(l)==='attended')totalAttended++;else totalPending++});
-    var cAll=document.getElementById('lw-c-all');if(cAll)cAll.textContent=leadsCache.length;
+    var totalPending=0,totalAttended=0,totalNewsletter=0,totalRegular=0;
+    leadsCache.forEach(function(l){
+      if(_isNewsletter(l)){totalNewsletter++;return}
+      totalRegular++;
+      if(_stateOf(l)==='attended')totalAttended++;else totalPending++;
+    });
+    var cAll=document.getElementById('lw-c-all');if(cAll)cAll.textContent=totalRegular;
     var cPend=document.getElementById('lw-c-pending');if(cPend)cPend.textContent=totalPending;
     var cAtt=document.getElementById('lw-c-attended');if(cAtt)cAtt.textContent=totalAttended;
+    var cNl=document.getElementById('lw-c-newsletter');if(cNl)cNl.textContent=totalNewsletter;
 
     var rows=_filteredLeads();
+
+    // Vista Newsletter: tabla compacta (email + fecha + copiar)
+    if(lwFilter==='newsletter'){
+      if(!rows.length){
+        box.innerHTML='<div class="lw-empty"><b>Sin suscriptores aún</b>Las suscripciones al newsletter del blog WhiteMoon aparecerán aquí.</div>';
+        return;
+      }
+      var nlHtml='<div class="lw-table lw-table-newsletter">';
+      nlHtml+='<div class="lw-row lw-head"><div>Fecha</div><div>Email</div><div style="text-align:right">Acciones</div></div>';
+      rows.forEach(function(l){
+        var email=_extractEmail(l);
+        var emailEsc=_esc(email||'(sin email)');
+        var fecha=_fmtDate(l.created_at||l.fecha||l.createdAt);
+        var idEsc=_esc(l.id);
+        var copyBtn=email?'<button class="btn btn-ghost btn-xs" onclick="lwCopyEmail(\''+_esc(email).replace(/\\/g,'\\\\').replace(/\x27/g,"\\\x27")+'\')">📋 Copiar email</button>':'';
+        var mailtoBtn=email?'<a class="btn btn-ghost btn-xs" href="mailto:'+_esc(email)+'" title="Abrir cliente de correo">✉️ Email</a>':'';
+        var delBtn='<button class="btn btn-ghost btn-xs" onclick="lwDeleteLead(\''+idEsc+'\')" style="color:#ef4444;border-color:rgba(239,68,68,.3)" title="Eliminar suscripción">🗑️</button>';
+        nlHtml+='<div class="lw-row">';
+        nlHtml+='<div class="lw-date">'+_esc(fecha)+'</div>';
+        nlHtml+='<div class="lw-name" style="font-family:\'Space Mono\',monospace;font-size:.78rem">'+emailEsc+'</div>';
+        nlHtml+='<div class="lw-actions">'+copyBtn+mailtoBtn+delBtn+'</div>';
+        nlHtml+='</div>';
+      });
+      nlHtml+='</div>';
+      box.innerHTML=nlHtml;
+      return;
+    }
+
     if(!rows.length){
       box.innerHTML='<div class="lw-empty"><b>Sin leads para mostrar</b>Cuando un visitante de <b style="display:inline;color:var(--accent2)">whitemoon.es</b> deje sus datos en el chatbot, aparecerá aquí en tiempo real.</div>';
       return;
@@ -5107,6 +5153,22 @@ async function generateWebDemo(idx){
     tabs.forEach(function(t){t.classList.remove('on')});
     if(btn)btn.classList.add('on');
     renderLeadsWebTable();
+  };
+
+  window.lwCopyEmail=function(email){
+    if(!email)return;
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(email).then(function(){
+        if(typeof showToast==='function')showToast('📋 '+email+' copiado');
+      });
+    }else{
+      try{
+        var ta=document.createElement('textarea');
+        ta.value=email;document.body.appendChild(ta);ta.select();
+        document.execCommand('copy');document.body.removeChild(ta);
+        if(typeof showToast==='function')showToast('📋 '+email+' copiado');
+      }catch(e){}
+    }
   };
 
   window.lwDeleteLead=async function(id){
