@@ -475,7 +475,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 .lw-refresh{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted)}
 .lw-refresh .lw-live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
 .lw-table{display:flex;flex-direction:column;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2)}
-.lw-row{display:grid;grid-template-columns:1.1fr 1.3fr 1.1fr 1fr .9fr 1.6fr;gap:10px;padding:11px 14px;align-items:center;border-bottom:1px solid var(--border2);font-size:.74rem}
+.lw-row{display:grid;grid-template-columns:1.1fr 1.3fr 1.1fr 1.1fr 1fr .9fr 1.6fr;gap:10px;padding:11px 14px;align-items:center;border-bottom:1px solid var(--border2);font-size:.74rem}
 .lw-row:last-child{border-bottom:none}
 .lw-row.lw-head{background:var(--bg3);font-size:.58rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .lw-row.lw-pending{background:linear-gradient(90deg,rgba(255,140,66,.06),transparent)}
@@ -5079,11 +5079,12 @@ async function generateWebDemo(idx){
       return;
     }
     var html='<div class="lw-table">';
-    html+='<div class="lw-row lw-head"><div>Fecha</div><div>Nombre</div><div>Teléfono</div><div>Sector</div><div>Origen</div><div style="text-align:right">Acciones</div></div>';
+    html+='<div class="lw-row lw-head"><div>Fecha</div><div>Nombre</div><div>Empresa</div><div>Teléfono</div><div>Sector</div><div>Origen</div><div style="text-align:right">Acciones</div></div>';
     rows.forEach(function(l){
       var state=_stateOf(l);
       var rowCls='lw-row '+(state==='attended'?'lw-attended':'lw-pending');
       var name=_esc(l.nombre||l.name||'(sin nombre)');
+      var empresa=_esc(l.empresa||l.company||'—');
       var phone=l.telefono||l.phone||'';
       var phoneEsc=_esc(phone);
       var sector=_esc(l.sector||'—');
@@ -5121,6 +5122,7 @@ async function generateWebDemo(idx){
       html+='<div class="'+rowCls+'">';
       html+='<div class="lw-date">'+_esc(fecha)+'</div>';
       html+='<div><div class="lw-name">'+pulse+name+statePill+prefBadges+'</div>'+(l.email?'<div class="lw-meta">'+_esc(l.email)+'</div>':'')+citaTxt+'</div>';
+      html+='<div class="lw-empresa">'+empresa+'</div>';
       html+='<div class="lw-phone">'+phoneEsc+'</div>';
       html+='<div>'+sector+'</div>';
       html+='<div class="lw-origin">'+origen+'</div>';
