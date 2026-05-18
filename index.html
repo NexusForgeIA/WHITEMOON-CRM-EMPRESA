@@ -2374,6 +2374,75 @@ function agendarDemoCalendar(nombre,dominio){
   window.open(url,'_blank','noopener');
 }
 
+async function generarPromptDesign(nombre, dominio) {
+  const btn = event.target;
+  btn.textContent = '⏳ Analizando...';
+  btn.disabled = true;
+
+  let sector = 'empresa';
+  let servicios = '';
+  let colores = '';
+  let descripcion = '';
+
+  try {
+    const res = await fetch(
+      'https://api.codetabs.com/v1/proxy?quest=https://' + dominio
+    );
+    const html = await res.text();
+    const tmp = document.createElement('div');
+    tmp.innerHTML = html;
+    const texto = tmp.innerText.slice(0, 2000);
+    descripcion = texto.replace(/\s+/g, ' ').trim();
+  } catch(e) {
+    descripcion = 'Web de ' + nombre;
+  }
+
+  const prompt = `Crea una web demo profesional para ${nombre} (${dominio}).
+
+CONTEXTO DEL CLIENTE:
+${descripcion.slice(0, 500)}
+
+IDENTIDAD WHITEMOON:
+- Fondo: #08080d
+- Púrpura: #7c4dff primario, #9d70ff lighter
+- Verde: #00d4aa accent
+- Fuente: Sora 200/700 — contraste brutal de pesos
+- Sin emojis, sin fotos genéricas de personas
+
+PIEZA CENTRAL INOLVIDABLE:
+Diseña un elemento visual único que represente el sector de ${nombre}.
+Algo que nadie olvide al ver esta demo.
+
+ESTRUCTURA:
+1. Hero — elemento central impactante + titular potente
+2. Servicios/productos de ${nombre} — lista editorial, no cards genéricas
+3. Por qué digitalizar con IA — 3 beneficios reales para su sector
+4. Plazos/datos clave de su sector con números grandes
+5. CTA final — "Solicita tu demo gratuita"
+
+AGENTE IA INTEGRADO:
+Chatbot de triaje para el sector de ${nombre}
+Captura nombre + teléfono → WhatsApp 643199580
+Sin testimonios inventados. Sin casos ficticios.
+
+Itera hasta que sea UNFORGETTABLE.`;
+
+  await navigator.clipboard.writeText(prompt);
+
+  btn.textContent = '✅ Copiado!';
+  btn.style.background = 'linear-gradient(135deg,#00d4aa,#009c80)';
+
+  setTimeout(() => {
+    btn.textContent = '🎨 Prompt Design';
+    btn.style.background = 'linear-gradient(135deg,#7c4dff,#5c35cc)';
+    btn.disabled = false;
+  }, 3000);
+
+  if (typeof showToast === 'function') {
+    showToast('Prompt copiado — pégalo en claude.ai/design', 'success');
+  }
+}
+
 function promptScheduleDemo(nombre,dominio){
   var t=document.getElementById('toast');
   var msg=document.getElementById('toast-msg');
@@ -2441,12 +2510,13 @@ function renderPipeline(){
     var nameEsc=String(m.name||m.domain).replace(/'/g,'\\\'');
     var selectHTML=_sectorSelectHTML(nichoKey,'updateProspectSector(\''+domEsc+'\',this.value)');
     var deleteBtn='<button class="btn btn-ghost btn-xs" onclick="deleteProspect(\''+domEsc+'\')" style="color:var(--red2);font-size:.65rem;padding:2px 8px" title="Eliminar prospecto">🗑️</button>';
+    var promptDesignBtn='<button class="btn btn-xs" onclick="generarPromptDesign(\''+nameEsc+'\',\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c4dff,#5c35cc);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Generar prompt para Claude Design">🎨 Prompt Design</button>';
     var calBtn='<button class="btn btn-xs" onclick="agendarDemoCalendar(\''+nameEsc+'\',\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Agendar demo en Google Calendar">📅 Agendar demo</button>';
     listHTML+='<div class="pipe-item'+dim+'" draggable="true" data-domain="'+domEsc+'" data-status="'+m.status+'">'+
       '<div style="flex:1;min-width:160px">'+
         '<div class="pi-name">'+(m.name||m.domain)+'</div>'+
         '<div class="pi-domain">'+m.domain+'</div>'+
-        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+selectHTML+calBtn+deleteBtn+'</div>'+
+        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+selectHTML+promptDesignBtn+calBtn+deleteBtn+'</div>'+
       '</div>'+
       '<span class="pi-status" style="color:'+s.color+';background:'+s.bg+'">'+s.label+'</span>'+
       (m.mrr?'<span class="pi-status" style="color:var(--accent);background:var(--accent-dim)">'+m.mrr+'€/mes</span>':'')+
