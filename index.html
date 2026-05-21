@@ -5688,6 +5688,7 @@ window._pushNotif=function(title,body){
 // Casos de éxito · Dashboard  (lectura directa de Supabase)
 // ═══════════════════════════════════════════════════════════
 var WM_PACK_PRICE={spark:199,core:199,scale:449,elite:599};
+var WM_PACK_SETUP={spark:499,core:1800,scale:4500,elite:8500};
 var WM_PACK_LABELS={spark:'Spark',core:'Core',scale:'Scale',elite:'Elite'};
 var WM_SB_CACHE={onboarding:[],upsell:[],casos:[],referidos:[],leads:[]};
 
@@ -5736,9 +5737,55 @@ async function renderWmOnboarding(){
       +'<div class="wm-meta">Día '+(parseInt(r.dia_actual,10)||0)+'/7 · '+_wmE(st.label)+'</div>'
       +'<div class="wm-prog"><div style="width:'+pct+'%"></div></div></div>'
       +'<div style="text-align:right;flex-shrink:0"><div class="wm-name" style="font-size:1rem">'+pct+'%</div>'
-      +'<button class="btn btn-ghost btn-xs" onclick="window.open(\'/onboarding/\',\'_blank\')" style="margin-top:4px">Ver detalle</button></div>'
+      +'<button class="btn btn-ghost btn-xs" onclick="openObDetail(\''+_wmE(r.id)+'\')" style="margin-top:4px">Ver detalle</button></div>'
       +'</div>';
   }).join('');
+}
+
+// ─── DETALLE DE CLIENTE (modal interno, sin redirección) ───
+function _wmPackFull(p){
+  if(!p)return '—';
+  var label=_wmPack(p),setup=WM_PACK_SETUP[p],month=WM_PACK_PRICE[p],parts=[];
+  if(setup!=null)parts.push(setup+'€ setup');
+  if(month!=null)parts.push(month+'€/mes');
+  return _wmE(label)+(parts.length?' · '+parts.join(' + '):'');
+}
+function _wmTxt(v){return (v==null||v==='')?'—':_wmE(v)}
+function _wmDate(v){if(!v)return '—';var d=new Date(v);if(isNaN(d.getTime()))return _wmE(v);return d.toLocaleDateString('es-ES',{year:'numeric',month:'short',day:'numeric'})}
+function _wmLink(v){if(!v)return '—';var url=(''+v).trim();if(!url)return '—';var href=/^https?:\/\//i.test(url)?url:'https://'+url;return '<a href="'+_wmE(href)+'" target="_blank" rel="noopener" style="color:var(--accent2);word-break:break-all">'+_wmE(url)+'</a>'}
+function _wmDtRow(label,html){return '<div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border2)"><span style="color:var(--text2);font-size:.74rem;letter-spacing:.04em;flex-shrink:0">'+label+'</span><span style="text-align:right;font-size:.84rem;color:var(--text);max-width:64%;word-break:break-word">'+html+'</span></div>'}
+
+function openObDetail(id){
+  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(id)})[0];
+  if(!r){_wmToast('Cliente no encontrado');return}
+  closeModalById('ob-detail-modal');
+  var tokenHtml=r.token_cdn?'<span class="mono">'+_wmE(r.token_cdn)+'</span> <button class="btn btn-ghost btn-xs" style="padding:1px 6px" onclick="copyTxt(\''+_wmE(r.token_cdn)+'\')">📋</button>':'—';
+  var emailHtml=r.cliente_email?'<a href="mailto:'+_wmE(r.cliente_email)+'" style="color:var(--accent2)">'+_wmE(r.cliente_email)+'</a>':'—';
+  var notasHtml=r.notas?'<span style="white-space:pre-wrap">'+_wmE(r.notas)+'</span>':'—';
+  var rows=_wmDtRow('Nombre completo',_wmTxt(r.cliente_nombre))
+    +_wmDtRow('Email',emailHtml)
+    +_wmDtRow('Teléfono',_wmTxt(r.cliente_telefono))
+    +_wmDtRow('Sector',_wmTxt(r.sector))
+    +_wmDtRow('Pack',_wmPackFull(r.pack))
+    +_wmDtRow('Token CDN',tokenHtml)
+    +_wmDtRow('Estado',_wmTxt(r.estado))
+    +_wmDtRow('Fecha inicio',_wmDate(r.fecha_inicio))
+    +_wmDtRow('URL web cliente',_wmLink(r.url_web_cliente))
+    +_wmDtRow('Repo GitHub',_wmLink(r.repo_github))
+    +_wmDtRow('Notas',notasHtml);
+  var fiscal=_wmDtRow('Dirección',_wmTxt(r.direccion))
+    +_wmDtRow('CIF',_wmTxt(r.cif))
+    +_wmDtRow('Persona de contacto',_wmTxt(r.persona_contacto));
+  var modal=document.createElement('div');
+  modal.className='modal-overlay';modal.id='ob-detail-modal';
+  modal.onclick=function(e){if(e.target===modal)closeModalById('ob-detail-modal')};
+  modal.innerHTML='<div class="modal-box" style="max-width:520px"><div class="modal-title">🚀 Detalle de cliente · '+_wmE(r.cliente_nombre||'')+'<button class="modal-close" onclick="closeModalById(\'ob-detail-modal\')">×</button></div>'
+    +'<div>'+rows+'</div>'
+    +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin:16px 0 2px">Datos fiscales</div>'
+    +'<div>'+fiscal+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'ob-detail-modal\')">Cerrar</button></div>'
+    +'</div>';
+  document.body.appendChild(modal);
 }
 
 // Token CDN: WM- + 16 hex aleatorios
