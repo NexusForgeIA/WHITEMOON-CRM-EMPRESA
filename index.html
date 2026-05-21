@@ -801,6 +801,9 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 .asis-quick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .asis-qbtn{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:'Sora',sans-serif;font-size:.72rem;font-weight:700;padding:8px 13px;border-radius:10px;cursor:pointer;transition:all .16s}
 .asis-qbtn:hover{color:var(--text);border-color:var(--accent-border);background:var(--accent-dim)}
+.asis-clear{margin-left:auto;color:var(--muted)}
+.asis-clear:hover{color:#ff4d6d;border-color:rgba(255,77,106,.4);background:rgba(255,77,106,.08)}
+@media(max-width:640px){.asis-clear{margin-left:0}}
 .asis-chat{display:flex;flex-direction:column;height:calc(100vh - 250px);min-height:440px;padding:0;overflow:hidden}
 .asis-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px}
 .asis-empty{margin:auto;text-align:center;color:var(--muted);font-size:.82rem;max-width:440px;line-height:1.6}
@@ -853,6 +856,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
     <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="Analiza la web de este prospecto: [URL]">🌐 Analizar Web</button>
     <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="Busca [sector] en [ciudad] sin chatbot IA. Analiza sus webs y dame nombre, web, teléfono y la oportunidad detectada, con un mensaje de contacto personalizado por cada uno.">🔍 Prospectar</button>
     <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="Busca [sector] en [ciudad] estilo Google Maps. Dame una tabla con nombre, dirección, teléfono, web, valoración y nº de reseñas, detecta si tienen chatbot y clasifica la oportunidad (sin web = alta, con web sin chatbot = media, con chatbot = descartado).">📍 Google Maps</button>
+    <button class="asis-qbtn asis-clear" onclick="asisClear()" title="Borra el historial y reinicia el contexto">🗑️ Limpiar chat</button>
   </div>
   <div class="asis-chat card">
     <div class="asis-messages" id="asis-messages"></div>
@@ -7247,6 +7251,17 @@ async function renderWmDashboard(){
     }else{
       inp.value=p;window.asisSend();
     }
+  };
+
+  window.asisClear=function(){
+    if(busy)return;
+    if(!HISTORY.length)return;
+    if(!confirm('¿Borrar el historial del chat?'))return;
+    HISTORY.length=0;          // reinicia el contexto completo en memoria
+    render();
+    var inp=document.getElementById('asis-input');
+    if(inp){inp.value='';autoGrow(inp);inp.focus()}
+    if(typeof showToast==='function')showToast('Chat reiniciado');
   };
 
   window.asisCopy=function(idx){
