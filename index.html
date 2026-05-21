@@ -1352,6 +1352,16 @@ Todos los planes: Sin permanencia · IVA no incluido
           <div class="camp-angle-ex" id="camp-cre-angle-ex"></div>
           <div id="camp-cre-fields"></div>
           <button class="btn btn-p btn-sm" onclick="campCreativeCopy()" style="margin-top:4px">📋 Copiar creatividad</button>
+          <div style="border-top:1px solid var(--border2);margin-top:16px;padding-top:14px">
+            <div class="camp-field-label" style="margin-bottom:8px">🤖 Generación con IA</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+              <div style="flex:1;min-width:120px"><label class="camp-field-label">Sector</label><input class="cap-input" id="camp-ai-sector" placeholder="Ej: dental, restaurante…"></div>
+              <div style="flex:1;min-width:120px"><label class="camp-field-label">Pack / servicio</label><input class="cap-input" id="camp-ai-pack" placeholder="Ej: agente IA, web + SEO…"></div>
+              <div style="flex:1;min-width:120px"><label class="camp-field-label">Objetivo</label><select class="cap-select" id="camp-ai-obj"><option value="reconocimiento">Reconocimiento</option><option value="consideracion">Consideración</option><option value="conversion" selected>Conversión</option></select></div>
+            </div>
+            <button class="btn btn-p btn-sm" id="camp-ai-btn" onclick="campGenCreatives()" style="background:linear-gradient(135deg,#7c4dff,#5c35cc);border-color:transparent">🤖 Generar creatividades</button>
+            <div id="camp-cre-ai-out" style="margin-top:14px"></div>
+          </div>
         </div>
         <div>
           <div class="card" style="background:var(--bg2);padding:14px;margin-bottom:14px">
@@ -2862,11 +2872,12 @@ function renderPipeline(){
     var deleteBtn='<button class="btn btn-ghost btn-xs" onclick="deleteProspect(\''+domEsc+'\')" style="color:var(--red2);font-size:.65rem;padding:2px 8px" title="Eliminar prospecto">🗑️</button>';
     var promptDesignBtn='<button class="btn btn-xs" onclick="generarPromptDesign(\''+nameEsc+'\',\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c4dff,#5c35cc);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Generar prompt para Claude Design">🎨 Prompt Design</button>';
     var calBtn='<button class="btn btn-xs" onclick="agendarDemoCalendar(\''+nameEsc+'\',\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Agendar demo en Google Calendar">📅 Agendar demo</button>';
+    var aiBtn='<button class="btn btn-xs" onclick="aiNextAction(\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c4dff,#5c35cc);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Siguiente acción de venta sugerida por IA">🤖 Siguiente acción</button>';
     listHTML+='<div class="pipe-item'+dim+'" draggable="true" data-domain="'+domEsc+'" data-status="'+m.status+'">'+
       '<div style="flex:1;min-width:160px">'+
         '<div class="pi-name">'+(m.name||m.domain)+'</div>'+
         '<div class="pi-domain">'+m.domain+'</div>'+
-        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+selectHTML+promptDesignBtn+calBtn+deleteBtn+'</div>'+
+        '<div style="margin-top:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap">'+selectHTML+aiBtn+promptDesignBtn+calBtn+deleteBtn+'</div>'+
       '</div>'+
       '<span class="pi-status" style="color:'+s.color+';background:'+s.bg+'">'+s.label+'</span>'+
       (m.mrr?'<span class="pi-status" style="color:var(--accent);background:var(--accent-dim)">'+m.mrr+'€/mes</span>':'')+
@@ -2883,6 +2894,34 @@ function renderPipeline(){
   listEl.innerHTML=listHTML;
   _bindPipelineDnD(listEl);
 }
+
+async function aiNextAction(domain){
+  if(typeof scoutAI!=='function'){showToast('Asistente IA no disponible');return}
+  var all=(typeof _allProspectMeta==='function')?_allProspectMeta():[];
+  var m=null;for(var i=0;i<all.length;i++){if(String(all[i].domain)===String(domain)){m=all[i];break}}
+  if(!m){showToast('Prospecto no encontrado');return}
+  var st=(typeof getPipelineState==='function')?getPipelineState(m.status):{label:m.status};
+  showToast('🤖 Calculando siguiente acción…');
+  try{
+    var d=await scoutAI('pipeline','siguiente_accion',{
+      name:m.name||m.domain,domain:m.domain,
+      sector:m.sector||m.nicho||'',estado:m.status||'pending',
+      mrr:m.mrr||0,notes:m.notes||'',lastContact:m.lastContact||''
+    });
+    var msgAttr=(d.mensaje||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+    var body=''
+      +'<div style="font-size:.72rem;color:var(--text2);margin-bottom:10px">Estado actual: <b style="color:var(--accent2)">'+_escHtmlSafe(st.label||m.status)+'</b></div>'
+      +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:5px">Siguiente acción</div>'
+      +'<div style="font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:12px">'+_escHtmlSafe(d.siguiente_accion||'')+'</div>'
+      +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:5px">Por qué</div>'
+      +'<div style="font-size:.82rem;color:var(--text);margin-bottom:14px">'+_escHtmlSafe(d.motivo||'')+'</div>'
+      +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:5px">Mensaje sugerido</div>'
+      +'<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:.84rem;white-space:pre-wrap;margin-bottom:8px">'+_escHtmlSafe(d.mensaje||'')+'</div>'
+      +'<button class="btn btn-ghost btn-xs" onclick="copyTxt(\''+msgAttr+'\')">📋 Copiar mensaje</button>';
+    aiResultModal('🤖 Siguiente acción · '+_escHtmlSafe(m.name||m.domain),body);
+  }catch(e){showToast('Error IA: '+(e.message||''))}
+}
+function _escHtmlSafe(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 
 function _bindPipelineDnD(listEl){
   var dragging=null;
@@ -3592,6 +3631,38 @@ function _initSb(){
   return sb;
 }
 function _parseJSON(s){try{return JSON.parse(s||'[]')}catch(e){return []}}
+
+// ── Asistente IA central (Edge Function scout-ai · Claude API) ──
+// La API key vive solo en el servidor; el frontend nunca la ve.
+async function scoutAI(module,action,context){
+  var s=_initSb();
+  if(!s)throw new Error('Supabase no disponible');
+  var resp=await s.functions.invoke('scout-ai',{body:{module:module,action:action,context:context||{}}});
+  if(resp.error){
+    var msg=resp.error.message||'Error al llamar al asistente IA';
+    try{var ctx=await resp.error.context.json();if(ctx&&ctx.error)msg=ctx.error}catch(e){}
+    throw new Error(msg);
+  }
+  var d=resp.data;
+  if(d&&d.ok===false)throw new Error(d.error||'Error del asistente IA');
+  return d&&d.data!=null?d.data:d;
+}
+window.scoutAI=scoutAI;
+
+// Modal genérico para mostrar resultados del asistente IA
+function aiResultModal(title,bodyHtml){
+  closeModalById('ai-result-modal');
+  var modal=document.createElement('div');
+  modal.className='modal-overlay';modal.id='ai-result-modal';
+  modal.onclick=function(e){if(e.target===modal)closeModalById('ai-result-modal')};
+  modal.innerHTML='<div class="modal-box" style="max-width:560px">'
+    +'<div class="modal-title">'+title+'<button class="modal-close" onclick="closeModalById(\'ai-result-modal\')">×</button></div>'
+    +'<div>'+bodyHtml+'</div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'ai-result-modal\')">Cerrar</button></div>'
+    +'</div>';
+  document.body.appendChild(modal);
+}
+window.aiResultModal=aiResultModal;
 
 function getSectorIco(nicho){
   var map={dental:'🦷',restaurante:'🍽️',belleza:'💅',peluqueria:'✂️',taller:'🚗',abogado:'⚖️',gestoria:'📊',veterinaria:'🐾',fisioterapia:'🦴',inmobiliaria:'🏠',academia:'📚',gimnasio:'💪',psicologia:'🧠',farmacia:'💊',hotel:'🏨',optica:'👓',fontanero:'🔧',marketing:'📱',consultoria:'💼',transporte:'🚛',limpieza:'🧹',seguros:'🛡️'};
@@ -5539,6 +5610,7 @@ async function generateWebDemo(idx){
       }
 
       var waBtn=phone?'<a class="btn btn-p btn-xs" href="'+_esc(_waLink(phone))+'" target="_blank" rel="noopener">💬 WhatsApp</a>':'';
+      var aiBtn='<button class="btn btn-xs" onclick="lwAnalyzeLead(\''+idEsc+'\')" style="background:linear-gradient(135deg,#7c4dff,#5c35cc);color:#fff;border-color:transparent" title="Analizar lead con IA">🤖 Analizar lead</button>';
       var pipeBtn='<button class="btn btn-ghost btn-xs" onclick="lwAddToPipeline(\''+idEsc+'\')">➕ Pipeline</button>';
       var calBtn=state==='attended'?'':'<button class="btn btn-xs" onclick="lwCalendar(\''+idEsc+'\')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent" title="Crear recordatorio en Google Calendar">📅 Agendar llamada</button>';
       var attendedBtn=state==='attended'
@@ -5553,7 +5625,7 @@ async function generateWebDemo(idx){
       html+='<div class="lw-phone">'+phoneEsc+'</div>';
       html+='<div>'+sector+'</div>';
       html+='<div class="lw-origin">'+origen+'</div>';
-      html+='<div class="lw-actions">'+waBtn+calBtn+pipeBtn+attendedBtn+delBtn+'</div>';
+      html+='<div class="lw-actions">'+aiBtn+waBtn+calBtn+pipeBtn+attendedBtn+delBtn+'</div>';
       html+='</div>';
     });
     html+='</div>';
@@ -5655,6 +5727,41 @@ async function generateWebDemo(idx){
       renderLeadsWebAll();
       if(typeof showToast==='function')showToast(val?'Marcado como atendido':'Marcado como pendiente');
     }catch(e){if(typeof showToast==='function')showToast('Error de red')}
+  };
+
+  window.lwAnalyzeLead=async function(id){
+    var lead=null;
+    for(var i=0;i<leadsCache.length;i++){if(String(leadsCache[i].id)===String(id)){lead=leadsCache[i];break}}
+    if(!lead){if(typeof showToast==='function')showToast('Lead no encontrado');return}
+    if(typeof scoutAI!=='function'){if(typeof showToast==='function')showToast('Asistente IA no disponible');return}
+    if(typeof showToast==='function')showToast('🤖 Analizando lead…');
+    try{
+      var d=await scoutAI('leads','analizar',{
+        nombre:lead.nombre||lead.name||'',
+        empresa:lead.empresa||lead.company||'',
+        sector:lead.sector||'',
+        origen:lead.origen||lead.source||'',
+        mensaje:lead.mensaje||lead.interes||lead.message||''
+      });
+      var colors={alta:'#22c55e',media:'#eab308',baja:'#ef4444'};
+      var inten=String(d.intencion||'media').toLowerCase();
+      var col=colors[inten]||'#eab308';
+      var phone=_phoneClean(lead.telefono||lead.phone||'');
+      var waUrl=phone?_waLink(phone)+'?text='+encodeURIComponent(d.mensaje_whatsapp||''):'';
+      var msgEsc=_esc(d.mensaje_whatsapp||'');
+      var msgAttr=(d.mensaje_whatsapp||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+      var body=''
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span style="font-size:.72rem;color:var(--text2)">Intención de compra:</span>'
+        +'<span style="font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:'+col+'">'+_esc(inten)+'</span></div>'
+        +'<div style="font-size:.82rem;color:var(--text);margin-bottom:14px">'+_esc(d.intencion_motivo||'')+'</div>'
+        +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:5px">Mensaje WhatsApp sugerido</div>'
+        +'<div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:10px;font-size:.84rem;white-space:pre-wrap;margin-bottom:8px">'+msgEsc+'</div>'
+        +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px"><button class="btn btn-ghost btn-xs" onclick="copyTxt(\''+msgAttr+'\')">📋 Copiar mensaje</button>'
+        +(waUrl?'<a class="btn btn-p btn-xs" href="'+_esc(waUrl)+'" target="_blank" rel="noopener">💬 Enviar por WhatsApp</a>':'')+'</div>'
+        +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:5px">Siguiente acción recomendada</div>'
+        +'<div style="font-size:.84rem;color:var(--text)">'+_esc(d.siguiente_accion||'')+'</div>';
+      aiResultModal('🤖 Análisis de lead · '+_esc(lead.nombre||lead.name||''),body);
+    }catch(e){if(typeof showToast==='function')showToast('Error IA: '+(e.message||''))}
   };
 
   window.lwAddToPipeline=async function(id){
@@ -6061,6 +6168,7 @@ function openObDetail(id){
   var tokenHtml=r.token_cdn?'<span class="mono">'+_wmE(r.token_cdn)+'</span> <button class="btn btn-ghost btn-xs" style="padding:1px 6px" onclick="copyTxt(\''+_wmE(r.token_cdn)+'\')">📋</button>':'—';
   var emailHtml=r.cliente_email?'<a href="mailto:'+_wmE(r.cliente_email)+'" style="color:var(--accent2)">'+_wmE(r.cliente_email)+'</a>':'—';
   var notasHtml=r.notas?'<span style="white-space:pre-wrap">'+_wmE(r.notas)+'</span>':'—';
+  var promptHtml=r.agente_system_prompt?'<span style="white-space:pre-wrap;font-family:\'Space Mono\',monospace;font-size:.72rem">'+_wmE(r.agente_system_prompt)+'</span>':'<span style="color:var(--muted)">— (genera uno desde Editar)</span>';
   var rows=_wmDtRow('Nombre completo',_wmTxt(r.cliente_nombre))
     +_wmDtRow('Email',emailHtml)
     +_wmDtRow('Teléfono',_wmTxt(r.cliente_telefono))
@@ -6071,7 +6179,8 @@ function openObDetail(id){
     +_wmDtRow('Fecha inicio',_wmDate(r.fecha_inicio))
     +_wmDtRow('URL web cliente',_wmLink(r.url_web_cliente))
     +_wmDtRow('Repo GitHub',_wmLink(r.repo_github))
-    +_wmDtRow('Notas',notasHtml);
+    +_wmDtRow('Notas',notasHtml)
+    +_wmDtRow('System prompt Laura',promptHtml);
   var fiscal=_wmDtRow('Dirección',_wmTxt(r.direccion))
     +_wmDtRow('CIF',_wmTxt(r.cif))
     +_wmDtRow('Persona de contacto',_wmTxt(r.persona_contacto));
@@ -6118,6 +6227,7 @@ function _wmObEdit(id){
     +'<div class="field-group"><span class="field-label">Persona de contacto</span><input class="input" id="ob-e-contacto" value="'+_wmE(r.persona_contacto==null?'':r.persona_contacto)+'"></div>'
     +'</div>'
     +'<div class="field-group mb12"><span class="field-label">Notas</span><textarea class="input" id="ob-e-notas" rows="3" style="resize:vertical">'+_wmE(r.notas==null?'':r.notas)+'</textarea></div>'
+    +'<div class="field-group mb12"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px"><span class="field-label" style="margin:0">System prompt de Laura IA (agente)</span><button class="btn btn-xs" id="ob-e-genprompt" onclick="_wmObGenPrompt(\''+_wmE(r.id)+'\')" style="background:linear-gradient(135deg,#7c4dff,#5c35cc);color:#fff;border-color:transparent" title="Generar con IA a partir de nombre, sector, pack y web">🤖 Generar system prompt</button></div><textarea class="input mono" id="ob-e-agente-prompt" rows="7" style="resize:vertical;font-size:.74rem" placeholder="Genera el system prompt con IA o escríbelo manualmente…">'+_wmE(r.agente_system_prompt==null?'':r.agente_system_prompt)+'</textarea></div>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-p btn-sm" id="ob-e-save" onclick="_wmObSaveEdit(\''+_wmE(r.id)+'\')">💾 Guardar</button><button class="btn btn-ghost btn-sm" onclick="openObDetail(\''+_wmE(r.id)+'\')">Cancelar</button></div>'
     +'</div>';
   document.body.appendChild(modal);
@@ -6142,6 +6252,7 @@ async function _wmObSaveEdit(id){
     cif:val('ob-e-cif')||null,
     persona_contacto:val('ob-e-contacto')||null,
     notas:val('ob-e-notas')||null,
+    agente_system_prompt:val('ob-e-agente-prompt')||null,
     fecha_inicio:fecha?new Date(fecha).toISOString():null
   };
   var btn=document.getElementById('ob-e-save');
@@ -6153,6 +6264,27 @@ async function _wmObSaveEdit(id){
   _wmToast('Cambios guardados');
   openObDetail(id);
   if(typeof renderWmOnboarding==='function')renderWmOnboarding();
+}
+
+async function _wmObGenPrompt(id){
+  if(typeof scoutAI!=='function'){_wmToast('Asistente IA no disponible');return}
+  function val(i){var el=document.getElementById(i);return el?(el.value||'').trim():''}
+  var nombre=val('ob-e-nombre');
+  if(!nombre){_wmToast('Indica primero el nombre del cliente');return}
+  var btn=document.getElementById('ob-e-genprompt');
+  if(btn){btn.disabled=true;btn.textContent='Generando…'}
+  try{
+    var d=await scoutAI('onboarding','system_prompt',{
+      cliente_nombre:nombre,
+      sector:val('ob-e-sector'),
+      pack:val('ob-e-pack'),
+      url_web_cliente:val('ob-e-url')
+    });
+    var ta=document.getElementById('ob-e-agente-prompt');
+    if(ta)ta.value=d.system_prompt||'';
+    _wmToast('System prompt generado · revisa y guarda');
+  }catch(e){_wmToast('Error IA: '+(e.message||''))}
+  finally{if(btn){btn.disabled=false;btn.textContent='🤖 Generar system prompt'}}
 }
 
 // Token CDN: WM- + 16 hex aleatorios
@@ -6743,6 +6875,41 @@ async function renderWmDashboard(){
     _creSpecs.forEach(function(f){var el=document.getElementById('camp-cref-'+f.k),v=el?el.value.trim():'';if(v){lines.push(f.label+': '+v);any=true}});
     if(!any){showToast&&showToast('Escribe alguna creatividad primero');return}
     if(typeof copyTxt==='function')copyTxt(lines.join('\n'));
+  };
+
+  window.campGenCreatives=async function(){
+    if(typeof scoutAI!=='function'){showToast&&showToast('Asistente IA no disponible');return}
+    var sector=(document.getElementById('camp-ai-sector')||{}).value||'';
+    var pack=(document.getElementById('camp-ai-pack')||{}).value||'';
+    var obj=(document.getElementById('camp-ai-obj')||{}).value||'conversion';
+    var out=document.getElementById('camp-cre-ai-out');
+    var btn=document.getElementById('camp-ai-btn');
+    if(btn){btn.disabled=true;btn.textContent='Generando…'}
+    if(out)out.innerHTML='<div class="camp-angle-ex">Generando 3 variantes con IA…</div>';
+    try{
+      var d=await scoutAI('campaigns','creatividades',{sector:sector,pack:pack,objetivo:obj});
+      var vars=(d&&d.variantes)||[];
+      if(!vars.length){if(out)out.innerHTML='<div class="camp-angle-ex">La IA no devolvió variantes.</div>';return}
+      var html='';
+      vars.forEach(function(v,i){
+        var meta=v.meta||{},goo=v.google||{};
+        var gh=(goo.titulares||[]).map(function(t){return '<li>'+esc(t)+'</li>'}).join('');
+        var gd=(goo.descripciones||[]).map(function(t){return '<li>'+esc(t)+'</li>'}).join('');
+        var copyText=('Variante '+(i+1)+' · '+(v.angulo||'')+'\n\n'
+          +'META\nTexto principal: '+(meta.texto_principal||'')+'\nTitular: '+(meta.titular||'')+'\nDescripción: '+(meta.descripcion||'')+'\n\n'
+          +'GOOGLE RSA\nTitulares:\n- '+((goo.titulares||[]).join('\n- '))+'\nDescripciones:\n- '+((goo.descripciones||[]).join('\n- ')))
+          .replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+        html+='<div class="card" style="background:var(--bg2);padding:12px;margin-bottom:12px">'
+          +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px"><b style="font-size:.82rem">Variante '+(i+1)+' · '+esc(v.angulo||v.nombre||'')+'</b><button class="btn btn-ghost btn-xs" onclick="copyTxt(\''+copyText+'\')">📋 Copiar</button></div>'
+          +'<div class="camp-field-label" style="margin-bottom:4px">Meta Ads</div>'
+          +'<div style="font-size:.78rem;color:var(--text);margin-bottom:8px"><div><b>Texto:</b> '+esc(meta.texto_principal||'')+'</div><div><b>Titular:</b> '+esc(meta.titular||'')+'</div><div><b>Descripción:</b> '+esc(meta.descripcion||'')+'</div></div>'
+          +'<div class="camp-field-label" style="margin-bottom:4px">Google RSA</div>'
+          +'<div style="font-size:.78rem;color:var(--text)"><b>Titulares:</b><ul style="margin:2px 0 6px 16px">'+gh+'</ul><b>Descripciones:</b><ul style="margin:2px 0 0 16px">'+gd+'</ul></div>'
+          +'</div>';
+      });
+      if(out)out.innerHTML=html;
+    }catch(e){if(out)out.innerHTML='<div class="camp-angle-ex" style="color:#ef4444">Error IA: '+esc(e.message||'')+'</div>'}
+    finally{if(btn){btn.disabled=false;btn.textContent='🤖 Generar creatividades'}}
   };
 
   // ── Constructor de UTMs ──
