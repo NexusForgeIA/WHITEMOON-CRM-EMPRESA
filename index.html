@@ -1172,8 +1172,8 @@ Todos los planes: Sin permanencia · IVA no incluido
 .camp-chart-empty,.camp-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:.78rem}
 .camp-empty b{display:block;color:var(--text);margin-bottom:6px;font-size:.86rem}
 .camp-table-wrap{overflow-x:auto}
-.camp-table{display:flex;flex-direction:column;gap:0;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2);min-width:1240px}
-.camp-row{display:grid;grid-template-columns:1fr 1.5fr .95fr 1fr .85fr .7fr .8fr .8fr .9fr .9fr .9fr .7fr 1.05fr .5fr;gap:9px;padding:10px 12px;align-items:center;border-bottom:1px solid var(--border2);font-size:.72rem}
+.camp-table{display:flex;flex-direction:column;gap:0;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2);min-width:1560px}
+.camp-row{display:grid;grid-template-columns:1fr 1.4fr 1fr .95fr 1fr .8fr .65fr .8fr .8fr .8fr .75fr .85fr .9fr .85fr .65fr 1.05fr .5fr;gap:9px;padding:10px 12px;align-items:center;border-bottom:1px solid var(--border2);font-size:.72rem}
 .camp-row:last-child{border-bottom:none}
 .camp-row.camp-head{background:var(--bg3);font-size:.55rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .camp-metric{font-family:'Space Mono',monospace;font-weight:700;color:var(--text)}
@@ -1191,12 +1191,71 @@ Todos los planes: Sin permanencia · IVA no incluido
   .camp-table{background:transparent;border:none;gap:8px;min-width:0}
   .camp-table-wrap{overflow-x:visible}
 }
+/* Sub-navegación */
+.camp-subnav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;border-bottom:1px solid var(--border2);padding-bottom:0}
+.camp-subtab{background:none;border:none;border-bottom:2px solid transparent;color:var(--text2);font-family:'Sora',sans-serif;font-size:.82rem;font-weight:700;padding:9px 14px;cursor:pointer;transition:all .18s;margin-bottom:-1px}
+.camp-subtab:hover{color:var(--text)}
+.camp-subtab.on{color:var(--accent2);border-bottom-color:var(--accent)}
+.camp-sub{display:none}
+.camp-sub.on{display:block}
+/* Generador de nombres */
+.camp-name-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:760px){.camp-name-grid{grid-template-columns:1fr 1fr}}
+.camp-field-label{font-size:.58rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:block}
+.camp-out{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin-top:12px;flex-wrap:wrap}
+.camp-out code{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--green2);word-break:break-all;flex:1;min-width:160px}
+/* Creatividades */
+.camp-cre-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media(max-width:860px){.camp-cre-grid{grid-template-columns:1fr}}
+.camp-angles{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.camp-angle{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:'Sora',sans-serif;font-size:.68rem;font-weight:700;padding:6px 11px;border-radius:20px;cursor:pointer;transition:all .16s}
+.camp-angle:hover{border-color:var(--accent-border);color:var(--text)}
+.camp-angle.on{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent2)}
+.camp-angle-ex{font-size:.7rem;color:var(--text2);font-style:italic;margin:2px 0 12px;min-height:1em}
+.camp-cre-field{margin-bottom:14px}
+.camp-cre-fhead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px}
+.camp-cre-count{font-family:'Space Mono',monospace;font-size:.64rem;font-weight:700;color:var(--text2)}
+.camp-cre-count.over{color:var(--red2)}
+.camp-cre-count.warn{color:var(--orange2)}
+.camp-cre-count.ok{color:var(--green2)}
+.camp-cre-hint{font-size:.62rem;color:var(--muted);margin-top:4px}
+.camp-cre-field textarea.cap-input{resize:vertical;min-height:62px;line-height:1.5}
+.camp-cre-field input.cap-input.over,.camp-cre-field textarea.cap-input.over{border-color:var(--red)}
+.camp-tips{list-style:none;padding:0;margin:0}
+.camp-tips li{font-size:.74rem;color:var(--text2);padding:6px 0;border-bottom:1px dashed var(--border2);line-height:1.45;display:flex;gap:8px}
+.camp-tips li:last-child{border-bottom:none}
+.camp-tips li::before{content:"✓";color:var(--green2);font-weight:800;flex-shrink:0}
+.camp-spec{width:100%;border-collapse:collapse;font-size:.72rem;margin-top:4px}
+.camp-spec th,.camp-spec td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--border2)}
+.camp-spec th{font-size:.58rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800}
+.camp-spec td{color:var(--text2)}
+.camp-spec td b{color:var(--text)}
+/* UTM + checklist */
+.camp-utm-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:760px){.camp-utm-grid{grid-template-columns:1fr}}
+.camp-check{display:flex;flex-direction:column;gap:2px}
+.camp-check-item{display:flex;gap:10px;align-items:flex-start;padding:9px 4px;border-bottom:1px solid var(--border2);font-size:.76rem;color:var(--text2);line-height:1.45;cursor:pointer}
+.camp-check-item:last-child{border-bottom:none}
+.camp-check-item input{margin-top:2px;width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+.camp-check-item.done span{color:var(--muted);text-decoration:line-through}
+.camp-ref-note{font-size:.72rem;color:var(--text2);line-height:1.6}
+.camp-ref-note code{font-family:'Space Mono',monospace;background:var(--bg3);padding:1px 6px;border-radius:5px;color:var(--accent2);font-size:.9em}
 </style>
 <div class="page" id="p-campaigns">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><path d="M3 11l15-5v12L3 14z"/><path d="M11.6 16.8a3 3 0 11-5.78-1.5"/><path d="M18 8a4 4 0 010 8"/></svg>📣 Campañas</div>
-    <div class="page-sub">Dashboard de rendimiento de <b style="color:var(--accent2)">Meta Ads</b> y <b style="color:var(--accent2)">Google Ads</b>. Entrada manual de datos por ahora (integración con las APIs de Meta/Google llegará más adelante). Configura los umbrales para recibir alertas de CTR y CPC.</div>
+    <div class="page-sub">Dashboard de rendimiento de <b style="color:var(--accent2)">Meta Ads</b> y <b style="color:var(--accent2)">Google Ads</b>. Estructura de campañas, KPIs, creatividades y tracking según buenas prácticas de paid media. Entrada manual de datos por ahora (integración con las APIs de Meta/Google llegará más adelante).</div>
   </div>
+
+  <!-- Sub-navegación del módulo -->
+  <div class="camp-subnav">
+    <button class="camp-subtab on" data-sub="dashboard" onclick="campSetSub('dashboard',this)">📊 Dashboard</button>
+    <button class="camp-subtab" data-sub="creative" onclick="campSetSub('creative',this)">✍️ Creatividades</button>
+    <button class="camp-subtab" data-sub="tracking" onclick="campSetSub('tracking',this)">🎯 Tracking &amp; UTMs</button>
+  </div>
+
+  <!-- ███ SUB-TAB: DASHBOARD ███ -->
+  <div class="camp-sub on" id="camp-sub-dashboard">
 
   <!-- Toolbar: filtro plataforma + umbrales + añadir -->
   <div class="card mb16">
@@ -1215,6 +1274,22 @@ Todos los planes: Sin permanencia · IVA no incluido
         </button>
       </div>
     </div>
+  </div>
+
+  <!-- Generador de nombre de campaña (convención de naming) -->
+  <div class="card mb16">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>Generador de nombre de campaña</div>
+      <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">Plataforma_Objetivo_Audiencia_Oferta_Fecha</div>
+    </div>
+    <div class="camp-name-grid">
+      <div><label class="camp-field-label">Plataforma</label><select class="cap-select" id="camp-nm-plat" onchange="campGenName()"><option value="META">Meta</option><option value="GOOG">Google</option></select></div>
+      <div><label class="camp-field-label">Objetivo</label><select class="cap-select" id="camp-nm-obj" onchange="campGenName()"><option value="Awareness">Reconocimiento</option><option value="Traffic">Consideración</option><option value="Conv" selected>Conversión</option></select></div>
+      <div><label class="camp-field-label">Audiencia</label><input class="cap-input" id="camp-nm-aud" placeholder="Lookalike-Clientes" oninput="campGenName()"></div>
+      <div><label class="camp-field-label">Oferta</label><input class="cap-input" id="camp-nm-off" placeholder="Demo-Gratis" oninput="campGenName()"></div>
+      <div><label class="camp-field-label">Fecha / periodo</label><input class="cap-input" id="camp-nm-date" placeholder="2026Q2" oninput="campGenName()"></div>
+    </div>
+    <div class="camp-out"><code id="camp-nm-out">META_Conv_Audiencia_Oferta_2026Q2</code><button class="btn btn-ghost btn-xs" onclick="campCopyName()">📋 Copiar</button></div>
   </div>
 
   <!-- Alertas -->
@@ -1257,6 +1332,98 @@ Todos los planes: Sin permanencia · IVA no incluido
     </div>
     <div class="camp-table-wrap" id="camp-table-wrap"></div>
   </div>
+
+  </div><!-- /camp-sub-dashboard -->
+
+  <!-- ███ SUB-TAB: CREATIVIDADES ███ -->
+  <div class="camp-sub" id="camp-sub-creative">
+    <div class="card mb16">
+      <div class="sec-hd">
+        <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>Framework de creatividades</div>
+        <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">ángulo → variación → validar specs</div>
+      </div>
+      <div class="camp-cre-grid">
+        <div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+            <div style="flex:1;min-width:140px"><label class="camp-field-label">Plataforma</label><select class="cap-select" id="camp-cre-plat" onchange="renderCreativeFields()"><option value="meta">Meta Ads (Facebook / Instagram)</option><option value="google">Google Ads (RSA — búsqueda)</option></select></div>
+          </div>
+          <label class="camp-field-label">Ángulo (motivación para hacer clic)</label>
+          <div class="camp-angles" id="camp-cre-angles"></div>
+          <div class="camp-angle-ex" id="camp-cre-angle-ex"></div>
+          <div id="camp-cre-fields"></div>
+          <button class="btn btn-p btn-sm" onclick="campCreativeCopy()" style="margin-top:4px">📋 Copiar creatividad</button>
+        </div>
+        <div>
+          <div class="card" style="background:var(--bg2);padding:14px;margin-bottom:14px">
+            <div class="camp-field-label" style="margin-bottom:8px">Límites por plataforma</div>
+            <table class="camp-spec">
+              <thead><tr><th>Plataforma</th><th>Elemento</th><th>Límite</th></tr></thead>
+              <tbody>
+                <tr><td rowspan="2"><b>Google RSA</b></td><td>Titular</td><td>30 car. · hasta 15</td></tr>
+                <tr><td>Descripción</td><td>90 car. · hasta 4</td></tr>
+                <tr><td rowspan="3"><b>Meta</b></td><td>Texto principal</td><td>125 visibles (máx 2.200)</td></tr>
+                <tr><td>Titular</td><td>40 car.</td></tr>
+                <tr><td>Descripción</td><td>30 car.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card" style="background:var(--bg2);padding:14px">
+            <div class="camp-field-label" style="margin-bottom:8px">Estándares de calidad</div>
+            <ul class="camp-tips">
+              <li>Específico ("Reduce un 75% el tiempo") mejor que vago ("Ahorra tiempo")</li>
+              <li>Beneficios antes que características</li>
+              <li>Voz activa e incluye números cuando sea posible</li>
+              <li>Incluye al menos un titular con CTA</li>
+              <li>Que cada titular funcione por sí solo (RSA los combina)</li>
+              <li>Evita mayúsculas excesivas y promesas que la landing no cumpla</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- /camp-sub-creative -->
+
+  <!-- ███ SUB-TAB: TRACKING & UTMs ███ -->
+  <div class="camp-sub" id="camp-sub-tracking">
+    <!-- Constructor de UTMs -->
+    <div class="card mb16">
+      <div class="sec-hd">
+        <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>Constructor de UTMs</div>
+        <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">todo en minúsculas</div>
+      </div>
+      <div class="camp-utm-grid">
+        <div><label class="camp-field-label">URL base</label><input class="cap-input" id="camp-utm-url" placeholder="https://whitemoon.es/landing" oninput="campBuildUtm()"></div>
+        <div><label class="camp-field-label">utm_source (origen)</label><input class="cap-input" id="camp-utm-source" placeholder="google, facebook, newsletter" oninput="campBuildUtm()"></div>
+        <div><label class="camp-field-label">utm_medium (medio)</label><input class="cap-input" id="camp-utm-medium" placeholder="cpc, email, social" oninput="campBuildUtm()"></div>
+        <div><label class="camp-field-label">utm_campaign (campaña)</label><input class="cap-input" id="camp-utm-campaign" placeholder="rebajas_primavera" oninput="campBuildUtm()"></div>
+        <div><label class="camp-field-label">utm_content (opcional)</label><input class="cap-input" id="camp-utm-content" placeholder="cta_hero" oninput="campBuildUtm()"></div>
+        <div><label class="camp-field-label">utm_term (opcional · search)</label><input class="cap-input" id="camp-utm-term" placeholder="zapatillas+running" oninput="campBuildUtm()"></div>
+      </div>
+      <div class="camp-out"><code id="camp-utm-out">Completa la URL base y los parámetros…</code><button class="btn btn-ghost btn-xs" onclick="campCopyUtm()">📋 Copiar URL</button></div>
+    </div>
+
+    <!-- Checklist de conversion tracking -->
+    <div class="card mb16">
+      <div class="sec-hd">
+        <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Checklist de seguimiento de conversiones</div>
+        <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace" id="camp-check-progress">0 / 0</div>
+      </div>
+      <div class="camp-check" id="camp-check"></div>
+    </div>
+
+    <!-- Convención de nombres de eventos -->
+    <div class="card">
+      <div class="sec-hd">
+        <div class="sec-title"><svg viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>Convención de nombres de eventos</div>
+      </div>
+      <div class="camp-ref-note">
+        Formato <b>objeto_acción</b> en minúsculas con guion bajo. Pon el contexto en las propiedades, no en el nombre.<br>
+        Ejemplos: <code>lead_capturado</code> · <code>cta_hero_clicado</code> · <code>formulario_enviado</code> · <code>demo_solicitada</code> · <code>compra_completada</code><br>
+        Propiedades estándar: <code>source</code>, <code>medium</code>, <code>campaign</code>, <code>content</code>, <code>term</code>, <code>value</code>, <code>plan</code>. Nunca incluyas PII (email, teléfono) en las propiedades de analítica.
+      </div>
+    </div>
+  </div><!-- /camp-sub-tracking -->
+
 </div>
 
 </main>
@@ -6258,8 +6425,44 @@ async function renderWmDashboard(){
   var SEED_KEY='wm_campaigns_seeded';
   var PLAT={meta:{label:'Meta Ads',dot:'#1877f2'},google:{label:'Google Ads',dot:'#34a853'}};
   var STATES=[{k:'activa',label:'Activa'},{k:'pausada',label:'Pausada'},{k:'finalizada',label:'Finalizada'}];
+  var OBJETIVOS=[{k:'reconocimiento',label:'Reconocimiento'},{k:'consideracion',label:'Consideración'},{k:'conversion',label:'Conversión'}];
   var NUMF=['impresiones','clics','conversiones','gasto','ingresos','presupuesto'];
+  var CHK_KEY='wm_campaigns_tracking_checklist';
+  var CHECKLIST=[
+    'Seguimiento de conversiones probado con una conversión real',
+    'Acciones de conversión creadas en la plataforma (no solo el píxel instalado)',
+    'El evento se dispara tras la acción confirmada (gracias/pago), no en el clic',
+    'Sin eventos duplicados — deduplicación píxel/servidor con event_id compartido',
+    'Parámetros UTM funcionando y consistentes',
+    'La landing carga rápido (<3s) y es mobile-friendly',
+    'Presupuesto y segmentación configurados correctamente',
+    'Tráfico interno del equipo excluido',
+    'Consentimiento (RGPD/CCPA) antes de disparar píxeles',
+    'Datos de plataforma comparados con GA4 (la atribución de plataforma está inflada)'
+  ];
+  var ANGLES=[
+    {k:'dolor',label:'Punto de dolor',ex:'Deja de perder tiempo en X'},
+    {k:'resultado',label:'Resultado',ex:'Consigue Y en Z días'},
+    {k:'social',label:'Prueba social',ex:'Únete a 10.000+ negocios que…'},
+    {k:'curiosidad',label:'Curiosidad',ex:'El truco que usan los mejores del sector'},
+    {k:'comparacion',label:'Comparación',ex:'A diferencia de X, nosotros Y'},
+    {k:'urgencia',label:'Urgencia',ex:'Tiempo limitado: consigue X gratis'},
+    {k:'identidad',label:'Identidad',ex:'Hecho para [rol/tipo concreto]'},
+    {k:'contrario',label:'Contrario',ex:'Por qué [práctica común] ya no funciona'}
+  ];
+  var CREATIVE_SPECS={
+    google:[
+      {k:'headline',label:'Titular (Headline)',limit:30,type:'input',hint:'Hasta 15 por RSA. Incluye keyword, beneficio y CTA.'},
+      {k:'description',label:'Descripción',limit:90,type:'textarea',hint:'Hasta 4 por RSA. Añade prueba y CTA; no repitas el titular.'}
+    ],
+    meta:[
+      {k:'primary',label:'Texto principal',limit:125,hard:2200,type:'textarea',hint:'Se ven ~125 caracteres (máx 2.200). Pon el gancho al principio.'},
+      {k:'headline',label:'Titular',limit:40,type:'input',hint:'Aparece debajo de la imagen.'},
+      {k:'description',label:'Descripción',limit:30,type:'input',hint:'Aparece debajo del titular.'}
+    ]
+  };
   var _plat='all';
+  var _angle='dolor';
 
   function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function num(v){var n=parseFloat(v);return isNaN(n)?0:n}
@@ -6274,9 +6477,12 @@ async function renderWmDashboard(){
   function pct(n){return num(n).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:2})+'%'}
   function ctrOf(c){return num(c.impresiones)>0?num(c.clics)/num(c.impresiones)*100:0}
   function cpcOf(c){return num(c.clics)>0?num(c.gasto)/num(c.clics):0}
+  function cpmOf(c){return num(c.impresiones)>0?num(c.gasto)/num(c.impresiones)*1000:0}
+  function cpaOf(c){return num(c.conversiones)>0?num(c.gasto)/num(c.conversiones):0}
   function roasOf(c){return num(c.gasto)>0?num(c.ingresos)/num(c.gasto):0}
   function platLabel(k){return (PLAT[k]||{}).label||k}
   function stateLabel(k){for(var i=0;i<STATES.length;i++)if(STATES[i].k===k)return STATES[i].label;return k}
+  function objLabel(k){for(var i=0;i<OBJETIVOS.length;i++)if(OBJETIVOS[i].k===k)return OBJETIVOS[i].label;return k}
   function filtered(){var a=load();return _plat==='all'?a:a.filter(function(c){return c.plataforma===_plat})}
   function todayStr(){return new Date().toISOString().slice(0,10)}
 
@@ -6285,9 +6491,9 @@ async function renderWmDashboard(){
     if(load().length>0){localStorage.setItem(SEED_KEY,'1');return}
     function ds(off){var d=new Date();d.setDate(d.getDate()-off);return d.toISOString().slice(0,10)}
     save([
-      {id:uid(),plataforma:'meta',nombre:'Ejemplo · Leads Clínicas (Meta)',estado:'activa',impresiones:48200,clics:712,conversiones:34,gasto:540,ingresos:2380,presupuesto:800,fecha:ds(0)},
-      {id:uid(),plataforma:'google',nombre:'Ejemplo · Search Marca (Google)',estado:'activa',impresiones:15800,clics:520,conversiones:41,gasto:610,ingresos:3050,presupuesto:700,fecha:ds(1)},
-      {id:uid(),plataforma:'meta',nombre:'Ejemplo · Remarketing (Meta)',estado:'pausada',impresiones:91000,clics:430,conversiones:9,gasto:380,ingresos:410,presupuesto:400,fecha:ds(3)}
+      {id:uid(),plataforma:'meta',nombre:'META_Conv_Lookalike-Clientes_Demo_2026Q2',estado:'activa',objetivo:'conversion',impresiones:48200,clics:712,conversiones:34,gasto:540,ingresos:2380,presupuesto:800,fecha:ds(0)},
+      {id:uid(),plataforma:'google',nombre:'GOOG_Conv_Marca_Demo_Ongoing',estado:'activa',objetivo:'conversion',impresiones:15800,clics:520,conversiones:41,gasto:610,ingresos:3050,presupuesto:700,fecha:ds(1)},
+      {id:uid(),plataforma:'meta',nombre:'META_Traffic_Remarketing_Visitantes_2026Q2',estado:'pausada',objetivo:'consideracion',impresiones:91000,clics:430,conversiones:9,gasto:380,ingresos:410,presupuesto:400,fecha:ds(3)}
     ]);
     localStorage.setItem(SEED_KEY,'1');
   }
@@ -6304,7 +6510,7 @@ async function renderWmDashboard(){
 
   window.campAdd=function(){
     var a=load();
-    a.unshift({id:uid(),plataforma:(_plat==='all'?'meta':_plat),nombre:'',estado:'activa',impresiones:0,clics:0,conversiones:0,gasto:0,ingresos:0,presupuesto:0,fecha:todayStr()});
+    a.unshift({id:uid(),plataforma:(_plat==='all'?'meta':_plat),nombre:'',estado:'activa',objetivo:'conversion',impresiones:0,clics:0,conversiones:0,gasto:0,ingresos:0,presupuesto:0,fecha:todayStr()});
     save(a);renderCampaigns();syncBadge();
     setTimeout(function(){var f=document.querySelector('#camp-table-wrap .camp-row:not(.camp-head) .cap-input');if(f)f.focus()},50);
   };
@@ -6331,10 +6537,12 @@ async function renderWmDashboard(){
   };
 
   function updateRowComputed(c){
-    var ctr=ctrOf(c),cpc=cpcOf(c),roas=roasOf(c),th=getTh();
+    var ctr=ctrOf(c),cpc=cpcOf(c),cpm=cpmOf(c),cpa=cpaOf(c),roas=roasOf(c),th=getTh();
     var e;
     e=document.getElementById('camp-ctr-'+c.id);if(e){e.textContent=pct(ctr);e.className='camp-metric'+(num(c.impresiones)>0&&ctr<th.ctr?' bad':'')}
+    e=document.getElementById('camp-cpm-'+c.id);if(e){e.textContent=num(c.impresiones)>0?eur(cpm):'—';e.className='camp-metric'}
     e=document.getElementById('camp-cpc-'+c.id);if(e){e.textContent=eur(cpc);e.className='camp-metric'+(num(c.clics)>0&&cpc>th.cpc?' bad':'')}
+    e=document.getElementById('camp-cpa-'+c.id);if(e){e.textContent=num(c.conversiones)>0?eur(cpa):'—';e.className='camp-metric'}
     e=document.getElementById('camp-roas-'+c.id);if(e){e.textContent=roas>0?roas.toFixed(2)+'x':'—';e.className='camp-metric'+(roas>=1?' good':(roas>0?' bad':''))}
   }
 
@@ -6342,14 +6550,16 @@ async function renderWmDashboard(){
     var list=filtered();
     var imp=0,clk=0,conv=0,gasto=0,ing=0;
     list.forEach(function(c){imp+=num(c.impresiones);clk+=num(c.clics);conv+=num(c.conversiones);gasto+=num(c.gasto);ing+=num(c.ingresos)});
-    var ctr=imp>0?clk/imp*100:0,cpc=clk>0?gasto/clk:0,roas=gasto>0?ing/gasto:0,convRate=clk>0?conv/clk*100:0;
+    var ctr=imp>0?clk/imp*100:0,cpc=clk>0?gasto/clk:0,cpm=imp>0?gasto/imp*1000:0,cpa=conv>0?gasto/conv:0,roas=gasto>0?ing/gasto:0,convRate=clk>0?conv/clk*100:0;
     var th=getTh();
     var kpis=[
       {label:'Impresiones',num:n0(imp),sub:list.length+' campaña(s)',cls:''},
-      {label:'Clics',num:n0(clk),sub:n0(conv)+' conversiones',cls:''},
+      {label:'Clics',num:n0(clk),sub:pct(ctr)+' CTR',cls:''},
       {label:'CTR',num:pct(ctr),sub:'umbral mín '+pct(th.ctr),cls:(imp>0&&ctr<th.ctr)?'k-bad':'k-rate'},
+      {label:'CPM',num:imp>0?eur(cpm):'—',sub:'coste / 1.000 impr.',cls:'k-rate'},
       {label:'CPC medio',num:eur(cpc),sub:'umbral máx '+eur(th.cpc),cls:(clk>0&&cpc>th.cpc)?'k-bad':'k-rate'},
       {label:'Conversiones',num:n0(conv),sub:pct(convRate)+' tasa conv.',cls:'k-rate'},
+      {label:'CPA',num:conv>0?eur(cpa):'—',sub:'coste / conversión',cls:'k-rate'},
       {label:'ROAS',num:roas>0?roas.toFixed(2)+'x':'—',sub:eur(ing)+' / '+eur(gasto),cls:roas>=1?'k-mrr':'k-bad'}
     ];
     var html='';
@@ -6433,19 +6643,22 @@ async function renderWmDashboard(){
     }
     var platOpts=[{k:'meta',label:'Meta Ads'},{k:'google',label:'Google Ads'}];
     var html='<div class="camp-table">';
-    html+='<div class="camp-row camp-head"><div>Plataforma</div><div>Campaña</div><div>Estado</div><div>Impresiones</div><div>Clics</div><div>CTR</div><div>CPC</div><div>Conv.</div><div>Gasto</div><div>Presupuesto</div><div>Ingresos</div><div>ROAS</div><div>Fecha</div><div></div></div>';
+    html+='<div class="camp-row camp-head"><div>Plataforma</div><div>Campaña</div><div>Objetivo</div><div>Estado</div><div>Impresiones</div><div>Clics</div><div>CTR</div><div>CPM</div><div>CPC</div><div>CPA</div><div>Conv.</div><div>Gasto</div><div>Presupuesto</div><div>Ingresos</div><div>ROAS</div><div>Fecha</div><div></div></div>';
     list.forEach(function(c){
-      var ctr=ctrOf(c),cpc=cpcOf(c),roas=roasOf(c);
+      var ctr=ctrOf(c),cpc=cpcOf(c),cpm=cpmOf(c),cpa=cpaOf(c),roas=roasOf(c);
       var ctrBad=num(c.impresiones)>0&&ctr<th.ctr,cpcBad=num(c.clics)>0&&cpc>th.cpc;
       var dot=(PLAT[c.plataforma]||{}).dot||'#9090b0';
       html+='<div class="camp-row">';
       html+='<div><span class="camp-plat"><span class="camp-plat-dot" style="background:'+dot+'"></span></span><select class="cap-select" onchange="campUpdate(\''+c.id+'\',\'plataforma\',this.value)">'+opts(platOpts,c.plataforma)+'</select></div>';
       html+='<div><input class="cap-input" value="'+esc(c.nombre)+'" placeholder="Nombre campaña" onchange="campUpdate(\''+c.id+'\',\'nombre\',this.value)"></div>';
+      html+='<div><select class="cap-select" onchange="campUpdate(\''+c.id+'\',\'objetivo\',this.value)">'+opts(OBJETIVOS,c.objetivo||'conversion')+'</select></div>';
       html+='<div><select class="cap-select" onchange="campUpdate(\''+c.id+'\',\'estado\',this.value)">'+opts(STATES,c.estado)+'</select><div><span class="camp-state s-'+c.estado+'" id="camp-statechip-'+c.id+'">'+stateLabel(c.estado)+'</span></div></div>';
       html+='<div><input type="number" min="0" class="cap-input" value="'+num(c.impresiones)+'" onchange="campUpdate(\''+c.id+'\',\'impresiones\',this.value)"></div>';
       html+='<div><input type="number" min="0" class="cap-input" value="'+num(c.clics)+'" onchange="campUpdate(\''+c.id+'\',\'clics\',this.value)"></div>';
       html+='<div class="camp-metric'+(ctrBad?' bad':'')+'" id="camp-ctr-'+c.id+'">'+pct(ctr)+'</div>';
+      html+='<div class="camp-metric" id="camp-cpm-'+c.id+'">'+(num(c.impresiones)>0?eur(cpm):'—')+'</div>';
       html+='<div class="camp-metric'+(cpcBad?' bad':'')+'" id="camp-cpc-'+c.id+'">'+eur(cpc)+'</div>';
+      html+='<div class="camp-metric" id="camp-cpa-'+c.id+'">'+(num(c.conversiones)>0?eur(cpa):'—')+'</div>';
       html+='<div><input type="number" min="0" class="cap-input" value="'+num(c.conversiones)+'" onchange="campUpdate(\''+c.id+'\',\'conversiones\',this.value)"></div>';
       html+='<div><input type="number" min="0" step="0.01" class="cap-input" value="'+num(c.gasto)+'" onchange="campUpdate(\''+c.id+'\',\'gasto\',this.value)"></div>';
       html+='<div><input type="number" min="0" step="0.01" class="cap-input" value="'+num(c.presupuesto)+'" onchange="campUpdate(\''+c.id+'\',\'presupuesto\',this.value)"></div>';
@@ -6459,12 +6672,114 @@ async function renderWmDashboard(){
     box.innerHTML=html;
   }
 
+  // ── Sub-navegación ──
+  window.campSetSub=function(sub,el){
+    var tabs=document.querySelectorAll('#p-campaigns .camp-subtab');
+    for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('on');
+    if(el)el.classList.add('on');
+    ['dashboard','creative','tracking'].forEach(function(s){var d=document.getElementById('camp-sub-'+s);if(d)d.classList.toggle('on',s===sub)});
+    if(sub==='creative'){renderCreativeAngles();renderCreativeFields()}
+    if(sub==='tracking'){renderCampChecklist();campBuildUtm()}
+  };
+
+  // ── Generador de nombre de campaña (convención de naming) ──
+  function _slug(s){return String(s||'').trim().replace(/\s+/g,'-').replace(/_/g,'-').replace(/[^\w\-]/g,'')}
+  window.campGenName=function(){
+    var g=function(id){return (document.getElementById(id)||{}).value||''};
+    var plat=g('camp-nm-plat')||'META',obj=g('camp-nm-obj')||'Conv';
+    var aud=_slug(g('camp-nm-aud'))||'Audiencia',off=_slug(g('camp-nm-off'))||'Oferta',date=_slug(g('camp-nm-date'))||'Fecha';
+    var out=document.getElementById('camp-nm-out');if(out)out.textContent=[plat,obj,aud,off,date].join('_');
+  };
+  window.campCopyName=function(){var o=document.getElementById('camp-nm-out');if(o&&typeof copyTxt==='function')copyTxt(o.textContent)};
+
+  // ── Framework de creatividades (specs por plataforma) ──
+  var _creSpecs=[];
+  function renderCreativeAngles(){
+    var box=document.getElementById('camp-cre-angles');if(!box)return;
+    var html='';
+    ANGLES.forEach(function(a){html+='<button class="camp-angle'+(a.k===_angle?' on':'')+'" onclick="campSetAngle(\''+a.k+'\',this)">'+esc(a.label)+'</button>'});
+    box.innerHTML=html;
+    var ex=document.getElementById('camp-cre-angle-ex'),cur=ANGLES.filter(function(a){return a.k===_angle})[0];
+    if(ex)ex.textContent=cur?'Ej.: '+cur.ex:'';
+  }
+  window.campSetAngle=function(k,el){
+    _angle=k;
+    var b=document.querySelectorAll('#camp-cre-angles .camp-angle');
+    for(var i=0;i<b.length;i++)b[i].classList.remove('on');
+    if(el)el.classList.add('on');
+    var ex=document.getElementById('camp-cre-angle-ex'),cur=ANGLES.filter(function(a){return a.k===k})[0];
+    if(ex)ex.textContent=cur?'Ej.: '+cur.ex:'';
+  };
+  window.renderCreativeFields=function(){
+    var sel=document.getElementById('camp-cre-plat'),plat=sel?sel.value:'meta';
+    _creSpecs=CREATIVE_SPECS[plat]||[];
+    var box=document.getElementById('camp-cre-fields');if(!box)return;
+    var html='';
+    _creSpecs.forEach(function(f){
+      html+='<div class="camp-cre-field"><div class="camp-cre-fhead"><label class="camp-field-label" style="margin:0">'+esc(f.label)+'</label><span class="camp-cre-count ok" id="camp-crec-'+f.k+'">0 / '+f.limit+(f.hard?' visibles':'')+'</span></div>';
+      if(f.type==='textarea')html+='<textarea class="cap-input" id="camp-cref-'+f.k+'" rows="3" oninput="campCreativeCount(\''+f.k+'\','+f.limit+','+(f.hard||0)+')"></textarea>';
+      else html+='<input class="cap-input" id="camp-cref-'+f.k+'" oninput="campCreativeCount(\''+f.k+'\','+f.limit+','+(f.hard||0)+')">';
+      html+='<div class="camp-cre-hint">'+esc(f.hint)+'</div></div>';
+    });
+    box.innerHTML=html;
+  };
+  window.campCreativeCount=function(k,limit,hard){
+    var el=document.getElementById('camp-cref-'+k),c=document.getElementById('camp-crec-'+k);if(!el||!c)return;
+    var n=el.value.length;
+    var isError=hard>0?n>hard:n>limit;
+    var isWarn=hard>0&&n>limit&&n<=hard;
+    var label=n+' / '+limit+(hard>0?' visibles':'');
+    if(isError)label+=' · excede el máximo'+(hard>0?' ('+hard+')':'');
+    else if(isWarn)label+=' · se truncará la vista previa';
+    c.textContent=label;
+    c.className='camp-cre-count '+(isError?'over':(isWarn?'warn':'ok'));
+    el.classList.toggle('over',isError);
+  };
+  window.campCreativeCopy=function(){
+    var plat=(document.getElementById('camp-cre-plat')||{}).value||'meta';
+    var ang=ANGLES.filter(function(a){return a.k===_angle})[0]||{};
+    var lines=['Plataforma: '+(plat==='google'?'Google Ads (RSA)':'Meta Ads'),'Ángulo: '+(ang.label||''),''];
+    var any=false;
+    _creSpecs.forEach(function(f){var el=document.getElementById('camp-cref-'+f.k),v=el?el.value.trim():'';if(v){lines.push(f.label+': '+v);any=true}});
+    if(!any){showToast&&showToast('Escribe alguna creatividad primero');return}
+    if(typeof copyTxt==='function')copyTxt(lines.join('\n'));
+  };
+
+  // ── Constructor de UTMs ──
+  function _utmv(s){return encodeURIComponent(String(s||'').trim().toLowerCase().replace(/\s+/g,'-'))}
+  window.campBuildUtm=function(){
+    var base=((document.getElementById('camp-utm-url')||{}).value||'').trim();
+    var out=document.getElementById('camp-utm-out');if(!out)return;
+    if(!base){out.textContent='Completa la URL base y los parámetros…';return}
+    var params=[];
+    function add(key,id){var v=((document.getElementById(id)||{}).value||'').trim();if(v)params.push(key+'='+_utmv(v))}
+    add('utm_source','camp-utm-source');add('utm_medium','camp-utm-medium');add('utm_campaign','camp-utm-campaign');
+    add('utm_content','camp-utm-content');add('utm_term','camp-utm-term');
+    out.textContent=params.length?base+(base.indexOf('?')>=0?'&':'?')+params.join('&'):base;
+  };
+  window.campCopyUtm=function(){var o=document.getElementById('camp-utm-out');if(o&&typeof copyTxt==='function')copyTxt(o.textContent)};
+
+  // ── Checklist de conversion tracking ──
+  function getChecks(){try{return JSON.parse(localStorage.getItem(CHK_KEY)||'{}')}catch(e){return {}}}
+  function setChecks(o){try{localStorage.setItem(CHK_KEY,JSON.stringify(o))}catch(e){}}
+  window.campToggleCheck=function(i){var o=getChecks();o[i]=!o[i];setChecks(o);renderCampChecklist()};
+  function renderCampChecklist(){
+    var box=document.getElementById('camp-check');if(!box)return;
+    var o=getChecks(),done=0,html='';
+    CHECKLIST.forEach(function(t,i){var c=!!o[i];if(c)done++;html+='<label class="camp-check-item'+(c?' done':'')+'"><input type="checkbox" '+(c?'checked':'')+' onchange="campToggleCheck('+i+')"><span>'+esc(t)+'</span></label>'});
+    box.innerHTML=html;
+    var p=document.getElementById('camp-check-progress');if(p)p.textContent=done+' / '+CHECKLIST.length;
+  }
+
   window.renderCampaigns=function(){
     seedIfEmpty();
     var ctrI=document.getElementById('camp-th-ctr'),cpcI=document.getElementById('camp-th-cpc'),th=getTh();
     if(ctrI&&document.activeElement!==ctrI)ctrI.value=th.ctr;
     if(cpcI&&document.activeElement!==cpcI)cpcI.value=th.cpc;
     renderCampKpis();renderCampBudget();renderCampAlerts();renderCampChart();renderCampTable();
+    var cf=document.getElementById('camp-cre-fields');
+    if(cf&&!cf.innerHTML){renderCreativeAngles();renderCreativeFields()}
+    renderCampChecklist();campGenName();campBuildUtm();
     syncBadge();
   };
 
