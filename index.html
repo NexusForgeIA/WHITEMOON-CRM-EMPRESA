@@ -1133,7 +1133,7 @@ Todos los planes: Sin permanencia · IVA no incluido
   <div class="card">
     <div class="sec-hd">
       <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Mensajes listos para copiar</div>
-      <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">5 sectores · WhatsApp + Email</div>
+      <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">12 sectores · WhatsApp + Email</div>
     </div>
     <div class="cap-msg-grid" id="cap-messages"></div>
   </div>
@@ -5083,7 +5083,7 @@ async function generateWebDemo(idx){
       email:'Asunto: Menos llamadas absurdas, más coches en el foso · IA para [NEGOCIO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon. Trabajamos con talleres en Madrid implantando un asistente IA que:\n\n• Da presupuestos orientativos por WhatsApp en segundos\n• Agenda citas según huecos reales de tu agenda\n• Avisa al cliente cuando el coche está listo (sin que llames tú)\n• Filtra clientes serios vs curiosos\n\nDesde 499€ setup + 199€/mes. Demo personalizada de tu taller en 5-7 días laborables.\n\n¿Te llamo 10 min y te lo enseño en pantalla?\n\nUn saludo,\nCris · whitemoon.es'
     },
     'clinicas':{
-      ico:'🦷',name:'Clínicas',
+      ico:'🦷',name:'Clínicas dentales',
       whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien intenta reservar primera visita en [CLÍNICA] fuera de horario o por la noche?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
       seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los pacientes que no reciben respuesta en 5 minutos llaman a la siguiente clínica.\n\n¿Hablamos?',
       cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una clínica dental en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
@@ -5102,6 +5102,55 @@ async function generateWebDemo(idx){
       seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los leads que no reciben respuesta en 5 minutos llaman al siguiente despacho.\n\n¿Hablamos?',
       cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy un despacho de abogados".\n\nAsí quedaría en TU web, cualificando casos. ¿Qué te parece?',
       email:'Asunto: Filtrar leads y captar mejores clientes · IA para [DESPACHO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon (agencia IA · Majadahonda). Hemos desarrollado un asistente específico para despachos que:\n\n• Cualifica leads 24/7 por WhatsApp (tipo de caso, urgencia, viabilidad)\n• Agenda consulta solo con casos que merece la pena coger\n• Ofrece info inicial (Ley Segunda Oportunidad, despido improcedente, etc.)\n• Cumple confidencialidad y RGPD\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'restaurantes':{
+      ico:'🍽️',name:'Restaurantes',
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien quiere reservar mesa en [RESTAURANTE] fuera de horario o cuando estáis a tope en plena hora punta?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los clientes que no reciben respuesta en 5 minutos reservan en el siguiente restaurante.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy un restaurante en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Más reservas y menos teléfono en hora punta · IA para [RESTAURANTE]\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon · Majadahonda). Hemos creado un asistente IA específico para restaurantes que:\n\n• Gestiona reservas por WhatsApp 24/7 (sin descolgar el teléfono en plena comida)\n• Responde dudas de carta, alérgenos y horarios al instante\n• Recuerda la reserva el mismo día → reduce los no-shows\n• Promociona menú del día y eventos a clientes habituales\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo de tu restaurante lista en 5-7 días laborables.\n\n¿Probamos una llamada de 10 min esta semana?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'podologia':{
+      ico:'🦶',name:'Podología',
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando un paciente intenta pedir cita en [CLÍNICA] fuera de horario o cuando estáis atendiendo en consulta?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los pacientes que no reciben respuesta en 5 minutos llaman al siguiente podólogo.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una clínica de podología en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Agenda llena y menos no-shows · IA para [CLÍNICA] de podología\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon, agencia IA en Majadahonda). Tenemos un asistente IA para clínicas de podología que:\n\n• Capta y agenda citas 24/7 por WhatsApp (estudio biomecánico, plantillas, uñero…)\n• Resuelve dudas frecuentes antes de la visita\n• Confirma la cita 24h antes → no-shows -60%\n• Avisa a la lista de espera cuando hay una cancelación\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'inmobiliarias':{
+      ico:'🏠',name:'Inmobiliarias',
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien se interesa por un piso de [INMOBILIARIA] a las 23h y no hay nadie para responder?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los interesados que no reciben respuesta en 5 minutos contactan con la siguiente inmobiliaria.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una inmobiliaria en [CIUDAD]".\n\nAsí quedaría en TU web, cualificando compradores. ¿Qué te parece?',
+      email:'Asunto: Cualificar compradores 24/7 y no perder leads · IA para [INMOBILIARIA]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon (agencia IA · Majadahonda). Hemos desarrollado un asistente específico para inmobiliarias que:\n\n• Responde por WhatsApp 24/7 sobre cada inmueble (precio, zona, financiación)\n• Cualifica al interesado (comprador real vs curioso, presupuesto, hipoteca)\n• Agenda visitas según la agenda de tus comerciales\n• Captura leads de portales y web y te los pasa listos para llamar\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min y te lo enseño en pantalla?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'gimnasios':{
+      ico:'💪',name:'Gimnasios',
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien quiere apuntarse a [GIMNASIO] o pedir info de cuotas fuera de horario de recepción?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los interesados que no reciben respuesta en 5 minutos se apuntan al siguiente gimnasio.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy un gimnasio en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Más altas y menos bajas · IA para [GIMNASIO]\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon · Majadahonda). Hemos creado un asistente IA específico para gimnasios y centros fitness que:\n\n• Informa de cuotas, clases y horarios por WhatsApp 24/7\n• Capta nuevas altas y agenda la clase de prueba gratuita\n• Recupera socios inactivos con mensajes automáticos\n• Resuelve dudas de recepción sin saturar a tu equipo\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo de tu gimnasio lista en 5-7 días laborables.\n\n¿Probamos una llamada de 10 min esta semana?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'academias':{
+      ico:'🎓',name:'Academias / Formación',
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando alguien pide info de cursos o plazas en [ACADEMIA] fuera de horario o en plena matrícula?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los interesados que no reciben respuesta en 5 minutos se matriculan en la siguiente academia.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una academia de formación en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Más matrículas y menos consultas repetitivas · IA para [ACADEMIA]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon (agencia IA · Majadahonda). Trabajamos con academias y centros de formación implantando un asistente IA que:\n\n• Informa 24/7 de cursos, precios, horarios y salidas profesionales\n• Capta y cualifica alumnos potenciales por WhatsApp\n• Agenda llamadas con el equipo de admisiones\n• Resuelve dudas de matrícula y bonificación FUNDAE\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min y te lo enseño?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'veterinarias':{
+      ico:'🐾',name:'Veterinarias',
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando un dueño con su mascota necesita cita o consulta urgente en [CLÍNICA] fuera de horario?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los dueños que no reciben respuesta en 5 minutos llaman a la siguiente veterinaria.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy una clínica veterinaria en [CIUDAD]".\n\nAsí quedaría en TU web. ¿Qué te parece?',
+      email:'Asunto: Agenda llena y urgencias bien filtradas · IA para [CLÍNICA] veterinaria\n\nHola [NOMBRE],\n\nMe llamo Cris (WhiteMoon, agencia IA en Majadahonda). Tenemos un asistente IA para clínicas veterinarias que:\n\n• Agenda consultas, vacunas y revisiones por WhatsApp 24/7\n• Orienta sobre urgencias y deriva los casos graves al instante\n• Recuerda vacunas y desparasitaciones a cada cliente\n• Resuelve dudas de horarios y servicios sin saturar recepción\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min para enseñártelo?\n\nUn saludo,\nCris · whitemoon.es'
+    },
+    'automovil':{
+      ico:'🚙',name:'Automóvil / Concesionario',
+      whatsapp:'Hola [NOMBRE] 👋\nSoy Cristobal de WhiteMoon, agencia IA.\n\nUna pregunta rápida: ¿qué pasa cuando un comprador ve un coche en la web de [CONCESIONARIO] a las 23h y no encuentra a nadie para informarse o financiar?\n\n¿Tienes 10 minutos esta semana?\n\nCris · whitemoon.es',
+      seguimiento:'Solo un dato [NOMBRE]:\n\nEl 70% de los compradores que no reciben respuesta en 5 minutos se van al siguiente concesionario.\n\n¿Hablamos?',
+      cierre:'[NOMBRE], entra en whitemoon.es y escribe en el chat "soy un concesionario en [CIUDAD]".\n\nAsí quedaría en TU web, cualificando compradores. ¿Qué te parece?',
+      email:'Asunto: Cada visita web convertida en lead cualificado · IA para [CONCESIONARIO]\n\nHola [NOMBRE],\n\nSoy Cris de WhiteMoon (agencia IA · Majadahonda). Hemos desarrollado un asistente específico para concesionarios que:\n\n• Atiende e informa por WhatsApp 24/7 sobre cada vehículo\n• Cualifica al comprador (contado, financiación, vehículo a cambio)\n• Calcula la cuota orientativa al instante\n• Agenda prueba de conducción y te pasa el lead listo para llamar\n\nDesde 499€ setup + 199€/mes sin permanencia. Demo personalizada en 5-7 días laborables.\n\n¿Te llamo 10 min y te lo enseño en pantalla?\n\nUn saludo,\nCris · whitemoon.es'
     }
   };
 
