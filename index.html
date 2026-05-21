@@ -2541,7 +2541,7 @@ function renderPipeline(){
   });
   statsHTML+='<div class="pipe-card" style="border-color:var(--accent);background:var(--accent-dim)"><div class="pipe-label" style="color:var(--accent)">MRR potencial</div><div class="pipe-num" style="color:var(--accent)">'+mrrPotential+'€</div></div>';
   statsEl.innerHTML=statsHTML;
-  if(!all.length){listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:.78rem">Sin prospectos en el pipeline. Analiza un negocio para empezar.</div>';return}
+  if(!all.length){listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:.78rem">Sin prospectos aún. Analiza un negocio para empezar.</div>';return}
   var orderId={pending:0,contacted:1,demo:2,proposal:3,negotiating:4,won:5,lost:6};
   all.sort(function(a,b){return (orderId[a.status]||0)-(orderId[b.status]||0)});
   var listHTML='';
@@ -3425,9 +3425,16 @@ async function deleteProspect(domain,cardEl){
   if(!domain){showToast('Dominio no válido');return}
   if(!confirm('¿Eliminar prospecto '+domain+'?'))return;
   var s=_initSb();
-  if(currentUser&&s){
-    try{await s.from('prospects').delete().eq('user_id',currentUser.id).eq('domain',domain)}
-    catch(e){console.warn('deleteProspect:',e)}
+  if(s){
+    try{
+      if(currentUser){
+        await s.from('prospects').delete().eq('user_id',currentUser.id).eq('domain',domain);
+      }
+      // wm_pipeline es la fuente de verdad del pipeline: si no se borra aquí,
+      // loadPipeline() lo vuelve a traer en el próximo arranque y reaparece.
+      var del=await s.from('wm_pipeline').delete().eq('id',domain);
+      if(del&&del.error){console.warn('deleteProspect wm_pipeline:',del.error);showToast('⚠️ No se pudo borrar de Supabase');return}
+    }catch(e){console.warn('deleteProspect:',e);showToast('⚠️ Error al borrar en Supabase');return}
   }
   prosResults=prosResults.filter(function(r){return r.domain!==domain});
   try{localStorage.removeItem('scout_prospect_'+domain)}catch(e){}
