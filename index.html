@@ -743,6 +743,32 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       <div class="sb-pipe-row" data-pipe="won"       onclick="goPage('p-pipeline',null);renderPipeline()"><span class="pdot" style="background:#22c55e;color:#22c55e"></span><span class="plabel">Cerrado ✅</span><span class="pcount" id="spm-won">0</span></div>
     </div>
   </div>
+  <div class="sb-section">
+    <div class="sb-label">WhiteMoon OS</div>
+    <button class="nav-item" onclick="goPage('p-onboarding',this);renderWmOnboarding()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      🚀 Onboarding
+      <span class="nav-badge nb-c" id="sb-onboarding">0</span>
+    </button>
+    <button class="nav-item" onclick="goPage('p-success',this);renderWmSuccess()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
+      💚 Client Success
+      <span class="nav-badge nb-o" id="sb-success">0</span>
+    </button>
+    <button class="nav-item" onclick="goPage('p-upsell',this);renderWmUpsell()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+      📈 Upsell
+      <span class="nav-badge nb-g" id="sb-upsell">0</span>
+    </button>
+    <button class="nav-item" onclick="goPage('p-casos',this);renderWmCasos()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+      ⭐ Casos de éxito
+    </button>
+    <button class="nav-item" onclick="goPage('p-dashboard',this);renderWmDashboard()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div>
+      📊 Dashboard
+    </button>
+  </div>
   <div class="sb-recents">
     <div class="sb-label">Recientes</div>
     <div id="recent-list"><div id="recent-empty" style="font-size:.7rem;color:var(--muted);padding:5px 8px">Sin análisis aún</div></div>
@@ -853,28 +879,13 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       <div style="font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:6px">Elite</div>
       <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.55">Solución completa con agentes IA, RAG y estrategia digital.</div>
       <div style="font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#ff8c42,#ffb380);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:4px;letter-spacing:-.02em">8.500€<span style="font-size:1rem;color:var(--text2);-webkit-text-fill-color:var(--text2)"> setup</span></div>
-      <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px">+ 799€/mes</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px">desde 599€/mes</div>
       <div style="font-size:.74rem;color:var(--text2);line-height:1.9;margin-bottom:14px">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#22c55e;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>Agentes IA multi-tarea</div>
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#22c55e;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>RAG sobre documentación interna</div>
         <div style="display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#22c55e;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>Estrategia digital trimestral</div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="copyTxt('Elite — 8.500€ setup + 799€/mes. Solución completa con agentes IA, RAG y estrategia digital. IVA no incluido.');this.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; style=&quot;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:3&quot;><polyline points=&quot;20 6 9 17 4 12&quot;/></svg>Copiado';setTimeout((b=>()=>b.innerHTML='Copiar precio')(this),1600)" style="width:100%;justify-content:center">Copiar precio</button>
-    </div>
-  </div>
-  <div class="mb16">
-    <div class="card card-glass" style="border-color:rgba(59,130,246,.35)">
-      <div style="font-size:.6rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#60a5fa;margin-bottom:10px">VERTICAL · GESTORÍAS</div>
-      <div style="font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:6px">Gestoría IA</div>
-      <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.55">Solución especializada para gestorías y asesorías: cualificación de leads, recogida de documentación y agendado automático.</div>
-      <div style="font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#3b82f6,#93c5fd);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:4px;letter-spacing:-.02em">599€<span style="font-size:1rem;color:var(--text2);-webkit-text-fill-color:var(--text2)"> setup</span></div>
-      <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px">+ 299€/mes</div>
-      <div style="font-size:.74rem;color:var(--text2);line-height:1.9;margin-bottom:14px">
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#22c55e;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>Agente IA fiscal/laboral/contable</div>
-        <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#22c55e;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>Recogida automática de documentación</div>
-        <div style="display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#22c55e;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>IVA no incluido</div>
-      </div>
-      <button class="btn btn-ghost btn-sm" onclick="copyTxt('Gestoría IA — 599€ setup + 299€/mes. Solución especializada para gestorías y asesorías: cualificación de leads, recogida de documentación y agendado automático. IVA no incluido.');this.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; style=&quot;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:3&quot;><polyline points=&quot;20 6 9 17 4 12&quot;/></svg>Copiado';setTimeout((b=>()=>b.innerHTML='Copiar precio')(this),1600)" style="width:100%;justify-content:center">Copiar precio</button>
+      <button class="btn btn-ghost btn-sm" onclick="copyTxt('Elite — 8.500€ setup · desde 599€/mes. Solución completa con agentes IA, RAG y estrategia digital. IVA no incluido.');this.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; style=&quot;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:3&quot;><polyline points=&quot;20 6 9 17 4 12&quot;/></svg>Copiado';setTimeout((b=>()=>b.innerHTML='Copiar precio')(this),1600)" style="width:100%;justify-content:center">Copiar precio</button>
     </div>
   </div>
   <div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Licencias Scout · Prospección IA</div></div>
@@ -945,10 +956,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
 Spark              →  499€ setup    + 199€/mes ⭐
 Core               →  1.800€ setup  + 199€/mes
 Scale              →  4.500€ setup  + 449€/mes
-Elite              →  8.500€ setup  + 799€/mes
-──────────────────────────────────────
-VERTICAL
-Gestoría IA        →  599€ setup    + 299€/mes
+Elite              →  8.500€ setup  · desde 599€/mes
 ──────────────────────────────────────
 LICENCIAS SCOUT
 Scout Starter      →  299€ setup    + 199€/mes
@@ -970,7 +978,7 @@ Todos los planes: Sin permanencia · IVA no incluido
 <div class="page" id="p-clients">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes</div>
-    <div class="page-sub">Historial de clientes cerrados, MRR y comisiones. Datos guardados en tu navegador (localStorage).</div>
+    <div class="page-sub">Historial de clientes cerrados, MRR y comisiones. Datos sincronizados con Supabase (tabla <b style="color:var(--accent2)">clients</b>).</div>
   </div>
   <div class="g4 mb16" id="cl-summary"></div>
   <div class="card mb16" id="cl-mrr-dashboard"></div>
@@ -987,13 +995,100 @@ Todos los planes: Sin permanencia · IVA no incluido
 <div class="page" id="p-pipeline">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg>Pipeline de Ventas</div>
-    <div class="page-sub">Estado de cada prospecto y MRR potencial. Los datos se guardan en tu navegador (localStorage).</div>
+    <div class="page-sub">Estado de cada prospecto y MRR potencial. Los datos se sincronizan con Supabase (tabla <b style="color:var(--accent2)">wm_pipeline</b>).</div>
   </div>
   <div id="pipe-stats" class="pipe-grid"></div>
   <div class="card">
     <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg>Prospectos en seguimiento</div>
     <div id="pipe-list" class="pipe-list"></div>
   </div>
+</div>
+
+<!-- ═══ WHITEMOON OS — estilos pestañas nuevas ═══ -->
+<style>
+.wm-dot{display:inline-block;width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.wm-dot-g{background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,.55)}
+.wm-dot-y{background:#f59e0b;box-shadow:0 0 8px rgba(245,158,11,.55)}
+.wm-dot-r{background:#ef4444;box-shadow:0 0 8px rgba(239,68,68,.55)}
+.wm-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.wm-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border:1px solid var(--border2);border-radius:10px;margin-bottom:8px;background:var(--bg3)}
+.wm-grow{flex:1;min-width:0}
+.wm-name{font-weight:700;color:#fff;font-size:.86rem;overflow:hidden;text-overflow:ellipsis}
+.wm-meta{font-size:.7rem;color:var(--text2);line-height:1.5}
+.wm-prog{height:6px;background:var(--bg2);border-radius:99px;overflow:hidden;margin-top:6px}
+.wm-prog>div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),#e91e8c);transition:width .4s ease}
+.wm-badge{font-size:.58rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;border:1px solid transparent;white-space:nowrap}
+.wm-loading{text-align:center;padding:30px;color:var(--muted);font-size:.8rem}
+.wm-empty{text-align:center;padding:24px;color:var(--muted);font-size:.8rem}
+.wm-sub-hd{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin:4px 0 10px;display:flex;align-items:center;gap:7px}
+</style>
+
+<!-- ONBOARDING -->
+<div class="page" id="p-onboarding">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>🚀 Onboarding</div>
+    <div class="page-sub">Clientes en proceso de onboarding (tabla <b style="color:var(--accent2)">onboarding_clientes</b>). Día actual, % de progreso y semáforo de estado. <button class="btn btn-ghost btn-xs" onclick="window.open('/onboarding/','_blank')" style="margin-left:6px">Abrir panel /onboarding/</button></div>
+  </div>
+  <div class="g4 mb16" id="wm-ob-kpis"></div>
+  <div class="card">
+    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes en onboarding</div>
+      <button class="btn btn-ghost btn-sm" onclick="renderWmOnboarding()">↻ Actualizar</button>
+    </div>
+    <div id="wm-ob-list"><div class="wm-loading">Cargando…</div></div>
+  </div>
+</div>
+
+<!-- CLIENT SUCCESS -->
+<div class="page" id="p-success">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>💚 Client Success</div>
+    <div class="page-sub">Salud de cartera calculada en tiempo real desde <b style="color:var(--accent2)">onboarding_clientes</b> + <b style="color:var(--accent2)">upsell_oportunidades</b>. Prioriza clientes en riesgo y detecta oportunidades.</div>
+  </div>
+  <div class="g4 mb16" id="wm-cs-kpis"></div>
+  <div id="wm-cs-content"><div class="wm-loading">Cargando…</div></div>
+</div>
+
+<!-- UPSELL -->
+<div class="page" id="p-upsell">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>📈 Upsell</div>
+    <div class="page-sub">Oportunidades de upsell detectadas (tabla <b style="color:var(--accent2)">upsell_oportunidades</b>). Pack actual → propuesto, diferencia de MRR y estado editable.</div>
+  </div>
+  <div class="g4 mb16" id="wm-up-kpis"></div>
+  <div class="card">
+    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Oportunidades detectadas</div>
+      <button class="btn btn-ghost btn-sm" onclick="renderWmUpsell()">↻ Actualizar</button>
+    </div>
+    <div id="wm-up-list"><div class="wm-loading">Cargando…</div></div>
+  </div>
+</div>
+
+<!-- CASOS DE ÉXITO -->
+<div class="page" id="p-casos">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>⭐ Casos de éxito</div>
+    <div class="page-sub">Testimonios (tabla <b style="color:var(--accent2)">casos_exito</b>) y programa de referidos (tabla <b style="color:var(--accent2)">programa_referidos</b>). Copia el HTML listo para la web.</div>
+  </div>
+  <div class="card mb16">
+    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Testimonios</div>
+      <button class="btn btn-ghost btn-sm" onclick="renderWmCasos()">↻ Actualizar</button>
+    </div>
+    <div id="wm-casos-test"><div class="wm-loading">Cargando…</div></div>
+  </div>
+  <div class="card">
+    <div class="sec-title mb12"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Programa de referidos</div>
+    <div id="wm-casos-ref"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="p-dashboard">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>📊 Dashboard</div>
+    <div class="page-sub">KPIs en tiempo real desde Supabase y progreso hacia los OKRs de Q2 2026. <button class="btn btn-ghost btn-xs" onclick="renderWmDashboard()" style="margin-left:6px">↻ Actualizar</button></div>
+  </div>
+  <div class="g4 mb16" id="wm-dash-kpis"><div class="wm-loading">Cargando…</div></div>
+  <div class="card" id="wm-dash-okr"></div>
 </div>
 
 <!-- LEADS WEB — chatbot whitemoon.es -->
@@ -1030,7 +1125,7 @@ Todos los planes: Sin permanencia · IVA no incluido
 <div class="page" id="p-captacion">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>🎯 Captación</div>
-    <div class="page-sub">Funnel de captación en tiempo real, KPIs por etapa, conversión por sector y mensajes WhatsApp/Email listos para enviar. Datos guardados en tu navegador (localStorage).</div>
+    <div class="page-sub">Funnel de captación en tiempo real, KPIs por etapa, conversión por sector y mensajes WhatsApp/Email listos para enviar. Datos sincronizados con Supabase (tabla <b style="color:var(--accent2)">wm_captacion</b>).</div>
   </div>
 
   <!-- KPIs en tiempo real -->
@@ -2288,7 +2383,7 @@ automocion: {
   ],
   solution: 'cualifican compradores 24/7 y calculan financiación al instante',
   callHours: 'entre 10:00-13:00',
-  ticket: 'Scale (4.500€ + 449€/mes) o Elite (8.500€ + 799€/mes)',
+  ticket: 'Scale (4.500€ + 449€/mes) o Elite (8.500€ + desde 599€/mes)',
   emailSubject: '¿Cuántos compradores pierde tu concesionario fuera de horario?',
   emailBody: 'Hola [nombre],\n\nSoy Cristobal de WhiteMoon.\n\nUna pregunta directa: ¿qué pasa cuando un comprador visita vuestra web a las 23h, ve el coche que quiere y no encuentra a nadie?\n\nSe va a la competencia.\n\nHemos desarrollado un agente IA específico para concesionarios que:\n✅ Cualifica al comprador — presupuesto, financiación o contado\n✅ Calcula la cuota mensual al instante\n✅ Informa del Plan Auto+ 2026 (hasta 4.500€ de ayuda)\n✅ Te manda el lead por WhatsApp listo para llamar\n\nPuedes ver la demo en vivo:\n👉 https://nexusforgeia.github.io/WHITEMOON-AUTOMOVILES/\n\nEscribe "BMW" en el chat y verás exactamente lo que recibiría tu equipo comercial.\n\n¿Tienes 10 minutos esta semana?\n\nSaludos,\nCristobal\nWhiteMoon · 643 199 580'
 }
@@ -3015,7 +3110,7 @@ function openClientModal(existingId){
 +'<option value="spark"'+(c.pack==='spark'?' selected':'')+'>Spark — 499€ setup + 199€/mes</option>'
 +'<option value="core"'+(c.pack==='core'?' selected':'')+'>Core — 1.800€ setup + 199€/mes</option>'
 +'<option value="scale"'+(c.pack==='scale'?' selected':'')+'>Scale — 4.500€ setup + 449€/mes</option>'
-+'<option value="elite"'+(c.pack==='elite'?' selected':'')+'>Elite — 8.500€ setup + 799€/mes</option>'
++'<option value="elite"'+(c.pack==='elite'?' selected':'')+'>Elite — 8.500€ setup + desde 599€/mes</option>'
 +'<option value="audit"'+(c.pack==='audit'?' selected':'')+'>Auditoría IA — 899€ pago único</option>'
 +'</select></div>'
 +'<div class="field-group"><span class="field-label">Estado</span><select class="select" id="cl-status">'+statusOpts+'</select></div>'
@@ -3040,7 +3135,7 @@ function _onPackChange(){
     spark:{mrr:149,setup:0},
     core:{mrr:199,setup:1800},
     scale:{mrr:449,setup:4500},
-    elite:{mrr:799,setup:8500},
+    elite:{mrr:599,setup:8500},
     audit:{mrr:0,setup:899}
   };
   var d=defaults[p]||{mrr:0,setup:0};
@@ -5621,6 +5716,273 @@ window._pushNotif=function(title,body){
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(tick,600)});
   else setTimeout(tick,600);
+})();
+</script>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// WHITEMOON OS — Onboarding · Client Success · Upsell ·
+// Casos de éxito · Dashboard  (lectura directa de Supabase)
+// ═══════════════════════════════════════════════════════════
+var WM_PACK_PRICE={spark:199,core:199,scale:449,elite:599};
+var WM_PACK_LABELS={spark:'Spark',core:'Core',scale:'Scale',elite:'Elite'};
+var WM_SB_CACHE={onboarding:[],upsell:[],casos:[],referidos:[],leads:[]};
+
+function _wmSb(){return (typeof _initSb==='function')?_initSb():(window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null)}
+function _wmE(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function _wmPack(p){return WM_PACK_LABELS[p]||(p?(''+p).charAt(0).toUpperCase()+(''+p).slice(1):'—')}
+function _wmKpi(label,val,color){return '<div class="card card-sm" style="border-color:'+color+'33"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:'+color+';margin-bottom:5px">'+_wmE(label)+'</div><div class="big-num" style="color:'+color+'">'+val+'</div></div>'}
+function _wmToast(m){if(typeof showToast==='function')showToast(m);else console.log(m)}
+
+function _wmPhone(p){p=(''+(p||'')).replace(/[^0-9+]/g,'');if(!p)return '';if(p.charAt(0)==='+')return p.substring(1);p=p.replace(/^0+/,'');if(p.length===9)p='34'+p;return p}
+function _wmWa(phone,msg){var p=_wmPhone(phone);if(!p){_wmToast('Este cliente no tiene teléfono guardado');return}window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank','noopener')}
+
+// Semáforo de estado de un cliente en onboarding
+function _wmObStatus(r){
+  var est=r.estado||'pendiente';
+  if(est==='completado')return {c:'g',label:'Completado'};
+  if(est==='pausado')return {c:'r',label:'Pausado'};
+  var ref=r.dia_iniciado_at||r.fecha_inicio;
+  if(ref){var days=(Date.now()-new Date(ref).getTime())/86400000;if(days>3)return {c:'r',label:'Estancado · '+Math.floor(days)+'d'}}
+  if(est==='pendiente')return {c:'y',label:'Pendiente de iniciar'};
+  return {c:'y',label:'En progreso'};
+}
+function _wmObPct(r){if(r.estado==='completado')return 100;var d=parseInt(r.dia_actual,10)||0;return Math.max(0,Math.min(100,Math.round(d/7*100)))}
+
+// ─── ONBOARDING ───
+async function renderWmOnboarding(){
+  var list=document.getElementById('wm-ob-list'),kpi=document.getElementById('wm-ob-kpis');
+  if(!list)return;
+  list.innerHTML='<div class="wm-loading">Cargando onboarding…</div>';
+  var s=_wmSb();
+  if(!s){list.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
+  var resp=await s.from('onboarding_clientes').select('*').order('fecha_inicio',{ascending:false,nullsFirst:false});
+  if(resp.error){list.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(resp.error.message||resp.error)+'</div>';return}
+  var rows=resp.data||[];WM_SB_CACHE.onboarding=rows;
+  var completados=rows.filter(function(r){return r.estado==='completado'}).length;
+  var enOb=rows.filter(function(r){return r.estado!=='completado'&&r.estado!=='pausado'}).length;
+  var paus=rows.filter(function(r){return r.estado==='pausado'}).length;
+  if(kpi)kpi.innerHTML=_wmKpi('Total',rows.length,'#7c3aed')+_wmKpi('Completados',completados,'#22c55e')+_wmKpi('En onboarding',enOb,'#eab308')+_wmKpi('Pausados',paus,'#ef4444');
+  var sbb=document.getElementById('sb-onboarding');if(sbb)sbb.textContent=enOb;
+  if(!rows.length){list.innerHTML='<div class="wm-empty">Sin clientes en onboarding todavía.</div>';return}
+  list.innerHTML=rows.map(function(r){
+    var st=_wmObStatus(r),pct=_wmObPct(r);
+    return '<div class="wm-row">'
+      +'<span class="wm-dot wm-dot-'+st.c+'" title="'+_wmE(st.label)+'"></span>'
+      +'<div class="wm-grow"><div class="wm-name">'+_wmE(r.cliente_nombre)+' <span class="wm-meta">· '+_wmE(r.sector||'—')+' · '+_wmPack(r.pack)+'</span></div>'
+      +'<div class="wm-meta">Día '+(parseInt(r.dia_actual,10)||0)+'/7 · '+_wmE(st.label)+'</div>'
+      +'<div class="wm-prog"><div style="width:'+pct+'%"></div></div></div>'
+      +'<div style="text-align:right;flex-shrink:0"><div class="wm-name" style="font-size:1rem">'+pct+'%</div>'
+      +'<button class="btn btn-ghost btn-xs" onclick="window.open(\'/onboarding/\',\'_blank\')" style="margin-top:4px">Ver detalle</button></div>'
+      +'</div>';
+  }).join('');
+}
+
+// ─── CLIENT SUCCESS ───
+async function renderWmSuccess(){
+  var cont=document.getElementById('wm-cs-content'),kpi=document.getElementById('wm-cs-kpis');
+  if(!cont)return;
+  cont.innerHTML='<div class="wm-loading">Calculando salud de clientes…</div>';
+  var s=_wmSb();
+  if(!s){cont.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
+  var r1=await s.from('onboarding_clientes').select('*');
+  if(r1.error){cont.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(r1.error.message||r1.error)+'</div>';return}
+  var r2=await s.from('upsell_oportunidades').select('*');
+  var ob=r1.data||[];WM_SB_CACHE.onboarding=ob;
+  var up=(r2&&r2.data)||[];
+  var upByClient={};
+  up.forEach(function(u){if(u.estado==='detectado'||u.estado==='contactado'){(upByClient[u.cliente_id]=upByClient[u.cliente_id]||[]).push(u)}});
+  var rojo=[],amar=[],verde=[];
+  ob.forEach(function(r){
+    var st=_wmObStatus(r);var ups=upByClient[r.id];
+    if(st.c==='r')rojo.push({r:r,st:st,ups:ups});
+    else if(ups)amar.push({r:r,st:st,ups:ups});
+    else verde.push({r:r,st:st});
+  });
+  if(kpi)kpi.innerHTML=_wmKpi('En riesgo',rojo.length,'#ef4444')+_wmKpi('Oportunidad upsell',amar.length,'#eab308')+_wmKpi('Sanos',verde.length,'#22c55e')+_wmKpi('Total cartera',ob.length,'#7c3aed');
+  var sbb=document.getElementById('sb-success');if(sbb)sbb.textContent=rojo.length;
+  if(!ob.length){cont.innerHTML='<div class="wm-empty">Sin clientes en cartera todavía.</div>';return}
+  function section(title,color,arr,kind){
+    var body=arr.length?arr.map(function(o){return _wmCsRow(o,kind)}).join(''):'<div class="wm-meta" style="padding:4px 2px 8px">Ninguno.</div>';
+    return '<div class="card mb16"><div class="wm-sub-hd" style="color:'+color+'"><span class="wm-dot wm-dot-'+kind+'"></span>'+title+' ('+arr.length+')</div>'+body+'</div>';
+  }
+  cont.innerHTML=section('Clientes en riesgo','#ef4444',rojo,'r')+section('Oportunidad de upsell','#eab308',amar,'y')+section('Clientes sanos','#22c55e',verde,'g');
+}
+function _wmCsRow(o,kind){
+  var r=o.r,st=o.st;
+  return '<div class="wm-row"><span class="wm-dot wm-dot-'+st.c+'"></span>'
+    +'<div class="wm-grow"><div class="wm-name">'+_wmE(r.cliente_nombre)+'</div>'
+    +'<div class="wm-meta">'+_wmE(r.sector||'—')+' · '+_wmPack(r.pack)+' · '+_wmE(st.label)+(o.ups?' · '+o.ups.length+' upsell pendiente':'')+'</div></div>'
+    +'<button class="btn btn-ghost btn-xs" onclick="wmCsAlert(\''+r.id+'\',\''+kind+'\')" style="flex-shrink:0">📲 Alerta WhatsApp</button></div>';
+}
+function wmCsAlert(id,kind){
+  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return x.id===id})[0];
+  if(!r){_wmToast('Cliente no encontrado');return}
+  var nm=r.cliente_nombre||'';
+  var msg=kind==='r'
+    ?'Hola '+nm+', soy Cris de WhiteMoon. He visto que tu onboarding necesita un pequeño empujón para dejarlo listo. ¿Te ayudo a retomarlo esta semana?'
+    :kind==='y'
+    ?'Hola '+nm+', soy Cris de WhiteMoon. Tengo una mejora que encaja muy bien con lo que ya tienes contratado. ¿Te la enseño en 5 minutos?'
+    :'Hola '+nm+', soy Cris de WhiteMoon. Quería saber cómo va todo y si necesitas cualquier cosa. ¡Aquí estamos!';
+  _wmWa(r.cliente_telefono,msg);
+}
+
+// ─── UPSELL ───
+var WM_UPSELL_ESTADOS=['detectado','contactado','aceptado','rechazado'];
+function _wmUpBadge(e){
+  var m={detectado:'color:#9ca3af;border-color:#9ca3af66;background:#9ca3af14',contactado:'color:#3b82f6;border-color:#3b82f666;background:#3b82f614',aceptado:'color:#22c55e;border-color:#22c55e66;background:#22c55e14',rechazado:'color:#ef4444;border-color:#ef444466;background:#ef444414'};
+  return m[e]||m.detectado;
+}
+async function renderWmUpsell(){
+  var list=document.getElementById('wm-up-list'),kpi=document.getElementById('wm-up-kpis');
+  if(!list)return;
+  list.innerHTML='<div class="wm-loading">Cargando oportunidades…</div>';
+  var s=_wmSb();
+  if(!s){list.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
+  var r=await s.from('upsell_oportunidades').select('*').order('created_at',{ascending:false});
+  if(r.error){list.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(r.error.message||r.error)+'</div>';return}
+  var rows=r.data||[];WM_SB_CACHE.upsell=rows;
+  var ob=WM_SB_CACHE.onboarding;
+  if(!ob||!ob.length){var ro=await s.from('onboarding_clientes').select('*');ob=ro.data||[];WM_SB_CACHE.onboarding=ob}
+  var byId={};ob.forEach(function(o){byId[o.id]=o});
+  var det=rows.filter(function(x){return x.estado==='detectado'}).length;
+  var acc=rows.filter(function(x){return x.estado==='aceptado'}).length;
+  var potencial=rows.filter(function(x){return x.estado==='detectado'||x.estado==='contactado'}).reduce(function(a,x){return a+(x.diferencia_mrr!=null?x.diferencia_mrr:((x.precio_nuevo||0)-(x.precio_actual||0)))},0);
+  var ganado=rows.filter(function(x){return x.estado==='aceptado'}).reduce(function(a,x){return a+(x.diferencia_mrr!=null?x.diferencia_mrr:((x.precio_nuevo||0)-(x.precio_actual||0)))},0);
+  if(kpi)kpi.innerHTML=_wmKpi('Detectadas',det,'#9ca3af')+_wmKpi('Aceptadas',acc,'#22c55e')+_wmKpi('MRR potencial','+'+potencial+'€','#eab308')+_wmKpi('MRR ganado','+'+ganado+'€','#7c3aed');
+  var sbb=document.getElementById('sb-upsell');if(sbb)sbb.textContent=det;
+  if(!rows.length){list.innerHTML='<div class="wm-empty">Sin oportunidades de upsell detectadas.</div>';return}
+  list.innerHTML=rows.map(function(u){
+    var cli=byId[u.cliente_id]||{};
+    var diff=u.diferencia_mrr!=null?u.diferencia_mrr:((u.precio_nuevo||0)-(u.precio_actual||0));
+    var opts=WM_UPSELL_ESTADOS.map(function(e){return '<option value="'+e+'"'+(u.estado===e?' selected':'')+'>'+e+'</option>'}).join('');
+    return '<div class="wm-row">'
+      +'<span class="wm-badge" style="'+_wmUpBadge(u.estado)+'">'+_wmE(u.estado)+'</span>'
+      +'<div class="wm-grow"><div class="wm-name">'+_wmE(cli.cliente_nombre||'Cliente')+'</div>'
+      +'<div class="wm-meta">'+_wmPack(u.pack_actual)+' <span style="color:var(--accent2)">→</span> <b style="color:#fff">'+_wmPack(u.pack_propuesto)+'</b>'+(u.notas?' · '+_wmE(u.notas):'')+'</div></div>'
+      +'<div style="text-align:right;flex-shrink:0"><div class="wm-name" style="color:#22c55e">'+(diff>=0?'+':'')+diff+'€/mes</div>'
+      +'<select class="select" style="font-size:.68rem;padding:4px 6px;margin-top:5px;width:auto" onchange="wmUpsellSetEstado(\''+u.id+'\',this.value)">'+opts+'</select></div>'
+      +'</div>';
+  }).join('');
+}
+async function wmUpsellSetEstado(id,estado){
+  var s=_wmSb();if(!s)return;
+  var patch={estado:estado};
+  if(estado==='contactado')patch.fecha_contacto=new Date().toISOString();
+  var r=await s.from('upsell_oportunidades').update(patch).eq('id',id);
+  if(r.error){_wmToast('Error al actualizar: '+(r.error.message||''));return}
+  _wmToast('Oportunidad → '+estado);
+  renderWmUpsell();
+}
+
+// ─── CASOS DE ÉXITO + REFERIDOS ───
+async function renderWmCasos(){
+  var test=document.getElementById('wm-casos-test'),ref=document.getElementById('wm-casos-ref');
+  if(!test)return;
+  test.innerHTML='<div class="wm-loading">Cargando casos…</div>';if(ref)ref.innerHTML='';
+  var s=_wmSb();
+  if(!s){test.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
+  var r1=await s.from('casos_exito').select('*').order('created_at',{ascending:false});
+  if(r1.error){test.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(r1.error.message||r1.error)+'</div>';return}
+  var casos=r1.data||[];WM_SB_CACHE.casos=casos;
+  if(!casos.length)test.innerHTML='<div class="wm-empty">Sin testimonios todavía.</div>';
+  else test.innerHTML=casos.map(function(c){
+    var badges=(c.autorizado
+      ?'<span class="wm-badge" style="color:#22c55e;border-color:#22c55e66;background:#22c55e14">Autorizado</span> '
+      :'<span class="wm-badge" style="color:var(--muted);border-color:var(--border2)">No autorizado</span> ')
+      +(c.destacado?'<span class="wm-badge" style="color:#eab308;border-color:#eab30866;background:#eab30814">★ Destacado</span>':'');
+    return '<div class="wm-card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap">'
+      +'<div class="wm-name">'+_wmE(c.cliente_nombre)+' <span class="wm-meta">· '+_wmE(c.sector||'—')+' · '+_wmPack(c.pack)+'</span></div><div>'+badges+'</div></div>'
+      +(c.testimonio_texto?'<div class="wm-meta" style="margin-top:8px;font-style:italic;color:var(--text)">“'+_wmE(c.testimonio_texto)+'”</div>':'')
+      +(c.resultado_principal?'<div class="wm-meta" style="margin-top:6px;color:#22c55e;font-weight:600">📈 '+_wmE(c.resultado_principal)+(c.resultado_secundario?' · '+_wmE(c.resultado_secundario):'')+'</div>':'')
+      +'<div style="margin-top:10px"><button class="btn btn-ghost btn-xs" onclick="wmCopyCasoHtml(\''+c.id+'\')">📋 Copiar HTML para web</button></div></div>';
+  }).join('');
+  // referidos
+  if(ref){
+    var r2=await s.from('programa_referidos').select('*').order('created_at',{ascending:false});
+    var refs=(r2&&r2.data)||[];WM_SB_CACHE.referidos=refs;
+    var ob=WM_SB_CACHE.onboarding;
+    if(!ob||!ob.length){var ro=await s.from('onboarding_clientes').select('*');ob=ro.data||[];WM_SB_CACHE.onboarding=ob}
+    var nm={};ob.forEach(function(o){nm[o.id]=o.cliente_nombre});
+    if(!refs.length)ref.innerHTML='<div class="wm-empty">Sin referidos todavía.</div>';
+    else ref.innerHTML=refs.map(function(x){
+      var col=x.estado==='convertido'?'g':x.estado==='contactado'?'y':'r';
+      return '<div class="wm-row"><span class="wm-dot wm-dot-'+col+'" title="'+_wmE(x.estado)+'"></span>'
+        +'<div class="wm-grow"><div class="wm-name">'+_wmE(x.nombre_referido)+' <span class="wm-meta">· '+_wmE(x.sector_referido||'—')+'</span></div>'
+        +'<div class="wm-meta">Referido por '+_wmE(nm[x.cliente_referidor_id]||'—')+' · '+_wmE(x.estado)+(x.recompensa_aplicada?' · 🎁 recompensa aplicada':'')+'</div></div></div>';
+    }).join('');
+  }
+}
+function wmCopyCasoHtml(id){
+  var c=(WM_SB_CACHE.casos||[]).filter(function(x){return x.id===id})[0];
+  if(!c){_wmToast('Caso no encontrado');return}
+  var html='<div class="wm-testimonial">\n'
+    +'  <blockquote>“'+(c.testimonio_texto||'')+'”</blockquote>\n'
+    +'  <p class="wm-testimonial-author"><strong>'+(c.cliente_nombre||'')+'</strong>'+(c.sector?' — '+c.sector:'')+'</p>\n'
+    +(c.resultado_principal?'  <p class="wm-testimonial-result">'+c.resultado_principal+(c.resultado_secundario?' · '+c.resultado_secundario:'')+'</p>\n':'')
+    +'</div>';
+  if(typeof copyTxt==='function')copyTxt(html);else navigator.clipboard&&navigator.clipboard.writeText(html);
+  _wmToast('HTML del testimonio copiado');
+}
+
+// ─── DASHBOARD ───
+async function renderWmDashboard(){
+  var k=document.getElementById('wm-dash-kpis'),o=document.getElementById('wm-dash-okr');
+  if(!k)return;
+  k.innerHTML='<div class="wm-loading">Cargando KPIs…</div>';if(o)o.innerHTML='';
+  var s=_wmSb();
+  if(!s){k.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
+  var r1=await s.from('onboarding_clientes').select('*');
+  if(r1.error){k.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(r1.error.message||r1.error)+'</div>';return}
+  var ob=r1.data||[];WM_SB_CACHE.onboarding=ob;
+  var r2=await s.from('leads_web').select('created_at');
+  var leads=(r2&&r2.data)||[];
+  var now=new Date();
+  var weekAgo=now.getTime()-7*86400000;
+  var monthStart=new Date(now.getFullYear(),now.getMonth(),1).getTime();
+  var leadsWeek=leads.filter(function(l){return l.created_at&&new Date(l.created_at).getTime()>=weekAgo}).length;
+  var leadsMonth=leads.filter(function(l){return l.created_at&&new Date(l.created_at).getTime()>=monthStart}).length;
+  var completados=ob.filter(function(r){return r.estado==='completado'});
+  var enOb=ob.filter(function(r){return r.estado!=='completado'&&r.estado!=='pausado'}).length;
+  var mrr=completados.reduce(function(sum,r){return sum+(WM_PACK_PRICE[r.pack]||0)},0);
+  var activos=completados.length;
+  k.innerHTML=_wmKpi('MRR actual',mrr+'€','#22c55e')+_wmKpi('Leads esta semana',leadsWeek,'#7c3aed')+_wmKpi('Clientes activos',activos,'#eab308')+_wmKpi('En onboarding',enOb,'#00c9ff');
+  var okrs=[
+    {label:'Clientes activos',val:activos,goal:10,unit:'',color:'#22c55e'},
+    {label:'MRR mensual',val:mrr,goal:2000,unit:'€',color:'#7c3aed'},
+    {label:'Leads / mes',val:leadsMonth,goal:50,unit:'',color:'#00c9ff'}
+  ];
+  if(o)o.innerHTML='<div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>OKRs Q2 2026</div></div>'
+    +okrs.map(function(x){
+      var pct=x.goal>0?Math.min(100,Math.round(x.val*100/x.goal)):0;
+      var pctReal=x.goal>0?Math.round(x.val*100/x.goal):0;
+      return '<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;font-size:.74rem;margin-bottom:5px">'
+        +'<span style="color:var(--text2);font-weight:600">'+x.label+'</span>'
+        +'<span style="font-family:\'Space Mono\',monospace;color:#fff;font-weight:700">'+x.val+x.unit+' / '+x.goal+x.unit+' · <span style="color:'+(pctReal>=100?'#22c55e':x.color)+'">'+pctReal+'%</span></span></div>'
+        +'<div class="wm-prog" style="height:10px"><div style="width:'+pct+'%;background:'+x.color+'"></div></div></div>';
+    }).join('');
+}
+
+// Pre-carga ligera de contadores del sidebar cuando Supabase esté listo
+(function _wmBoot(){
+  function go(){
+    var s=_wmSb();
+    if(!s){setTimeout(go,600);return}
+    s.from('onboarding_clientes').select('*').then(function(resp){
+      var rows=(resp&&resp.data)||[];WM_SB_CACHE.onboarding=rows;
+      var enOb=rows.filter(function(r){return r.estado!=='completado'&&r.estado!=='pausado'}).length;
+      var riesgo=rows.filter(function(r){return _wmObStatus(r).c==='r'}).length;
+      var a=document.getElementById('sb-onboarding');if(a)a.textContent=enOb;
+      var b=document.getElementById('sb-success');if(b)b.textContent=riesgo;
+    }).catch(function(){});
+    s.from('upsell_oportunidades').select('id,estado').then(function(resp){
+      var rows=(resp&&resp.data)||[];
+      var det=rows.filter(function(r){return r.estado==='detectado'}).length;
+      var c=document.getElementById('sb-upsell');if(c)c.textContent=det;
+    }).catch(function(){});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(go,800)});
+  else setTimeout(go,800);
 })();
 </script>
 
