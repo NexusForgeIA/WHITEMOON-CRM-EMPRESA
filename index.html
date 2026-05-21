@@ -992,7 +992,7 @@ Todos los planes: Sin permanencia · IVA no incluido
 <div class="page" id="p-onboarding">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>🚀 Onboarding</div>
-    <div class="page-sub">Clientes en proceso de onboarding (tabla <b style="color:var(--accent2)">onboarding_clientes</b>). Día actual, % de progreso y semáforo de estado. <button class="btn btn-ghost btn-xs" onclick="window.open('/onboarding/','_blank')" style="margin-left:6px">Abrir panel /onboarding/</button></div>
+    <div class="page-sub">Clientes en proceso de onboarding (tabla <b style="color:var(--accent2)">onboarding_clientes</b>). Día actual, % de progreso y semáforo de estado.</div>
   </div>
   <div class="g4 mb16" id="wm-ob-kpis"></div>
   <div class="card">
@@ -5536,9 +5536,12 @@ async function generateWebDemo(idx){
   function renderLeadsWebTable(){
     var box=document.getElementById('lw-table-wrap');
     if(!box)return;
+    var _secSel=document.getElementById('lw-sector-filter');
+    var _curSector=_secSel?_secSel.value:'';
     var totalPending=0,totalAttended=0,totalNewsletter=0,totalRegular=0;
     leadsCache.forEach(function(l){
       if(_isNewsletter(l)){totalNewsletter++;return}
+      if(_curSector&&String(l.sector||'').trim()!==_curSector)return;
       totalRegular++;
       if(_stateOf(l)==='attended')totalAttended++;else totalPending++;
     });
