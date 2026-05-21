@@ -5783,9 +5783,77 @@ function openObDetail(id){
     +'<div>'+rows+'</div>'
     +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin:16px 0 2px">Datos fiscales</div>'
     +'<div>'+fiscal+'</div>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'ob-detail-modal\')">Cerrar</button></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-p btn-sm" onclick="_wmObEdit(\''+_wmE(r.id)+'\')">✏️ Editar</button><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'ob-detail-modal\')">Cerrar</button></div>'
     +'</div>';
   document.body.appendChild(modal);
+}
+
+// ─── DETALLE: MODO EDICIÓN ───
+function _wmObDateInput(v){if(!v)return '';var d=new Date(v);if(isNaN(d.getTime()))return '';return d.toISOString().slice(0,10)}
+function _wmObEdit(id){
+  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(id)})[0];
+  if(!r){_wmToast('Cliente no encontrado');return}
+  closeModalById('ob-detail-modal');
+  var sectorOpts='<option value="">— Sin sector —</option>'+WM_OB_SECTORS.map(function(p){return '<option value="'+p[0]+'"'+(r.sector===p[0]?' selected':'')+'>'+_wmE(p[1])+'</option>'}).join('');
+  var packOpts='<option value="">— Sin pack —</option>'+['spark','core','scale','elite'].map(function(p){return '<option value="'+p+'"'+(r.pack===p?' selected':'')+'>'+_wmE(_wmPack(p))+'</option>'}).join('');
+  function inp(idf,label,val,extra){return '<div class="field-group mb12"><span class="field-label">'+label+'</span><input class="input'+(extra||'')+'" id="'+idf+'" value="'+_wmE(val==null?'':val)+'"></div>'}
+  var modal=document.createElement('div');
+  modal.className='modal-overlay';modal.id='ob-detail-modal';
+  modal.onclick=function(e){if(e.target===modal)closeModalById('ob-detail-modal')};
+  modal.innerHTML='<div class="modal-box" style="max-width:520px"><div class="modal-title">✏️ Editar cliente<button class="modal-close" onclick="closeModalById(\'ob-detail-modal\')">×</button></div>'
+    +inp('ob-e-nombre','Nombre completo',r.cliente_nombre)
+    +'<div class="g2 mb12">'
+    +'<div class="field-group"><span class="field-label">Email</span><input class="input mono" id="ob-e-email" value="'+_wmE(r.cliente_email==null?'':r.cliente_email)+'"></div>'
+    +'<div class="field-group"><span class="field-label">Teléfono</span><input class="input mono" id="ob-e-telefono" value="'+_wmE(r.cliente_telefono==null?'':r.cliente_telefono)+'"></div>'
+    +'</div>'
+    +'<div class="g2 mb12">'
+    +'<div class="field-group"><span class="field-label">Sector</span><select class="select" id="ob-e-sector">'+sectorOpts+'</select></div>'
+    +'<div class="field-group"><span class="field-label">Pack</span><select class="select" id="ob-e-pack">'+packOpts+'</select></div>'
+    +'</div>'
+    +'<div class="field-group mb12"><span class="field-label">Fecha inicio</span><input class="input" type="date" id="ob-e-fecha" value="'+_wmObDateInput(r.fecha_inicio)+'"></div>'
+    +inp('ob-e-url','URL web cliente',r.url_web_cliente,' mono')
+    +inp('ob-e-repo','Repo GitHub',r.repo_github,' mono')
+    +inp('ob-e-direccion','Dirección',r.direccion)
+    +'<div class="g2 mb12">'
+    +'<div class="field-group"><span class="field-label">CIF</span><input class="input mono" id="ob-e-cif" value="'+_wmE(r.cif==null?'':r.cif)+'"></div>'
+    +'<div class="field-group"><span class="field-label">Persona de contacto</span><input class="input" id="ob-e-contacto" value="'+_wmE(r.persona_contacto==null?'':r.persona_contacto)+'"></div>'
+    +'</div>'
+    +'<div class="field-group mb12"><span class="field-label">Notas</span><textarea class="input" id="ob-e-notas" rows="3" style="resize:vertical">'+_wmE(r.notas==null?'':r.notas)+'</textarea></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-p btn-sm" id="ob-e-save" onclick="_wmObSaveEdit(\''+_wmE(r.id)+'\')">💾 Guardar</button><button class="btn btn-ghost btn-sm" onclick="openObDetail(\''+_wmE(r.id)+'\')">Cancelar</button></div>'
+    +'</div>';
+  document.body.appendChild(modal);
+}
+
+async function _wmObSaveEdit(id){
+  function val(i){var el=document.getElementById(i);return el?(el.value||'').trim():''}
+  var nombre=val('ob-e-nombre');
+  if(!nombre){_wmToast('Indica el nombre del cliente');return}
+  var s=_wmSb();
+  if(!s){_wmToast('Supabase no disponible');return}
+  var fecha=val('ob-e-fecha');
+  var rec={
+    cliente_nombre:nombre,
+    cliente_email:val('ob-e-email')||null,
+    cliente_telefono:val('ob-e-telefono')||null,
+    sector:val('ob-e-sector')||null,
+    pack:val('ob-e-pack')||null,
+    url_web_cliente:val('ob-e-url')||null,
+    repo_github:val('ob-e-repo')||null,
+    direccion:val('ob-e-direccion')||null,
+    cif:val('ob-e-cif')||null,
+    persona_contacto:val('ob-e-contacto')||null,
+    notas:val('ob-e-notas')||null,
+    fecha_inicio:fecha?new Date(fecha).toISOString():null
+  };
+  var btn=document.getElementById('ob-e-save');
+  if(btn){btn.disabled=true;btn.textContent='Guardando…'}
+  var resp=await s.from('onboarding_clientes').update(rec).eq('id',id).select().single();
+  if(resp.error){if(btn){btn.disabled=false;btn.textContent='💾 Guardar'}_wmToast('Error al guardar: '+_wmE(resp.error.message||resp.error));return}
+  var arr=WM_SB_CACHE.onboarding||[];
+  for(var i=0;i<arr.length;i++){if(String(arr[i].id)===String(id)){arr[i]=resp.data;break}}
+  _wmToast('Cambios guardados');
+  openObDetail(id);
+  if(typeof renderWmOnboarding==='function')renderWmOnboarding();
 }
 
 // Token CDN: WM- + 16 hex aleatorios
