@@ -819,9 +819,13 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 .asis-msg code{font-family:'Space Mono',monospace;font-size:.78em;background:var(--bg2);padding:1px 5px;border-radius:5px;border:1px solid var(--border2)}
 .asis-msg pre{background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:12px;overflow-x:auto;margin:8px 0}
 .asis-msg pre code{background:none;border:none;padding:0;font-size:.76rem;line-height:1.5;white-space:pre;color:var(--text2)}
-.asis-msg table{border-collapse:collapse;margin:8px 0;font-size:.76rem;width:100%;display:block;overflow-x:auto}
-.asis-msg th,.asis-msg td{border:1px solid var(--border2);padding:6px 9px;text-align:left}
-.asis-msg th{background:var(--bg3);color:var(--text);font-weight:700}
+.asis-tablewrap{margin:10px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid rgba(124,77,255,.18);border-radius:9px}
+.asis-msg table{border-collapse:collapse;width:100%;font-family:'Sora',sans-serif;font-size:.76rem;color:var(--text2)}
+.asis-msg th,.asis-msg td{border:1px solid rgba(124,77,255,.18);padding:8px 12px;text-align:left;vertical-align:top}
+.asis-msg thead th{background:#13131e;color:var(--text);font-weight:700;white-space:nowrap}
+.asis-msg tbody tr{transition:background .12s}
+.asis-msg tbody tr:hover{background:rgba(124,77,255,.05)}
+@media(max-width:640px){.asis-msg table{min-width:480px}}
 .asis-msg-foot{margin-top:9px;display:flex;gap:7px}
 .asis-copy{background:transparent;border:1px solid var(--border2);color:var(--muted);font-family:'Sora',sans-serif;font-size:.64rem;font-weight:700;padding:3px 9px;border-radius:7px;cursor:pointer;transition:all .15s}
 .asis-copy:hover{color:var(--accent2);border-color:var(--accent-border)}
@@ -7106,19 +7110,25 @@ async function renderWmDashboard(){
       var l=line.trim().replace(/^\|/,'').replace(/\|$/,'');
       return l.split('|').map(function(c){return c.trim()});
     }
+    // Alineación por columna leída del separador (:---:  ---:  :---)
+    var aligns=cells(rows[1]).map(function(spec){
+      var l=/^:/.test(spec),r=/:$/.test(spec);
+      return r&&l?'center':r?'right':l?'left':'';
+    });
+    function al(i){return aligns[i]?' style="text-align:'+aligns[i]+'"':''}
     var head=cells(rows[0]);
     var body=rows.slice(2); // rows[1] es el separador ---
-    var h='<table><thead><tr>';
-    head.forEach(function(c){h+='<th>'+_inline(c)+'</th>'});
+    var h='<div class="asis-tablewrap"><table><thead><tr>';
+    head.forEach(function(c,i){h+='<th'+al(i)+'>'+_inline(c)+'</th>'});
     h+='</tr></thead><tbody>';
     body.forEach(function(r){
       if(!r.trim())return;
       var cs=cells(r);
       h+='<tr>';
-      cs.forEach(function(c){h+='<td>'+_inline(c)+'</td>'});
+      cs.forEach(function(c,i){h+='<td'+al(i)+'>'+_inline(c)+'</td>'});
       h+='</tr>';
     });
-    h+='</tbody></table>';
+    h+='</tbody></table></div>';
     return h;
   }
   function mdRender(src){
