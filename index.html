@@ -769,6 +769,14 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#07070e;color:#d8
       📊 Dashboard
     </button>
   </div>
+  <div class="sb-section">
+    <div class="sb-label">Publicidad</div>
+    <button class="nav-item" onclick="goPage('p-campaigns',this);renderCampaigns()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M3 11l15-5v12L3 14z"/><path d="M11.6 16.8a3 3 0 11-5.78-1.5"/><path d="M18 8a4 4 0 010 8"/></svg></div>
+      📣 Campañas
+      <span class="nav-badge nb-p" id="sb-camp">0</span>
+    </button>
+  </div>
   <div class="sb-recents">
     <div class="sb-label">Recientes</div>
     <div id="recent-list"><div id="recent-empty" style="font-size:.7rem;color:var(--muted);padding:5px 8px">Sin análisis aún</div></div>
@@ -1124,6 +1132,130 @@ Todos los planes: Sin permanencia · IVA no incluido
       <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">5 sectores · WhatsApp + Email</div>
     </div>
     <div class="cap-msg-grid" id="cap-messages"></div>
+  </div>
+</div>
+
+<!-- ═══ MÓDULO 8 · CAMPAÑAS (Meta Ads + Google Ads) ═══ -->
+<style id="camp-styles">
+.cap-kpi.k-bad .kpi-num{background:linear-gradient(135deg,var(--red2),var(--red));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.cap-kpi.k-bad::after{background:linear-gradient(90deg,var(--red),transparent)}
+.camp-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.camp-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.camp-tab{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:'Sora',sans-serif;font-size:.72rem;font-weight:700;padding:7px 14px;border-radius:9px;cursor:pointer;transition:all .18s}
+.camp-tab:hover{color:var(--text);border-color:var(--accent-border)}
+.camp-tab.on{background:var(--accent-dim);border-color:var(--accent-border);color:var(--accent2)}
+.camp-th-wrap{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.camp-th{display:flex;align-items:center;gap:7px;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.camp-th-input{width:62px;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Space Mono',monospace;font-size:.72rem;padding:5px 7px;border-radius:6px;outline:none;text-align:right}
+.camp-th-input:focus{border-color:var(--accent)}
+.camp-alerts{display:flex;flex-direction:column;gap:8px}
+.camp-alert{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:10px;font-size:.76rem;font-weight:600;line-height:1.4}
+.camp-alert.warn{background:rgba(255,140,66,.1);border:1px solid rgba(255,140,66,.3);color:var(--orange2)}
+.camp-alert.bad{background:var(--red-s);border:1px solid rgba(255,77,106,.3);color:var(--red2)}
+.camp-alert.ok{background:var(--green-s);border:1px solid rgba(34,197,94,.28);color:var(--green2)}
+.camp-alert-ico{flex-shrink:0;width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.82rem;background:rgba(0,0,0,.2)}
+.camp-budget{display:flex;flex-direction:column;gap:10px}
+.camp-budget-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.camp-budget-val{font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:800;color:var(--text)}
+.camp-budget-val b{color:var(--accent2)}
+.camp-budget-rest{font-size:.7rem;color:var(--text2);font-weight:600}
+.camp-budget-track{height:16px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;overflow:hidden}
+.camp-budget-fill{height:100%;border-radius:9px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease;min-width:2px}
+.camp-budget-fill.warn{background:linear-gradient(90deg,var(--orange),var(--orange2))}
+.camp-budget-fill.over{background:linear-gradient(90deg,var(--red),var(--red2))}
+.camp-chart{display:flex;align-items:flex-end;gap:10px;padding:14px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;height:200px;overflow-x:auto}
+.camp-bar-col{display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;min-width:46px;flex:1}
+.camp-bar-val{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--text2);font-weight:600;white-space:nowrap}
+.camp-bar-track{flex:1;width:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.camp-bar-fill{width:100%;background:linear-gradient(180deg,var(--accent2),var(--accent));border-radius:5px 5px 0 0;transition:height .45s ease;min-height:3px}
+.camp-bar-label{font-size:.58rem;color:var(--muted);font-weight:600;white-space:nowrap}
+.camp-chart-empty,.camp-empty{padding:30px 20px;text-align:center;color:var(--muted);font-size:.78rem}
+.camp-empty b{display:block;color:var(--text);margin-bottom:6px;font-size:.86rem}
+.camp-table-wrap{overflow-x:auto}
+.camp-table{display:flex;flex-direction:column;gap:0;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2);min-width:1240px}
+.camp-row{display:grid;grid-template-columns:1fr 1.5fr .95fr 1fr .85fr .7fr .8fr .8fr .9fr .9fr .9fr .7fr 1.05fr .5fr;gap:9px;padding:10px 12px;align-items:center;border-bottom:1px solid var(--border2);font-size:.72rem}
+.camp-row:last-child{border-bottom:none}
+.camp-row.camp-head{background:var(--bg3);font-size:.55rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.camp-metric{font-family:'Space Mono',monospace;font-weight:700;color:var(--text)}
+.camp-metric.bad{color:var(--red2)}
+.camp-metric.good{color:var(--green2)}
+.camp-plat{display:inline-flex;align-items:center;gap:6px;font-size:.66rem;font-weight:700;color:var(--text2)}
+.camp-plat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.camp-state{font-size:.58rem;font-weight:800;padding:3px 8px;border-radius:9px;letter-spacing:.04em;text-transform:uppercase;display:inline-block;margin-top:4px}
+.camp-state.s-activa{background:rgba(34,197,94,.16);color:var(--green2);border:1px solid rgba(34,197,94,.32)}
+.camp-state.s-pausada{background:rgba(255,140,66,.12);color:var(--orange2);border:1px solid rgba(255,140,66,.3)}
+.camp-state.s-finalizada{background:rgba(80,80,112,.18);color:var(--text2);border:1px solid var(--border2)}
+@media(max-width:760px){
+  .camp-row{grid-template-columns:1fr;gap:6px;padding:11px 12px;border:1px solid var(--border2);border-radius:8px;margin-bottom:8px;background:var(--card)}
+  .camp-row.camp-head{display:none}
+  .camp-table{background:transparent;border:none;gap:8px;min-width:0}
+  .camp-table-wrap{overflow-x:visible}
+}
+</style>
+<div class="page" id="p-campaigns">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M3 11l15-5v12L3 14z"/><path d="M11.6 16.8a3 3 0 11-5.78-1.5"/><path d="M18 8a4 4 0 010 8"/></svg>📣 Campañas</div>
+    <div class="page-sub">Dashboard de rendimiento de <b style="color:var(--accent2)">Meta Ads</b> y <b style="color:var(--accent2)">Google Ads</b>. Entrada manual de datos por ahora (integración con las APIs de Meta/Google llegará más adelante). Configura los umbrales para recibir alertas de CTR y CPC.</div>
+  </div>
+
+  <!-- Toolbar: filtro plataforma + umbrales + añadir -->
+  <div class="card mb16">
+    <div class="camp-toolbar">
+      <div class="camp-tabs">
+        <button class="camp-tab on" data-plat="all" onclick="campSetPlat('all',this)">Todas</button>
+        <button class="camp-tab" data-plat="meta" onclick="campSetPlat('meta',this)">📘 Meta Ads</button>
+        <button class="camp-tab" data-plat="google" onclick="campSetPlat('google',this)">🔍 Google Ads</button>
+      </div>
+      <div class="camp-th-wrap">
+        <label class="camp-th">CTR mín <input type="number" step="0.1" min="0" class="camp-th-input" id="camp-th-ctr" onchange="campSetTh('ctr',this.value)"> %</label>
+        <label class="camp-th">CPC máx <input type="number" step="0.05" min="0" class="camp-th-input" id="camp-th-cpc" onchange="campSetTh('cpc',this.value)"> €</label>
+        <button class="btn btn-p btn-sm" onclick="campAdd()">
+          <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Añadir campaña
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  <div id="camp-alerts" class="mb16"></div>
+
+  <!-- KPIs principales -->
+  <div class="g4 mb16" id="camp-kpis"></div>
+
+  <!-- Presupuesto gastado vs total -->
+  <div class="card mb16">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Presupuesto</div>
+      <div style="font-size:.66rem;color:var(--muted);font-family:'Space Mono',monospace">gastado vs total</div>
+    </div>
+    <div class="camp-budget" id="camp-budget"></div>
+  </div>
+
+  <!-- Gráfica de rendimiento temporal -->
+  <div class="card mb16">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg>Rendimiento temporal</div>
+      <select class="cap-select" id="camp-chart-metric" onchange="renderCampChart()" style="width:auto;min-width:150px;font-size:.7rem">
+        <option value="clics">Clics</option>
+        <option value="impresiones">Impresiones</option>
+        <option value="conversiones">Conversiones</option>
+        <option value="gasto">Gasto (€)</option>
+      </select>
+    </div>
+    <div class="camp-chart" id="camp-chart"></div>
+  </div>
+
+  <!-- Tabla de campañas activas -->
+  <div class="card">
+    <div class="sec-hd">
+      <div class="sec-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>Campañas</div>
+      <button class="btn btn-p btn-sm" onclick="campAdd()">
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Añadir campaña
+      </button>
+    </div>
+    <div class="camp-table-wrap" id="camp-table-wrap"></div>
   </div>
 </div>
 
@@ -6113,6 +6245,230 @@ async function renderWmDashboard(){
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(go,800)});
   else setTimeout(go,800);
+})();
+</script>
+
+<script>
+// ═══════════════════════════════════════
+// MÓDULO 8 · CAMPAÑAS — Meta Ads + Google Ads (entrada manual)
+// ═══════════════════════════════════════
+(function(){
+  var CAMP_KEY='wm_campaigns';
+  var TH_KEY='wm_campaigns_thresholds';
+  var SEED_KEY='wm_campaigns_seeded';
+  var PLAT={meta:{label:'Meta Ads',dot:'#1877f2'},google:{label:'Google Ads',dot:'#34a853'}};
+  var STATES=[{k:'activa',label:'Activa'},{k:'pausada',label:'Pausada'},{k:'finalizada',label:'Finalizada'}];
+  var NUMF=['impresiones','clics','conversiones','gasto','ingresos','presupuesto'];
+  var _plat='all';
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function num(v){var n=parseFloat(v);return isNaN(n)?0:n}
+  function load(){try{var r=localStorage.getItem(CAMP_KEY);return r?JSON.parse(r):[]}catch(e){return []}}
+  function save(a){try{localStorage.setItem(CAMP_KEY,JSON.stringify(a))}catch(e){}}
+  function uid(){return 'k'+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+  function getTh(){try{var t=JSON.parse(localStorage.getItem(TH_KEY)||'{}');return {ctr:t.ctr!=null?t.ctr:1,cpc:t.cpc!=null?t.cpc:1.5}}catch(e){return {ctr:1,cpc:1.5}}}
+  function setTh(t){try{localStorage.setItem(TH_KEY,JSON.stringify(t))}catch(e){}}
+
+  function n0(n){return num(n).toLocaleString('es-ES')}
+  function eur(n){return num(n).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:2})+'€'}
+  function pct(n){return num(n).toLocaleString('es-ES',{minimumFractionDigits:0,maximumFractionDigits:2})+'%'}
+  function ctrOf(c){return num(c.impresiones)>0?num(c.clics)/num(c.impresiones)*100:0}
+  function cpcOf(c){return num(c.clics)>0?num(c.gasto)/num(c.clics):0}
+  function roasOf(c){return num(c.gasto)>0?num(c.ingresos)/num(c.gasto):0}
+  function platLabel(k){return (PLAT[k]||{}).label||k}
+  function stateLabel(k){for(var i=0;i<STATES.length;i++)if(STATES[i].k===k)return STATES[i].label;return k}
+  function filtered(){var a=load();return _plat==='all'?a:a.filter(function(c){return c.plataforma===_plat})}
+  function todayStr(){return new Date().toISOString().slice(0,10)}
+
+  function seedIfEmpty(){
+    if(localStorage.getItem(SEED_KEY))return;
+    if(load().length>0){localStorage.setItem(SEED_KEY,'1');return}
+    function ds(off){var d=new Date();d.setDate(d.getDate()-off);return d.toISOString().slice(0,10)}
+    save([
+      {id:uid(),plataforma:'meta',nombre:'Ejemplo · Leads Clínicas (Meta)',estado:'activa',impresiones:48200,clics:712,conversiones:34,gasto:540,ingresos:2380,presupuesto:800,fecha:ds(0)},
+      {id:uid(),plataforma:'google',nombre:'Ejemplo · Search Marca (Google)',estado:'activa',impresiones:15800,clics:520,conversiones:41,gasto:610,ingresos:3050,presupuesto:700,fecha:ds(1)},
+      {id:uid(),plataforma:'meta',nombre:'Ejemplo · Remarketing (Meta)',estado:'pausada',impresiones:91000,clics:430,conversiones:9,gasto:380,ingresos:410,presupuesto:400,fecha:ds(3)}
+    ]);
+    localStorage.setItem(SEED_KEY,'1');
+  }
+
+  function syncBadge(){var b=document.getElementById('sb-camp');if(b)b.textContent=load().length}
+
+  window.campSetPlat=function(p,el){
+    _plat=p;
+    var tabs=document.querySelectorAll('#p-campaigns .camp-tab');
+    for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('on');
+    if(el)el.classList.add('on');
+    renderCampaigns();
+  };
+
+  window.campAdd=function(){
+    var a=load();
+    a.unshift({id:uid(),plataforma:(_plat==='all'?'meta':_plat),nombre:'',estado:'activa',impresiones:0,clics:0,conversiones:0,gasto:0,ingresos:0,presupuesto:0,fecha:todayStr()});
+    save(a);renderCampaigns();syncBadge();
+    setTimeout(function(){var f=document.querySelector('#camp-table-wrap .camp-row:not(.camp-head) .cap-input');if(f)f.focus()},50);
+  };
+
+  window.campDel=function(id){
+    if(!confirm('¿Eliminar esta campaña?'))return;
+    save(load().filter(function(c){return c.id!==id}));
+    renderCampaigns();syncBadge();
+  };
+
+  window.campUpdate=function(id,field,value){
+    var a=load(),c=null;
+    for(var i=0;i<a.length;i++){if(a[i].id===id){if(NUMF.indexOf(field)>=0)value=num(value);a[i][field]=value;c=a[i];break}}
+    save(a);
+    if(field==='plataforma'){renderCampaigns();return}
+    if(c)updateRowComputed(c);
+    if(field==='estado'){var chip=document.getElementById('camp-statechip-'+id);if(chip){chip.className='camp-state s-'+value;chip.textContent=stateLabel(value)}}
+    renderCampKpis();renderCampBudget();renderCampAlerts();renderCampChart();
+  };
+
+  window.campSetTh=function(field,value){
+    var t=getTh();t[field]=num(value);setTh(t);
+    renderCampAlerts();renderCampTable();
+  };
+
+  function updateRowComputed(c){
+    var ctr=ctrOf(c),cpc=cpcOf(c),roas=roasOf(c),th=getTh();
+    var e;
+    e=document.getElementById('camp-ctr-'+c.id);if(e){e.textContent=pct(ctr);e.className='camp-metric'+(num(c.impresiones)>0&&ctr<th.ctr?' bad':'')}
+    e=document.getElementById('camp-cpc-'+c.id);if(e){e.textContent=eur(cpc);e.className='camp-metric'+(num(c.clics)>0&&cpc>th.cpc?' bad':'')}
+    e=document.getElementById('camp-roas-'+c.id);if(e){e.textContent=roas>0?roas.toFixed(2)+'x':'—';e.className='camp-metric'+(roas>=1?' good':(roas>0?' bad':''))}
+  }
+
+  function renderCampKpis(){
+    var list=filtered();
+    var imp=0,clk=0,conv=0,gasto=0,ing=0;
+    list.forEach(function(c){imp+=num(c.impresiones);clk+=num(c.clics);conv+=num(c.conversiones);gasto+=num(c.gasto);ing+=num(c.ingresos)});
+    var ctr=imp>0?clk/imp*100:0,cpc=clk>0?gasto/clk:0,roas=gasto>0?ing/gasto:0,convRate=clk>0?conv/clk*100:0;
+    var th=getTh();
+    var kpis=[
+      {label:'Impresiones',num:n0(imp),sub:list.length+' campaña(s)',cls:''},
+      {label:'Clics',num:n0(clk),sub:n0(conv)+' conversiones',cls:''},
+      {label:'CTR',num:pct(ctr),sub:'umbral mín '+pct(th.ctr),cls:(imp>0&&ctr<th.ctr)?'k-bad':'k-rate'},
+      {label:'CPC medio',num:eur(cpc),sub:'umbral máx '+eur(th.cpc),cls:(clk>0&&cpc>th.cpc)?'k-bad':'k-rate'},
+      {label:'Conversiones',num:n0(conv),sub:pct(convRate)+' tasa conv.',cls:'k-rate'},
+      {label:'ROAS',num:roas>0?roas.toFixed(2)+'x':'—',sub:eur(ing)+' / '+eur(gasto),cls:roas>=1?'k-mrr':'k-bad'}
+    ];
+    var html='';
+    kpis.forEach(function(k){html+='<div class="cap-kpi '+k.cls+'"><div class="kpi-label">'+k.label+'</div><div class="kpi-num">'+k.num+'</div><div class="kpi-sub">'+k.sub+'</div></div>'});
+    var box=document.getElementById('camp-kpis');if(box)box.innerHTML=html;
+  }
+
+  function renderCampBudget(){
+    var list=filtered();
+    var gasto=0,presup=0;
+    list.forEach(function(c){gasto+=num(c.gasto);presup+=num(c.presupuesto)});
+    var p=presup>0?gasto/presup*100:0;
+    var cls=p>100?'over':(p>=85?'warn':'');
+    var rest=presup-gasto;
+    var restTxt=rest>=0?'Restante '+eur(rest):'Sobrepasado '+eur(-rest);
+    var box=document.getElementById('camp-budget');
+    if(!box)return;
+    box.innerHTML=
+      '<div class="camp-budget-head"><div class="camp-budget-val"><b>'+eur(gasto)+'</b> / '+eur(presup)+'</div>'
+      +'<div class="camp-budget-rest">'+pct(p)+' usado · '+restTxt+'</div></div>'
+      +'<div class="camp-budget-track"><div class="camp-budget-fill '+cls+'" style="width:'+Math.min(p,100)+'%"></div></div>';
+  }
+
+  function renderCampAlerts(){
+    var th=getTh(),list=filtered(),alerts=[];
+    list.forEach(function(c){
+      if(c.estado==='finalizada')return;
+      var nm=c.nombre||'(sin nombre)';
+      if(num(c.impresiones)>0){var ctr=ctrOf(c);if(ctr<th.ctr)alerts.push({type:'warn',ico:'⚠️',msg:'CTR bajo en <b>'+esc(nm)+'</b>: '+pct(ctr)+' (umbral mín '+pct(th.ctr)+')'})}
+      if(num(c.clics)>0){var cpc=cpcOf(c);if(cpc>th.cpc)alerts.push({type:'bad',ico:'🔺',msg:'CPC alto en <b>'+esc(nm)+'</b>: '+eur(cpc)+' (umbral máx '+eur(th.cpc)+')'})}
+    });
+    var box=document.getElementById('camp-alerts');
+    if(!box)return;
+    if(alerts.length===0){
+      box.innerHTML='<div class="camp-alerts"><div class="camp-alert ok"><span class="camp-alert-ico">✅</span><span>Sin alertas: todas las campañas '+(_plat==='all'?'':'de '+platLabel(_plat)+' ')+'cumplen los umbrales de CTR y CPC.</span></div></div>';
+      return;
+    }
+    var html='<div class="camp-alerts">';
+    alerts.forEach(function(a){html+='<div class="camp-alert '+a.type+'"><span class="camp-alert-ico">'+a.ico+'</span><span>'+a.msg+'</span></div>'});
+    html+='</div>';
+    box.innerHTML=html;
+  }
+
+  function renderCampChart(){
+    var sel=document.getElementById('camp-chart-metric');
+    var metric=sel?sel.value:'clics';
+    var isEur=metric==='gasto';
+    var list=filtered(),buckets={};
+    list.forEach(function(c){var d=c.fecha||'—';buckets[d]=(buckets[d]||0)+num(c[metric])});
+    var keys=Object.keys(buckets).sort();
+    if(keys.length>14)keys=keys.slice(keys.length-14);
+    var box=document.getElementById('camp-chart');
+    if(!box)return;
+    if(keys.length===0){box.innerHTML='<div class="camp-chart-empty" style="margin:auto">Sin datos para graficar. Añade campañas con fecha para ver el rendimiento temporal.</div>';return}
+    var max=1;keys.forEach(function(k){if(buckets[k]>max)max=buckets[k]});
+    var html='';
+    keys.forEach(function(k){
+      var v=buckets[k];
+      var h=Math.max(v/max*100,2);
+      var lbl=k;
+      if(/^\d{4}-\d{2}-\d{2}$/.test(k)){var p=k.split('-');lbl=p[2]+'/'+p[1]}
+      var vTxt=isEur?eur(v):n0(v);
+      html+='<div class="camp-bar-col"><div class="camp-bar-val">'+vTxt+'</div><div class="camp-bar-track"><div class="camp-bar-fill" style="height:'+h+'%"></div></div><div class="camp-bar-label">'+esc(lbl)+'</div></div>';
+    });
+    box.innerHTML=html;
+  }
+
+  function opts(items,sel){
+    var out='';
+    items.forEach(function(it){out+='<option value="'+esc(it.k)+'"'+(it.k===sel?' selected':'')+'>'+esc(it.label)+'</option>'});
+    return out;
+  }
+
+  function renderCampTable(){
+    var list=filtered(),th=getTh();
+    var box=document.getElementById('camp-table-wrap');
+    if(!box)return;
+    if(list.length===0){
+      box.innerHTML='<div class="camp-empty"><b>Sin campañas'+(_plat==='all'?'':' de '+platLabel(_plat))+'</b>Pulsa <b style="display:inline;color:var(--accent2)">"Añadir campaña"</b> para registrar manualmente los datos de tus campañas de Meta Ads y Google Ads.</div>';
+      return;
+    }
+    var platOpts=[{k:'meta',label:'Meta Ads'},{k:'google',label:'Google Ads'}];
+    var html='<div class="camp-table">';
+    html+='<div class="camp-row camp-head"><div>Plataforma</div><div>Campaña</div><div>Estado</div><div>Impresiones</div><div>Clics</div><div>CTR</div><div>CPC</div><div>Conv.</div><div>Gasto</div><div>Presupuesto</div><div>Ingresos</div><div>ROAS</div><div>Fecha</div><div></div></div>';
+    list.forEach(function(c){
+      var ctr=ctrOf(c),cpc=cpcOf(c),roas=roasOf(c);
+      var ctrBad=num(c.impresiones)>0&&ctr<th.ctr,cpcBad=num(c.clics)>0&&cpc>th.cpc;
+      var dot=(PLAT[c.plataforma]||{}).dot||'#9090b0';
+      html+='<div class="camp-row">';
+      html+='<div><span class="camp-plat"><span class="camp-plat-dot" style="background:'+dot+'"></span></span><select class="cap-select" onchange="campUpdate(\''+c.id+'\',\'plataforma\',this.value)">'+opts(platOpts,c.plataforma)+'</select></div>';
+      html+='<div><input class="cap-input" value="'+esc(c.nombre)+'" placeholder="Nombre campaña" onchange="campUpdate(\''+c.id+'\',\'nombre\',this.value)"></div>';
+      html+='<div><select class="cap-select" onchange="campUpdate(\''+c.id+'\',\'estado\',this.value)">'+opts(STATES,c.estado)+'</select><div><span class="camp-state s-'+c.estado+'" id="camp-statechip-'+c.id+'">'+stateLabel(c.estado)+'</span></div></div>';
+      html+='<div><input type="number" min="0" class="cap-input" value="'+num(c.impresiones)+'" onchange="campUpdate(\''+c.id+'\',\'impresiones\',this.value)"></div>';
+      html+='<div><input type="number" min="0" class="cap-input" value="'+num(c.clics)+'" onchange="campUpdate(\''+c.id+'\',\'clics\',this.value)"></div>';
+      html+='<div class="camp-metric'+(ctrBad?' bad':'')+'" id="camp-ctr-'+c.id+'">'+pct(ctr)+'</div>';
+      html+='<div class="camp-metric'+(cpcBad?' bad':'')+'" id="camp-cpc-'+c.id+'">'+eur(cpc)+'</div>';
+      html+='<div><input type="number" min="0" class="cap-input" value="'+num(c.conversiones)+'" onchange="campUpdate(\''+c.id+'\',\'conversiones\',this.value)"></div>';
+      html+='<div><input type="number" min="0" step="0.01" class="cap-input" value="'+num(c.gasto)+'" onchange="campUpdate(\''+c.id+'\',\'gasto\',this.value)"></div>';
+      html+='<div><input type="number" min="0" step="0.01" class="cap-input" value="'+num(c.presupuesto)+'" onchange="campUpdate(\''+c.id+'\',\'presupuesto\',this.value)"></div>';
+      html+='<div><input type="number" min="0" step="0.01" class="cap-input" value="'+num(c.ingresos)+'" onchange="campUpdate(\''+c.id+'\',\'ingresos\',this.value)"></div>';
+      html+='<div class="camp-metric'+(roas>=1?' good':(roas>0?' bad':''))+'" id="camp-roas-'+c.id+'">'+(roas>0?roas.toFixed(2)+'x':'—')+'</div>';
+      html+='<div><input type="date" class="cap-input" value="'+esc(c.fecha||'')+'" onchange="campUpdate(\''+c.id+'\',\'fecha\',this.value)"></div>';
+      html+='<div><button class="cap-del" title="Eliminar" onclick="campDel(\''+c.id+'\')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button></div>';
+      html+='</div>';
+    });
+    html+='</div>';
+    box.innerHTML=html;
+  }
+
+  window.renderCampaigns=function(){
+    seedIfEmpty();
+    var ctrI=document.getElementById('camp-th-ctr'),cpcI=document.getElementById('camp-th-cpc'),th=getTh();
+    if(ctrI&&document.activeElement!==ctrI)ctrI.value=th.ctr;
+    if(cpcI&&document.activeElement!==cpcI)cpcI.value=th.cpc;
+    renderCampKpis();renderCampBudget();renderCampAlerts();renderCampChart();renderCampTable();
+    syncBadge();
+  };
+
+  setTimeout(function(){seedIfEmpty();syncBadge()},120);
 })();
 </script>
 
