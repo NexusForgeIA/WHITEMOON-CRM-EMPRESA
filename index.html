@@ -985,7 +985,10 @@ Todos los planes: Sin permanencia · IVA no incluido
   <div class="g4 mb16" id="wm-ob-kpis"></div>
   <div class="card">
     <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes en onboarding</div>
-      <button class="btn btn-ghost btn-sm" onclick="renderWmOnboarding()">↻ Actualizar</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-p btn-sm" onclick="openOnboardModal()">➕ Añadir cliente</button>
+        <button class="btn btn-ghost btn-sm" onclick="renderWmOnboarding()">↻ Actualizar</button>
+      </div>
     </div>
     <div id="wm-ob-list"><div class="wm-loading">Cargando…</div></div>
   </div>
@@ -5736,6 +5739,58 @@ async function renderWmOnboarding(){
       +'<button class="btn btn-ghost btn-xs" onclick="window.open(\'/onboarding/\',\'_blank\')" style="margin-top:4px">Ver detalle</button></div>'
       +'</div>';
   }).join('');
+}
+
+// Token CDN: WM- + 16 hex aleatorios
+function _wmGenCdnToken(){return 'WM-'+Array.from(crypto.getRandomValues(new Uint8Array(8))).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
+
+var WM_OB_SECTORS=[['dental','Dental'],['legal','Legal'],['abogados','Abogados'],['restaurante','Restaurante'],['gestoria','Gestoría'],['clinica','Clínica'],['inmobiliaria','Inmobiliaria'],['gimnasio','Gimnasio'],['peluqueria','Peluquería'],['veterinaria','Veterinaria'],['formacion','Formación'],['taller','Taller'],['podologia','Podología'],['automovil','Automóvil']];
+
+function openOnboardModal(){
+  closeModalById('onboard-modal');
+  var sectorOpts=WM_OB_SECTORS.map(function(p){return '<option value="'+p[0]+'">'+_wmE(p[1])+'</option>'}).join('');
+  var packOpts=['spark','core','scale','elite'].map(function(p){return '<option value="'+p+'">'+_wmE(_wmPack(p))+'</option>'}).join('');
+  var modal=document.createElement('div');
+  modal.className='modal-overlay';modal.id='onboard-modal';
+  modal.onclick=function(e){if(e.target===modal)closeModalById('onboard-modal')};
+  modal.innerHTML='<div class="modal-box" style="max-width:520px"><div class="modal-title">🚀 Añadir cliente a onboarding<button class="modal-close" onclick="closeModalById(\'onboard-modal\')">×</button></div>'
++'<div class="field-group mb12"><span class="field-label">Nombre del cliente</span><input class="input" id="ob-name" placeholder="Nombre del negocio"></div>'
++'<div class="g2 mb12">'
++'<div class="field-group"><span class="field-label">Sector</span><select class="select" id="ob-sector"><option value="">— Sin sector —</option>'+sectorOpts+'</select></div>'
++'<div class="field-group"><span class="field-label">Pack</span><select class="select" id="ob-pack"><option value="">— Sin pack —</option>'+packOpts+'</select></div>'
++'</div>'
++'<div class="g2 mb12">'
++'<div class="field-group"><span class="field-label">Teléfono</span><input class="input mono" id="ob-phone"></div>'
++'<div class="field-group"><span class="field-label">Email</span><input class="input mono" id="ob-email"></div>'
++'</div>'
++'<div id="ob-token-box"></div>'
++'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p btn-sm" id="ob-save-btn" onclick="_wmSaveOnboard()">💾 Guardar y generar token</button><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'onboard-modal\')">Cerrar</button></div>'
++'</div>';
+  document.body.appendChild(modal);
+}
+
+async function _wmSaveOnboard(){
+  var name=(document.getElementById('ob-name').value||'').trim();
+  if(!name){_wmToast('Indica el nombre del cliente');return}
+  var s=_wmSb();
+  if(!s){_wmToast('Supabase no disponible');return}
+  var btn=document.getElementById('ob-save-btn');
+  if(btn){btn.disabled=true;btn.textContent='Guardando…'}
+  var token=_wmGenCdnToken();
+  var rec={cliente_nombre:name,token_cdn:token,estado:'pendiente',dia_actual:0,fecha_inicio:new Date().toISOString()};
+  var sector=document.getElementById('ob-sector').value;if(sector)rec.sector=sector;
+  var pack=document.getElementById('ob-pack').value;if(pack)rec.pack=pack;
+  var phone=(document.getElementById('ob-phone').value||'').trim();if(phone)rec.cliente_telefono=phone;
+  var email=(document.getElementById('ob-email').value||'').trim();if(email)rec.cliente_email=email;
+  var resp=await s.from('onboarding_clientes').insert(rec).select().single();
+  if(resp.error){if(btn){btn.disabled=false;btn.textContent='💾 Guardar y generar token'}_wmToast('Error al guardar: '+_wmE(resp.error.message||resp.error));return}
+  var box=document.getElementById('ob-token-box');
+  if(box){box.innerHTML='<div class="field-group mb12"><span class="field-label">Token CDN generado</span>'
+    +'<div style="display:flex;gap:8px;align-items:center"><input class="input mono" id="ob-token" readonly value="'+_wmE(token)+'" style="flex:1">'
+    +'<button class="btn btn-ghost btn-sm" onclick="copyTxt(\''+token+'\')">📋 Copiar</button></div></div>'}
+  if(btn)btn.style.display='none';
+  _wmToast('Cliente añadido · token generado');
+  renderWmOnboarding();
 }
 
 // ─── CLIENT SUCCESS ───
