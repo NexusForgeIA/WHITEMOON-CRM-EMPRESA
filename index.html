@@ -6540,8 +6540,9 @@ function _ragSectionHtml(clienteId,pack){
     +'<div id="rag-list" style="margin-top:10px"><div class="rag-empty">Cargando documentos…</div></div>'
     +'<div class="rag-sec-title">📤 Subir nuevo documento</div>'
     +'<div class="rag-upbox">'
+      +'<div style="margin-bottom:9px"><label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Subir archivo (PDF, TXT, DOC, DOCX)<input type="file" id="rag-up-file" accept=".pdf,.txt,.doc,.docx" style="display:none" onchange="_ragFile(this,\''+idEsc+'\')"></label><div style="font-size:.66rem;color:var(--muted);margin-top:5px">El archivo se lee como texto y rellena los campos de abajo. Revísalo antes de indexar.</div></div>'
       +'<div class="field-group" style="margin-bottom:9px"><span class="field-label">Nombre del documento</span><input class="input" id="rag-up-nombre" placeholder="Ej: Tarifas 2026.pdf"></div>'
-      +'<div class="field-group"><span class="field-label">Contenido (pega el texto a indexar)</span><textarea class="input" id="rag-up-texto" rows="5" style="resize:vertical;font-size:.78rem" placeholder="Pega aquí el contenido del documento…"></textarea></div>'
+      +'<div class="field-group"><span class="field-label">Contenido (pega el texto o sube un archivo)</span><textarea class="input" id="rag-up-texto" rows="5" style="resize:vertical;font-size:.78rem" placeholder="Pega aquí el contenido del documento…"></textarea></div>'
       +'<div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap"><button class="btn btn-p btn-sm" id="rag-up-btn" onclick="_ragUpload(\''+idEsc+'\')">📤 Subir e indexar</button><span class="rag-up-status" id="rag-up-status"></span></div>'
     +'</div>'
     +'<div class="rag-sec-title">⚙️ Script de instalación RAG</div>'
@@ -6658,9 +6659,33 @@ function _ragCopyScript(clienteId){
   if(typeof copyTxt==='function')copyTxt(script);
   else if(navigator.clipboard)navigator.clipboard.writeText(script);
 }
+// Lee un archivo (PDF/TXT/DOC/DOCX) como texto con FileReader y rellena los campos.
+function _ragFile(input,clienteId){
+  var f=input&&input.files&&input.files[0];
+  if(!f)return;
+  var nameEl=document.getElementById('rag-up-nombre'),textoEl=document.getElementById('rag-up-texto'),status=document.getElementById('rag-up-status');
+  function setStatus(msg,color){if(status){status.textContent=msg;status.style.color=color||'var(--text2)'}}
+  var ext=(f.name.split('.').pop()||'').toLowerCase();
+  setStatus('⏳ Leyendo '+f.name+'…','var(--accent2)');
+  var reader=new FileReader();
+  reader.onload=function(){
+    var txt=String(reader.result||'');
+    if(textoEl)textoEl.value=txt;
+    if(nameEl&&!nameEl.value.trim())nameEl.value=f.name;
+    if(ext==='pdf'||ext==='doc'||ext==='docx'){
+      setStatus('⚠️ '+f.name+' leído como texto plano ('+txt.length+' caracteres). Los PDF/DOC pueden requerir limpieza: revisa el contenido y pulsa «Subir e indexar».','#f5c842');
+    }else{
+      setStatus('📄 '+f.name+' cargado ('+txt.length+' caracteres). Revisa y pulsa «Subir e indexar».','#00d4aa');
+    }
+    input.value='';
+  };
+  reader.onerror=function(){setStatus('❌ No se pudo leer el archivo','#ff4d6d');input.value=''};
+  reader.readAsText(f);
+}
 window._ragUpload=_ragUpload;
 window._ragDelete=_ragDelete;
 window._ragCopyScript=_ragCopyScript;
+window._ragFile=_ragFile;
 
 // ─── DETALLE: MODO EDICIÓN ───
 function _wmObDateInput(v){if(!v)return '';var d=new Date(v);if(isNaN(d.getTime()))return '';return d.toISOString().slice(0,10)}
