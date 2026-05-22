@@ -332,6 +332,23 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 .pm-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
 .pm-actions .btn{flex:1;min-width:120px;justify-content:center}
 .pm-actions .btn[aria-disabled="true"]{opacity:.4;pointer-events:none}
+/* Documentos RAG (detalle de cliente · Onboarding) */
+.rag-sec-title{font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin:18px 0 8px;display:flex;align-items:center;gap:7px}
+.rag-doc{display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--bg3);border:1px solid var(--border2);border-radius:9px;margin-bottom:7px}
+.rag-doc-main{flex:1;min-width:0}
+.rag-doc-name{font-size:.8rem;color:var(--text);font-weight:600;word-break:break-word}
+.rag-doc-meta{font-size:.66rem;color:var(--muted);margin-top:2px}
+.rag-badge{font-size:.56rem;font-weight:800;letter-spacing:.04em;padding:2px 8px;border-radius:20px;border:1px solid;white-space:nowrap;flex-shrink:0}
+.rag-del{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:.95rem;flex-shrink:0;padding:2px 4px;line-height:1}
+.rag-del:hover{color:#ff4d6d}
+.rag-empty{font-size:.74rem;color:var(--muted);padding:10px 0}
+.rag-upbox{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px;margin-bottom:6px}
+.rag-up-status{font-size:.72rem;margin-top:8px;min-height:1em}
+.rag-stat-row{display:flex;justify-content:space-between;font-size:.74rem;color:var(--text2);margin-bottom:5px}
+.rag-stat-row b{color:var(--text)}
+.rag-progress{height:8px;background:var(--bg);border:1px solid var(--border2);border-radius:6px;overflow:hidden}
+.rag-progress>div{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+.rag-script{background:var(--bg);border:1px solid var(--border2);border-radius:9px;padding:12px;font-family:'Space Mono',monospace;font-size:.66rem;line-height:1.55;color:var(--text2);white-space:pre;overflow-x:auto;max-height:230px;overflow-y:auto;margin-bottom:8px}
 .script-text{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:14px;font-family:'Space Mono',monospace;font-size:.76rem;line-height:1.75;color:var(--text2);margin-bottom:12px;max-height:320px;overflow-y:auto}
 .script-text b{color:var(--green2);font-weight:600;background:rgba(0,212,170,.1);padding:1px 4px;border-radius:3px}
 /* Comparativa antes/después */
@@ -6400,7 +6417,7 @@ window._pushNotif=function(title,body){
 // ═══════════════════════════════════════════════════════════
 var WM_PACK_PRICE={spark:199,core:199,scale:449,elite:599};
 var WM_PACK_SETUP={spark:499,core:1800,scale:4500,elite:8500};
-var WM_PACK_LABELS={spark:'Spark',core:'Core',scale:'Scale',elite:'Elite'};
+var WM_PACK_LABELS={spark:'Spark',core:'Core','core-rag':'Core RAG',scale:'Scale',elite:'Elite'};
 var WM_SB_CACHE={onboarding:[],upsell:[],casos:[],referidos:[],leads:[]};
 
 function _wmSb(){return (typeof _initSb==='function')?_initSb():(window.supabase?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null)}
@@ -6489,6 +6506,7 @@ function openObDetail(id){
   var fiscal=_wmDtRow('Dirección',_wmTxt(r.direccion))
     +_wmDtRow('CIF',_wmTxt(r.cif))
     +_wmDtRow('Persona de contacto',_wmTxt(r.persona_contacto));
+  var ragHtml=_ragEligible(r.pack)?_ragSectionHtml(r.id,r.pack):'';
   var modal=document.createElement('div');
   modal.className='modal-overlay';modal.id='ob-detail-modal';
   modal.onclick=function(e){if(e.target===modal)closeModalById('ob-detail-modal')};
@@ -6496,10 +6514,153 @@ function openObDetail(id){
     +'<div>'+rows+'</div>'
     +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin:16px 0 2px">Datos fiscales</div>'
     +'<div>'+fiscal+'</div>'
+    +ragHtml
     +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-p btn-sm" onclick="_wmObEdit(\''+_wmE(r.id)+'\')">✏️ Editar</button><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'ob-detail-modal\')">Cerrar</button></div>'
     +'</div>';
   document.body.appendChild(modal);
+  if(ragHtml)_ragLoad(r.id,r.pack);
 }
+
+// ─── DOCUMENTOS RAG (solo packs core-rag / scale / elite) ───
+var RAG_INGEST_URL=SUPABASE_URL+'/functions/v1/rag-ingest';
+var RAG_CHAT_URL=SUPABASE_URL+'/functions/v1/rag-chat';
+var RAG_PACK_LIMIT={'core-rag':100,'scale':500,'elite':Infinity};
+function _ragEligible(pack){return Object.prototype.hasOwnProperty.call(RAG_PACK_LIMIT,pack)}
+function _ragBadge(estado){
+  var m={procesando:{l:'PROCESANDO',c:'#f5c842'},listo:{l:'LISTO',c:'#00d4aa'},error:{l:'ERROR',c:'#ff4d6d'}};
+  var b=m[estado]||{l:(estado||'—').toUpperCase(),c:'#8888a0'};
+  return '<span class="rag-badge" style="background:'+b.c+'1f;color:'+b.c+';border-color:'+b.c+'66">'+b.l+'</span>';
+}
+function _ragSectionHtml(clienteId,pack){
+  var limit=RAG_PACK_LIMIT[pack];
+  var limTxt=(limit===Infinity)?'ilimitado':limit;
+  var idEsc=_wmE(clienteId);
+  return '<div class="rag-sec-title">📚 Documentos RAG <span style="color:var(--muted);font-weight:600;text-transform:none;letter-spacing:0">· pack '+_wmE(_wmPack(pack))+' (límite '+limTxt+')</span></div>'
+    +'<div id="rag-stats"></div>'
+    +'<div id="rag-list" style="margin-top:10px"><div class="rag-empty">Cargando documentos…</div></div>'
+    +'<div class="rag-sec-title">📤 Subir nuevo documento</div>'
+    +'<div class="rag-upbox">'
+      +'<div class="field-group" style="margin-bottom:9px"><span class="field-label">Nombre del documento</span><input class="input" id="rag-up-nombre" placeholder="Ej: Tarifas 2026.pdf"></div>'
+      +'<div class="field-group"><span class="field-label">Contenido (pega el texto a indexar)</span><textarea class="input" id="rag-up-texto" rows="5" style="resize:vertical;font-size:.78rem" placeholder="Pega aquí el contenido del documento…"></textarea></div>'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap"><button class="btn btn-p btn-sm" id="rag-up-btn" onclick="_ragUpload(\''+idEsc+'\')">📤 Subir e indexar</button><span class="rag-up-status" id="rag-up-status"></span></div>'
+    +'</div>'
+    +'<div class="rag-sec-title">⚙️ Script de instalación RAG</div>'
+    +'<div class="rag-script" id="rag-script">'+_wmE(_ragBuildScriptById(clienteId))+'</div>'
+    +'<button class="btn btn-ghost btn-sm" onclick="_ragCopyScript(\''+idEsc+'\')">📋 Copiar script</button>';
+}
+function _ragBuildScriptById(clienteId){
+  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(clienteId)})[0]||{};
+  return _ragBuildScript(r);
+}
+function _ragEscTpl(s){return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${')}
+function _ragBuildScript(r){
+  var sysPrompt=r.agente_system_prompt||('Eres el asistente de '+(r.cliente_nombre||'la empresa')+'. Responde solo con la información de los documentos indexados; si no la tienes, dilo y ofrece contactar con el equipo.');
+  return '<!-- WhiteMoon RAG · '+(r.cliente_nombre||'')+' -->\n'
+    +'<script>\n'
+    +'(function(){\n'
+    +'  var WM_RAG = {\n'
+    +'    clienteId: "'+(r.id||'')+'",\n'
+    +'    endpoint: "'+RAG_CHAT_URL+'",\n'
+    +'    apiKey: "'+SUPABASE_KEY+'",\n'
+    +'    systemPrompt: `'+_ragEscTpl(sysPrompt)+'`\n'
+    +'  };\n'
+    +'  window.wmRagChat = async function(pregunta){\n'
+    +'    var res = await fetch(WM_RAG.endpoint, {\n'
+    +'      method: "POST",\n'
+    +'      headers: { "Content-Type":"application/json", "apikey": WM_RAG.apiKey, "Authorization":"Bearer "+WM_RAG.apiKey },\n'
+    +'      body: JSON.stringify({ cliente_id: WM_RAG.clienteId, pregunta: pregunta, system_prompt: WM_RAG.systemPrompt })\n'
+    +'    });\n'
+    +'    var data = await res.json();\n'
+    +'    return data.respuesta || data.reply || "";\n'
+    +'  };\n'
+    +'})();\n'
+    +'</'+'script>';
+}
+async function _ragLoad(clienteId,pack){
+  var listEl=document.getElementById('rag-list'),statsEl=document.getElementById('rag-stats');
+  if(!listEl)return;
+  var s=_wmSb();
+  if(!s){listEl.innerHTML='<div class="rag-empty">Supabase no disponible.</div>';return}
+  var resp=await s.from('rag_archivos').select('*').eq('cliente_id',clienteId).order('created_at',{ascending:false});
+  if(resp.error){listEl.innerHTML='<div class="rag-empty">Error al cargar documentos: '+_wmE(resp.error.message||resp.error)+'</div>';return}
+  var rows=resp.data||[];
+  // Estadísticas
+  var limit=RAG_PACK_LIMIT[pack];
+  if(statsEl){
+    var limTxt=(limit===Infinity)?'∞':limit;
+    var pct=(limit===Infinity)?(rows.length?6:0):Math.min(100,Math.round(rows.length/limit*100));
+    statsEl.innerHTML='<div class="rag-stat-row"><span>Documentos indexados</span><b>'+rows.length+(limit===Infinity?'':' / '+limTxt)+'</b></div>'
+      +'<div class="rag-progress"><div style="width:'+pct+'%"></div></div>'
+      +(limit!==Infinity&&rows.length>=limit?'<div style="font-size:.68rem;color:#ff4d6d;margin-top:5px">Límite del pack alcanzado.</div>':'');
+  }
+  // Lista
+  if(!rows.length){listEl.innerHTML='<div class="rag-empty">Sin documentos subidos todavía.</div>';return}
+  listEl.innerHTML=rows.map(function(a){
+    var fecha=_wmDate(a.created_at);
+    var chunks=(a.chunks_generados||0)+' chunk'+((a.chunks_generados===1)?'':'s');
+    var err=(a.estado==='error'&&a.error_mensaje)?(' · '+_wmE(a.error_mensaje)):'';
+    return '<div class="rag-doc">'
+      +'<div class="rag-doc-main"><div class="rag-doc-name">'+_wmE(a.nombre_archivo||'(sin nombre)')+'</div>'
+      +'<div class="rag-doc-meta">'+chunks+' · '+fecha+err+'</div></div>'
+      +_ragBadge(a.estado)
+      +'<button class="rag-del" title="Eliminar documento" onclick="_ragDelete(\''+_wmE(a.id)+'\',\''+_wmE(clienteId)+'\',\''+_wmE(pack)+'\')">🗑️</button>'
+      +'</div>';
+  }).join('');
+}
+async function _ragUpload(clienteId){
+  var nombreEl=document.getElementById('rag-up-nombre'),textoEl=document.getElementById('rag-up-texto');
+  var btn=document.getElementById('rag-up-btn'),status=document.getElementById('rag-up-status');
+  var nombre=(nombreEl&&nombreEl.value||'').trim(),texto=(textoEl&&textoEl.value||'').trim();
+  function setStatus(msg,color){if(status){status.textContent=msg;status.style.color=color||'var(--text2)'}}
+  if(!nombre){setStatus('Indica el nombre del documento','#ff4d6d');return}
+  if(!texto){setStatus('Pega el contenido a indexar','#ff4d6d');return}
+  // Comprobación de límite con los datos ya cargados.
+  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(clienteId)})[0]||{};
+  var limit=RAG_PACK_LIMIT[r.pack];
+  if(btn)btn.disabled=true;
+  setStatus('⏳ Subiendo e indexando…','var(--accent2)');
+  try{
+    var res=await fetch(RAG_INGEST_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},
+      body:JSON.stringify({cliente_id:clienteId,nombre_archivo:nombre,texto:texto})
+    });
+    var data=null;try{data=await res.json()}catch(e){}
+    if(!res.ok||(data&&data.ok===false)){
+      var emsg=(data&&(data.error||data.message))||('HTTP '+res.status);
+      setStatus('❌ Error: '+emsg,'#ff4d6d');
+      if(btn)btn.disabled=false;
+      return;
+    }
+    var chunks=(data&&(data.chunks||data.chunks_generados));
+    setStatus('✅ Documento indexado'+(chunks!=null?(' · '+chunks+' chunks'):''),'#00d4aa');
+    if(nombreEl)nombreEl.value='';if(textoEl)textoEl.value='';
+    if(typeof _wmToast==='function')_wmToast('📚 Documento enviado a indexar');
+    _ragLoad(clienteId,r.pack);
+  }catch(e){
+    setStatus('❌ Error de red: '+(e&&e.message?e.message:'desconocido'),'#ff4d6d');
+  }
+  if(btn)btn.disabled=false;
+}
+async function _ragDelete(archivoId,clienteId,pack){
+  if(!confirm('¿Eliminar este documento del índice RAG?'))return;
+  var s=_wmSb();
+  if(!s){_wmToast('Supabase no disponible');return}
+  try{
+    var del=await s.from('rag_archivos').delete().eq('id',archivoId);
+    if(del&&del.error){_wmToast('No se pudo eliminar: '+(del.error.message||''));return}
+    _wmToast('Documento eliminado');
+    _ragLoad(clienteId,pack);
+  }catch(e){_wmToast('Error: '+(e&&e.message?e.message:''))}
+}
+function _ragCopyScript(clienteId){
+  var script=_ragBuildScriptById(clienteId);
+  if(typeof copyTxt==='function')copyTxt(script);
+  else if(navigator.clipboard)navigator.clipboard.writeText(script);
+}
+window._ragUpload=_ragUpload;
+window._ragDelete=_ragDelete;
+window._ragCopyScript=_ragCopyScript;
 
 // ─── DETALLE: MODO EDICIÓN ───
 function _wmObDateInput(v){if(!v)return '';var d=new Date(v);if(isNaN(d.getTime()))return '';return d.toISOString().slice(0,10)}
@@ -6508,7 +6669,7 @@ function _wmObEdit(id){
   if(!r){_wmToast('Cliente no encontrado');return}
   closeModalById('ob-detail-modal');
   var sectorOpts='<option value="">— Sin sector —</option>'+WM_OB_SECTORS.map(function(p){return '<option value="'+p[0]+'"'+(r.sector===p[0]?' selected':'')+'>'+_wmE(p[1])+'</option>'}).join('');
-  var packOpts='<option value="">— Sin pack —</option>'+['spark','core','scale','elite'].map(function(p){return '<option value="'+p+'"'+(r.pack===p?' selected':'')+'>'+_wmE(_wmPack(p))+'</option>'}).join('');
+  var packOpts='<option value="">— Sin pack —</option>'+['spark','core','core-rag','scale','elite'].map(function(p){return '<option value="'+p+'"'+(r.pack===p?' selected':'')+'>'+_wmE(_wmPack(p))+'</option>'}).join('');
   function inp(idf,label,val,extra){return '<div class="field-group mb12"><span class="field-label">'+label+'</span><input class="input'+(extra||'')+'" id="'+idf+'" value="'+_wmE(val==null?'':val)+'"></div>'}
   var modal=document.createElement('div');
   modal.className='modal-overlay';modal.id='ob-detail-modal';
