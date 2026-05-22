@@ -315,6 +315,23 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 .modal-title{font-size:.95rem;font-weight:800;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
 .modal-close{margin-left:auto;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.5rem;line-height:1;padding:0 4px}
 .modal-close:hover{color:#fff}
+.pipe-modal-badges{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.pm-badge{font-size:.6rem;font-weight:800;letter-spacing:.04em;padding:4px 10px;border-radius:20px;border:1px solid;white-space:nowrap}
+.pipe-modal-grid{display:flex;flex-direction:column;margin-bottom:14px}
+.pmrow{display:flex;justify-content:space-between;gap:14px;align-items:center;padding:9px 0;border-bottom:1px solid var(--border2)}
+.pmrow:last-child{border-bottom:none}
+.pmrow .pml{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text2);flex-shrink:0}
+.pmrow .pmv{font-size:.82rem;color:var(--text);text-align:right;word-break:break-word}
+.pmrow .pmv a{color:var(--accent2);text-decoration:none}
+.pmrow .pmv a:hover{text-decoration:underline}
+.pm-noweb{color:#ff4d6d;font-weight:700;font-size:.72rem;background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.3);padding:1px 8px;border-radius:7px}
+.pm-wabox{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:11px;font-size:.82rem;color:var(--text2);line-height:1.5;white-space:pre-wrap;margin-bottom:8px}
+.pm-notes{width:100%;resize:vertical;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Sora',sans-serif;font-size:.8rem;line-height:1.45;padding:9px 11px;border-radius:9px;outline:none;min-height:54px}
+.pm-notes:focus{border-color:var(--accent)}
+.pm-statussel{background:var(--bg3);border:1px solid var(--accent);border-radius:8px;color:var(--text);font-family:'Sora',sans-serif;font-size:.78rem;padding:5px 9px;cursor:pointer}
+.pm-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.pm-actions .btn{flex:1;min-width:120px;justify-content:center}
+.pm-actions .btn[aria-disabled="true"]{opacity:.4;pointer-events:none}
 .script-text{background:var(--bg3);border:1px solid var(--border2);border-radius:9px;padding:14px;font-family:'Space Mono',monospace;font-size:.76rem;line-height:1.75;color:var(--text2);margin-bottom:12px;max-height:320px;overflow-y:auto}
 .script-text b{color:var(--green2);font-weight:600;background:rgba(0,212,170,.1);padding:1px 4px;border-radius:3px}
 /* Comparativa antes/después */
@@ -2784,6 +2801,7 @@ function saveProspectMeta(domain,meta){
 }
 function deleteProspectMeta(domain){
   try{localStorage.removeItem('scout_prospect_'+domain)}catch(e){}
+  try{localStorage.removeItem('scout_prospect_extra_'+domain)}catch(e){}
   var s=(typeof _initSb==='function')?_initSb():null;
   if(s){try{s.from('wm_pipeline').delete().eq('id',domain)}catch(e){}}
 }
@@ -2974,7 +2992,7 @@ function renderPipeline(){
     var promptDesignBtn='<button class="btn btn-xs" onclick="generarPromptDesign(\''+nameEsc+'\',\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c4dff,#5c35cc);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Generar prompt para Claude Design">🎨 Prompt Design</button>';
     var calBtn='<button class="btn btn-xs" onclick="agendarDemoCalendar(\''+nameEsc+'\',\''+domEsc+'\')" style="background:linear-gradient(135deg,#7c3aed,#5b21b6);color:#fff;border-color:transparent;font-size:.65rem;padding:3px 8px" title="Agendar demo en Google Calendar">📅 Agendar demo</button>';
     var aiBtn='<button class="btn btn-ai btn-xs" onclick="aiNextAction(\''+domEsc+'\')" style="font-size:.65rem;padding:3px 8px" title="Siguiente acción de venta sugerida por IA">🤖 Siguiente acción</button>';
-    listHTML+='<div class="pipe-item'+dim+'" draggable="true" data-domain="'+domEsc+'" data-status="'+m.status+'">'+
+    listHTML+='<div class="pipe-item'+dim+'" draggable="true" data-domain="'+domEsc+'" data-status="'+m.status+'" onclick="_pipeCardClick(event,\''+domEsc+'\')" style="cursor:pointer" title="Ver ficha del prospecto">'+
       '<div style="flex:1;min-width:160px">'+
         '<div class="pi-name">'+(m.name||m.domain)+'</div>'+
         '<div class="pi-domain">'+m.domain+'</div>'+
@@ -3023,6 +3041,140 @@ async function aiNextAction(domain){
   }catch(e){showToast('Error IA: '+(e.message||''))}
 }
 function _escHtmlSafe(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+// ═══ MODAL DETALLE DE PROSPECTO (Pipeline) ═══
+function _oppBadgeMeta(o){
+  var k=String(o==null?'':o).toLowerCase().trim();
+  if(k.indexOf('alta')>=0)return {label:'ALTA',color:'#ff4d6d'};
+  if(k.indexOf('media')>=0)return {label:'MEDIA',color:'#f5c842'};
+  if(k.indexOf('baja')>=0)return {label:'BAJA',color:'#00d4aa'};
+  if(k.indexOf('descart')>=0)return {label:'DESCARTADO',color:'#8888a0'};
+  return {label:k?k.toUpperCase():'—',color:'#8888a0'};
+}
+// Reúne todos los datos disponibles de un prospecto del pipeline.
+function _pipeData(domain){
+  var meta=(typeof getProspectMeta==='function')?getProspectMeta(domain):{};
+  var extra={};
+  try{var rx=localStorage.getItem('scout_prospect_extra_'+domain);if(rx)extra=JSON.parse(rx)||{}}catch(e){}
+  var match=null;
+  if(typeof prosResults!=='undefined'&&prosResults&&prosResults.length){
+    for(var i=0;i<prosResults.length;i++){if(String(prosResults[i].domain)===String(domain)){match=prosResults[i];break}}
+  }
+  function first(a){return (a&&a.length)?a[0]:''}
+  var web=extra.web||(match&&(match.url||match.domain))||'';
+  if(!web && domain && domain.indexOf('.')>=0 && domain.indexOf('ia-')!==0 && domain.indexOf('lead-')!==0) web=domain;
+  var webBare=web?String(web).replace(/^https?:\/\//i,'').replace(/\/+$/,''):'';
+  var phone=meta.phone||extra.telefono||(match?first(match.phones):'')||'';
+  var chatbot=null;
+  if(extra.chatbot!=null)chatbot=!!extra.chatbot; else if(match)chatbot=!!match.chat;
+  var opp=extra.oportunidad||'';
+  if(!opp){opp=!webBare?'alta':(chatbot?'descartado':'media')}
+  var pack=(typeof getRecommendedPack==='function')?getRecommendedPack(match||{score:65}):null;
+  return {
+    domain:domain,
+    name:meta.name||webBare||domain,
+    web:webBare,
+    webHref:web?(/^https?:\/\//i.test(web)?web:'https://'+web):'',
+    phone:phone,
+    email:extra.email||(match?first(match.emails):'')||'',
+    direccion:extra.direccion||(match?match.address:'')||'',
+    puntuacion:extra.puntuacion||'',
+    resenas:extra.resenas||0,
+    chatbot:chatbot,
+    oportunidad:opp,
+    sector:meta.sector||extra.sector||(match?match.sector:'')||'',
+    pack:pack,
+    mensaje_wa:extra.mensaje_wa||'',
+    status:meta.status||'pending',
+    notes:meta.notes||'',
+    mrr:meta.mrr||0
+  };
+}
+function _pipeCardClick(e,domain){
+  if(e&&e.target&&e.target.closest&&e.target.closest('button,select,a,input,textarea,option'))return;
+  openPipelineModal(domain);
+}
+function openPipelineModal(domain){
+  closeModalById('pipe-modal');
+  var d=_pipeData(domain);
+  var st=(typeof getPipelineState==='function')?getPipelineState(d.status):{label:d.status,color:'#9ca3af',bg:'rgba(156,163,175,.15)'};
+  var opp=_oppBadgeMeta(d.oportunidad);
+  var domEsc=String(domain).replace(/'/g,"\\'");
+  var phoneClean=String(d.phone||'').replace(/[^0-9+]/g,'');
+  var waDigits=phoneClean.replace(/^\+/,'');
+  var waText=d.mensaje_wa?('?text='+encodeURIComponent(d.mensaje_wa)):'';
+
+  function row(label,valHtml){return valHtml?('<div class="pmrow"><span class="pml">'+label+'</span><span class="pmv">'+valHtml+'</span></div>'):''}
+
+  var rows='';
+  rows+=row('Web', d.web?('<a href="'+_escHtmlSafe(d.webHref)+'" target="_blank" rel="noopener">🌐 '+_escHtmlSafe(d.web)+'</a>'):'<span class="pm-noweb">Sin web</span>');
+  rows+=row('Teléfono', d.phone?('<a href="tel:'+_escHtmlSafe(phoneClean)+'">📞 '+_escHtmlSafe(d.phone)+'</a>'):'');
+  rows+=row('Email', d.email?('<a href="mailto:'+_escHtmlSafe(d.email)+'">✉️ '+_escHtmlSafe(d.email)+'</a>'):'');
+  rows+=row('Dirección', d.direccion?('📍 '+_escHtmlSafe(d.direccion)):'');
+  rows+=row('Puntuación Google', d.puntuacion?('⭐ '+_escHtmlSafe(d.puntuacion)+(/\/\s*5\s*$/.test(d.puntuacion)?'':'/5')+(d.resenas?(' · '+_escHtmlSafe(String(d.resenas))+' reseñas'):'')):'');
+  rows+=row('Chatbot IA', d.chatbot==null?'':(d.chatbot?'✅ Sí':'❌ No'));
+  rows+=row('Sector', d.sector?_escHtmlSafe(d.sector):'');
+  rows+=row('Pack recomendado', d.pack?('<b style="color:var(--accent2)">'+_escHtmlSafe(d.pack.name)+'</b> · '+d.pack.setup+'€ setup + '+d.pack.mrr+'€/mes'):'');
+  rows+=row('MRR potencial', d.mrr?(d.mrr+'€/mes'):'');
+  // Estado (con edición inline)
+  var stateOpts='';
+  PIPELINE_STATES.forEach(function(s){stateOpts+='<option value="'+s.id+'"'+(s.id===d.status?' selected':'')+'>'+s.label+'</option>'});
+  rows+='<div class="pmrow"><span class="pml">Estado</span><span class="pmv">'
+    +'<span id="pipe-status-view"><span class="pm-badge" style="background:'+st.bg+';color:'+st.color+';border-color:'+st.color+'66">'+_escHtmlSafe(st.label)+'</span></span>'
+    +'<select id="pipe-status-sel" class="pm-statussel" style="display:none" onchange="_pipeApplyStatus(\''+domEsc+'\',this.value)">'+stateOpts+'</select>'
+    +'</span></div>';
+
+  var waBlock=d.mensaje_wa?('<div style="margin-bottom:14px"><span class="pml" style="display:block;margin-bottom:6px">Mensaje WhatsApp</span><div class="pm-wabox">'+_escHtmlSafe(d.mensaje_wa)+'</div><button class="btn btn-ghost btn-sm" onclick="_pipeCopyWa(\''+domEsc+'\')">📋 Copiar mensaje</button></div>'):'';
+
+  var notesBlock='<div style="margin-bottom:4px"><span class="pml" style="display:block;margin-bottom:6px">Notas</span>'
+    +'<textarea class="pm-notes" maxlength="200" placeholder="Añade notas sobre este prospecto…" onchange="updateProspectNotes(\''+domEsc+'\',this.value)">'+_escHtmlSafe(d.notes)+'</textarea></div>';
+
+  var callBtn=d.phone
+    ?'<a class="btn btn-ghost btn-sm" href="tel:'+_escHtmlSafe(phoneClean)+'">📞 Llamar</a>'
+    :'<span class="btn btn-ghost btn-sm" aria-disabled="true">📞 Llamar</span>';
+  var waBtn=waDigits
+    ?'<a class="btn btn-sm" style="background:#25d366;color:#06241a;border-color:transparent;font-weight:700" href="https://wa.me/'+_escHtmlSafe(waDigits)+_escHtmlSafe(waText)+'" target="_blank" rel="noopener">💬 WhatsApp</a>'
+    :'<span class="btn btn-ghost btn-sm" aria-disabled="true">💬 WhatsApp</span>';
+  var actions='<div class="pm-actions">'
+    +callBtn+waBtn
+    +'<button class="btn btn-ghost btn-sm" onclick="_pipeEditStatus()">✏️ Editar estado</button>'
+    +'<button class="btn btn-ai btn-sm" onclick="aiNextAction(\''+domEsc+'\')">🤖 Siguiente acción IA</button>'
+    +'</div>';
+
+  var modal=document.createElement('div');
+  modal.className='modal-overlay';modal.id='pipe-modal';
+  modal.onclick=function(e){if(e.target===modal)closeModalById('pipe-modal')};
+  modal.innerHTML='<div class="modal-box" style="max-width:540px">'
+    +'<div class="modal-title">🏢 '+_escHtmlSafe(d.name)+'<button class="modal-close" onclick="closeModalById(\'pipe-modal\')">×</button></div>'
+    +'<div class="pipe-modal-badges"><span class="pm-badge" style="background:'+opp.color+'1f;color:'+opp.color+';border-color:'+opp.color+'66">Oportunidad '+_escHtmlSafe(opp.label)+'</span></div>'
+    +'<div class="pipe-modal-grid">'+rows+'</div>'
+    +waBlock+notesBlock+actions
+    +'</div>';
+  document.body.appendChild(modal);
+}
+function _pipeEditStatus(){
+  var v=document.getElementById('pipe-status-view'),s=document.getElementById('pipe-status-sel');
+  if(v)v.style.display='none';
+  if(s){s.style.display='';s.focus()}
+}
+function _pipeApplyStatus(domain,val){
+  if(typeof updateProspectStatus==='function')updateProspectStatus(domain,val);
+  if(typeof renderPipeline==='function')renderPipeline();
+  if(typeof showToast==='function')showToast('Estado actualizado');
+  openPipelineModal(domain);
+}
+function _pipeCopyWa(domain){
+  var d=_pipeData(domain);
+  if(!d.mensaje_wa){if(typeof showToast==='function')showToast('Sin mensaje');return}
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(d.mensaje_wa).then(function(){if(typeof showToast==='function')showToast('Mensaje copiado')});
+  }
+}
+window.openPipelineModal=openPipelineModal;
+window._pipeCardClick=_pipeCardClick;
+window._pipeEditStatus=_pipeEditStatus;
+window._pipeApplyStatus=_pipeApplyStatus;
+window._pipeCopyWa=_pipeCopyWa;
 
 function _bindPipelineDnD(listEl){
   var dragging=null;
@@ -7318,6 +7470,7 @@ async function renderWmDashboard(){
     if(typeof saveProspectMeta!=='function'){if(typeof showToast==='function')showToast('Pipeline no disponible');return}
     var domain=String(p.web||'').trim().replace(/^https?:\/\//i,'').replace(/\/.*$/,'').toLowerCase();
     var phone=String(p.telefono||'').replace(/[^0-9+]/g,'');
+    var chatbot=(p.chatbot===true)||/^(s[ií]|true|yes)$/i.test(String(p.chatbot||''));
     var key=domain||('ia-'+String(p.nombre||'prospecto').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40)+(phone?('-'+phone):''));
     var sector=p.sector||'';
     var nicho=(typeof _nichoFromSector==='function')?_nichoFromSector(sector):'otro';
@@ -7334,6 +7487,11 @@ async function renderWmDashboard(){
       source:'asistente_ia'
     };
     try{saveProspectMeta(key,meta)}catch(e){}
+    try{localStorage.setItem('scout_prospect_extra_'+key,JSON.stringify({
+      web:p.web||'',telefono:phone,email:p.email||'',direccion:p.direccion||'',
+      puntuacion:p.puntuacion||'',resenas:p.resenas||0,chatbot:chatbot,
+      oportunidad:p.oportunidad||'',mensaje_wa:p.mensaje_wa||'',sector:sector
+    }))}catch(e){}
     if(typeof renderPipeline==='function')renderPipeline();
     if(typeof updateCounters==='function')updateCounters();
     if(typeof showToast==='function')showToast('✅ '+(p.nombre||'Prospecto')+' añadido al pipeline');
