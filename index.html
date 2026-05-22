@@ -842,6 +842,26 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 .asis-send{flex-shrink:0;width:46px;height:46px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s}
 .asis-send:hover{opacity:.9}.asis-send:disabled{opacity:.45;cursor:not-allowed}
 .asis-send svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+/* Prospección · cards WhiteMoon (resultados del asistente) */
+.asis-cards{width:100%;display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:2px 0 4px}
+@media(max-width:1024px){.asis-cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.asis-cards{grid-template-columns:1fr}}
+.asis-card{background:var(--card);border:1px solid rgba(124,77,255,.18);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color .18s,box-shadow .18s,transform .18s}
+.asis-card:hover{border-color:rgba(124,77,255,.4);box-shadow:0 6px 22px rgba(124,77,255,.16);transform:translateY(-2px)}
+.asis-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.asis-card-name{font-weight:600;color:#f0f0f5;font-size:15px;line-height:1.3}
+.asis-card-badge{flex-shrink:0;font-size:.6rem;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:20px;border:1px solid;white-space:nowrap}
+.asis-card-body{display:flex;flex-direction:column;gap:6px}
+.asis-card-row{font-size:.78rem;color:var(--text2);display:flex;align-items:center;gap:6px;line-height:1.4}
+.asis-card-link{text-decoration:none;color:var(--text2);transition:color .15s;word-break:break-all}
+.asis-card-link:hover{color:var(--accent2)}
+.asis-card-addr{color:var(--muted);font-size:.72rem;align-items:flex-start}
+.asis-card-nowebt{color:#ff4d6d;font-weight:700;font-size:.72rem;background:rgba(255,77,106,.1);border:1px solid rgba(255,77,106,.3);padding:1px 8px;border-radius:7px}
+.asis-card-foot{display:flex;gap:8px;margin-top:auto;padding-top:4px}
+.asis-card-btn{flex:1;background:var(--bg3);border:1px solid var(--border2);color:var(--text2);font-family:'Sora',sans-serif;font-size:.66rem;font-weight:700;padding:7px 8px;border-radius:8px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.asis-card-btn:hover{color:var(--text);border-color:var(--accent-border);background:var(--accent-dim)}
+.asis-card-btn-p{background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff}
+.asis-card-btn-p:hover{opacity:.9;color:#fff}
 </style>
 <div class="page" id="p-asistente">
   <div class="page-head">
@@ -855,7 +875,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
     <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="¿Cómo está el pipeline esta semana? Analiza los leads, el MRR y las conversiones con los datos reales.">📊 Análisis</button>
     <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="Analiza la web de este prospecto: [URL]">🌐 Analizar Web</button>
     <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="Busca [sector] en [ciudad] sin chatbot IA. Analiza sus webs y dame nombre, web, teléfono y la oportunidad detectada, con un mensaje de contacto personalizado por cada uno.">🔍 Prospectar</button>
-    <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="Busca [sector] en [ciudad] estilo Google Maps. Dame una tabla con nombre, dirección, teléfono, web, valoración y nº de reseñas, detecta si tienen chatbot y clasifica la oportunidad (sin web = alta, con web sin chatbot = media, con chatbot = descartado).">📍 Google Maps</button>
+    <button class="asis-qbtn" onclick="asisQuick(this)" data-prompt="Busca [sector] en [ciudad] estilo Google Maps. Dame nombre, dirección, teléfono, web, valoración y nº de reseñas, detecta si tienen chatbot y clasifica la oportunidad (sin web = alta, con web sin chatbot = media, con chatbot = descartado).">📍 Google Maps</button>
     <button class="asis-qbtn asis-clear" onclick="asisClear()" title="Borra el historial y reinicia el contexto">🗑️ Limpiar chat</button>
   </div>
   <div class="asis-chat card">
@@ -7190,6 +7210,135 @@ async function renderWmDashboard(){
     if(box)box.scrollTop=box.scrollHeight;
   }
 
+  // ── Detección de prospectos: extrae { "type":"prospects", "data":[...] } ──
+  // Devuelve {text, prospects}: el texto sin el bloque JSON y el array de prospectos.
+  function _asProspectArray(raw){
+    if(!raw||typeof raw!=='object')return null;
+    if(raw.type==='prospects'&&Array.isArray(raw.data))return raw.data;
+    return null;
+  }
+  // Recorre el texto buscando objetos { ... } de primer nivel (respeta strings).
+  function _scanJsonObjects(text){
+    var out=[],depth=0,start=-1,inStr=false,esc=false;
+    for(var i=0;i<text.length;i++){
+      var ch=text[i];
+      if(inStr){
+        if(esc){esc=false}
+        else if(ch==='\\'){esc=true}
+        else if(ch==='"'){inStr=false}
+        continue;
+      }
+      if(ch==='"'){inStr=true;continue}
+      if(ch==='{'){if(depth===0)start=i;depth++}
+      else if(ch==='}'){if(depth>0){depth--;if(depth===0&&start>=0){out.push({start:start,end:i+1,str:text.slice(start,i+1)});start=-1}}}
+    }
+    return out;
+  }
+  function _parseProspects(text){
+    if(!text)return {text:text||'',prospects:[]};
+    var prospects=[],clean=text;
+    // 1) Bloques con valla ```json ... ``` (o ``` ... ```)
+    var fenceRe=/```(?:json)?\s*([\s\S]*?)```/gi,m;
+    var fences=[];
+    while((m=fenceRe.exec(text))!==null)fences.push({full:m[0],inner:m[1]});
+    fences.forEach(function(f){
+      try{
+        var arr=_asProspectArray(JSON.parse(f.inner.trim()));
+        if(arr){prospects=prospects.concat(arr);clean=clean.replace(f.full,'')}
+      }catch(e){}
+    });
+    // 2) Fallback sin valla: objetos { ... } sueltos en el texto
+    if(!prospects.length){
+      var objs=_scanJsonObjects(clean);
+      for(var j=objs.length-1;j>=0;j--){
+        try{
+          var a=_asProspectArray(JSON.parse(objs[j].str));
+          if(a){prospects=a.concat(prospects);clean=clean.slice(0,objs[j].start)+clean.slice(objs[j].end)}
+        }catch(e){}
+      }
+    }
+    clean=clean.replace(/\n{3,}/g,'\n\n').trim();
+    return {text:clean,prospects:prospects};
+  }
+
+  function _oppMeta(o){
+    var k=String(o==null?'':o).toLowerCase().trim();
+    if(k.indexOf('alta')>=0||k==='high')return {label:'ALTA',color:'#ff4d6d'};
+    if(k.indexOf('media')>=0||k==='medium')return {label:'MEDIA',color:'#f5c842'};
+    if(k.indexOf('baja')>=0||k==='low')return {label:'BAJA',color:'#00d4aa'};
+    if(k.indexOf('descart')>=0)return {label:'DESCARTADO',color:'#8888a0'};
+    return {label:k?k.toUpperCase():'—',color:'#8888a0'};
+  }
+  function _prospectCards(list,msgIdx){
+    var h='<div class="asis-cards">';
+    list.forEach(function(p,ci){
+      var opp=_oppMeta(p.oportunidad);
+      var phone=String(p.telefono||'').trim();
+      var phoneClean=phone.replace(/[^0-9+]/g,'');
+      var web=String(p.web||'').trim();
+      var punt=String(p.puntuacion||'').trim();
+      var res=p.resenas;
+      var chatbot=(p.chatbot===true)||/^(s[ií]|true|yes)$/i.test(String(p.chatbot||''));
+      h+='<div class="asis-card">';
+      h+='<div class="asis-card-top"><span class="asis-card-name">'+_esc(p.nombre||'(sin nombre)')+'</span>'
+        +'<span class="asis-card-badge" style="background:'+opp.color+'1f;color:'+opp.color+';border-color:'+opp.color+'66">'+_esc(opp.label)+'</span></div>';
+      var rows='';
+      if(phone)rows+='<a class="asis-card-row asis-card-link" href="tel:'+_esc(phoneClean)+'">📞 '+_esc(phone)+'</a>';
+      if(web){
+        var href=/^https?:\/\//i.test(web)?web:'https://'+web;
+        rows+='<a class="asis-card-row asis-card-link" href="'+_esc(href)+'" target="_blank" rel="noopener">🌐 '+_esc(web.replace(/^https?:\/\//i,''))+'</a>';
+      }else{
+        rows+='<div class="asis-card-row"><span class="asis-card-nowebt">🌐 Sin web</span></div>';
+      }
+      if(punt)rows+='<div class="asis-card-row">⭐ '+_esc(punt)+(/\/\s*5\s*$/.test(punt)?'':'/5')+(res?(' · '+_esc(String(res))+' reseñas'):'')+'</div>';
+      rows+='<div class="asis-card-row">🤖 Chatbot IA: '+(chatbot?'✅ Sí':'❌ No')+'</div>';
+      if(p.direccion)rows+='<div class="asis-card-row asis-card-addr">📍 '+_esc(p.direccion)+'</div>';
+      h+='<div class="asis-card-body">'+rows+'</div>';
+      h+='<div class="asis-card-foot">'
+        +'<button class="asis-card-btn" onclick="asisCardCopy('+msgIdx+','+ci+')">📋 Copiar mensaje</button>'
+        +'<button class="asis-card-btn asis-card-btn-p" onclick="asisCardPipeline('+msgIdx+','+ci+')">➕ Añadir al Pipeline</button>'
+        +'</div>';
+      h+='</div>';
+    });
+    h+='</div>';
+    return h;
+  }
+
+  window.asisCardCopy=function(mi,ci){
+    var m=HISTORY[mi];if(!m||!m.prospects||!m.prospects[ci])return;
+    var msg=m.prospects[ci].mensaje_wa||'';
+    if(!msg){if(typeof showToast==='function')showToast('Este prospecto no trae mensaje');return}
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(msg).then(function(){if(typeof showToast==='function')showToast('Mensaje copiado')});
+    }
+  };
+  window.asisCardPipeline=function(mi,ci){
+    var m=HISTORY[mi];if(!m||!m.prospects||!m.prospects[ci])return;
+    var p=m.prospects[ci];
+    if(typeof saveProspectMeta!=='function'){if(typeof showToast==='function')showToast('Pipeline no disponible');return}
+    var domain=String(p.web||'').trim().replace(/^https?:\/\//i,'').replace(/\/.*$/,'').toLowerCase();
+    var phone=String(p.telefono||'').replace(/[^0-9+]/g,'');
+    var key=domain||('ia-'+String(p.nombre||'prospecto').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,40)+(phone?('-'+phone):''));
+    var sector=p.sector||'';
+    var nicho=(typeof _nichoFromSector==='function')?_nichoFromSector(sector):'otro';
+    var notes='Prospección IA'+(p.direccion?(' · '+p.direccion):'')+(p.mensaje_wa?(' · WA: '+String(p.mensaje_wa).slice(0,120)):'');
+    var meta={
+      status:'pending',
+      notes:notes,
+      lastContact:new Date().toISOString().substring(0,10),
+      mrr:0,
+      sector:sector,
+      nicho:nicho,
+      name:p.nombre||domain||'Prospecto',
+      phone:phone||'',
+      source:'asistente_ia'
+    };
+    try{saveProspectMeta(key,meta)}catch(e){}
+    if(typeof renderPipeline==='function')renderPipeline();
+    if(typeof updateCounters==='function')updateCounters();
+    if(typeof showToast==='function')showToast('✅ '+(p.nombre||'Prospecto')+' añadido al pipeline');
+  };
+
   function render(){
     var box=document.getElementById('asis-messages');
     if(!box)return;
@@ -7204,8 +7353,12 @@ async function renderWmDashboard(){
       }else if(m.role==='error'){
         html+='<div class="asis-msg error">⚠️ '+_esc(m.content)+'</div>';
       }else{
-        html+='<div class="asis-msg assistant">'+mdRender(m.content)
-          +'<div class="asis-msg-foot"><button class="asis-copy" onclick="asisCopy('+idx+')">📋 Copiar</button></div></div>';
+        var clean=(m.clean!=null?m.clean:m.content)||'';
+        if(clean.trim()){
+          html+='<div class="asis-msg assistant">'+mdRender(clean)
+            +'<div class="asis-msg-foot"><button class="asis-copy" onclick="asisCopy('+idx+')">📋 Copiar</button></div></div>';
+        }
+        if(m.prospects&&m.prospects.length)html+=_prospectCards(m.prospects,idx);
       }
     });
     box.innerHTML=html;
@@ -7267,8 +7420,9 @@ async function renderWmDashboard(){
   window.asisCopy=function(idx){
     var m=HISTORY[idx];
     if(!m)return;
+    var txt=(m.clean!=null&&m.clean.trim())?m.clean:m.content;
     if(navigator.clipboard&&navigator.clipboard.writeText){
-      navigator.clipboard.writeText(m.content).then(function(){
+      navigator.clipboard.writeText(txt).then(function(){
         if(typeof showToast==='function')showToast('Respuesta copiada');
       });
     }
@@ -7298,7 +7452,10 @@ async function renderWmDashboard(){
       showTyping(false);
       var reply=(d&&d.reply)?d.reply:(typeof d==='string'?d:'');
       if(!reply){HISTORY.push({role:'error',content:'La IA no devolvió respuesta.'})}
-      else{HISTORY.push({role:'assistant',content:reply})}
+      else{
+        var parsed=_parseProspects(reply);
+        HISTORY.push({role:'assistant',content:reply,clean:parsed.text,prospects:parsed.prospects});
+      }
       render();
     }).catch(function(e){
       showTyping(false);
