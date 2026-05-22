@@ -6540,7 +6540,7 @@ function _ragSectionHtml(clienteId,pack){
     +'<div id="rag-list" style="margin-top:10px"><div class="rag-empty">Cargando documentos…</div></div>'
     +'<div class="rag-sec-title">📤 Subir nuevo documento</div>'
     +'<div class="rag-upbox">'
-      +'<div style="margin-bottom:9px"><label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Subir archivo (PDF, TXT, DOC, DOCX)<input type="file" id="rag-up-file" accept=".pdf,.txt,.doc,.docx" style="display:none" onchange="_ragFile(this,\''+idEsc+'\')"></label><div style="font-size:.66rem;color:var(--muted);margin-top:5px">El archivo se lee como texto y rellena los campos de abajo. Revísalo antes de indexar.</div></div>'
+      +'<div style="margin-bottom:9px"><label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Subir archivo (PDF, TXT, DOC, DOCX)<input type="file" id="rag-up-file" accept=".pdf,.txt,.doc,.docx" style="display:none" onchange="_ragFile(this,\''+idEsc+'\')"></label><div style="font-size:.66rem;color:var(--muted);margin-top:5px">Los PDF se procesan en el servidor (texto limpio, sin ruido). TXT/DOC se cargan abajo para que los revises antes de indexar.</div></div>'
       +'<div class="field-group" style="margin-bottom:9px"><span class="field-label">Nombre del documento</span><input class="input" id="rag-up-nombre" placeholder="Ej: Tarifas 2026.pdf"></div>'
       +'<div class="field-group"><span class="field-label">Contenido (pega el texto o sube un archivo)</span><textarea class="input" id="rag-up-texto" rows="5" style="resize:vertical;font-size:.78rem" placeholder="Pega aquí el contenido del documento…"></textarea></div>'
       +'<div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap"><button class="btn btn-p btn-sm" id="rag-up-btn" onclick="_ragUpload(\''+idEsc+'\')">📤 Subir e indexar</button><span class="rag-up-status" id="rag-up-status"></span></div>'
@@ -6633,7 +6633,7 @@ async function _ragUpload(clienteId){
       if(btn)btn.disabled=false;
       return;
     }
-    var chunks=(data&&(data.chunks||data.chunks_generados));
+    var chunks=_ragChunks(data);
     setStatus('✅ Documento indexado'+(chunks!=null?(' · '+chunks+' chunks'):''),'#00d4aa');
     if(nombreEl)nombreEl.value='';if(textoEl)textoEl.value='';
     if(typeof _wmToast==='function')_wmToast('📚 Documento enviado a indexar');
@@ -6659,21 +6659,33 @@ function _ragCopyScript(clienteId){
   if(typeof copyTxt==='function')copyTxt(script);
   else if(navigator.clipboard)navigator.clipboard.writeText(script);
 }
-// Lee un archivo (PDF/TXT/DOC/DOCX) como texto con FileReader y rellena los campos.
+// Lee el nº de chunks de la respuesta de rag-ingest (varias claves posibles).
+function _ragChunks(data){
+  if(!data)return null;
+  var v=(data.chunks_procesados!=null)?data.chunks_procesados:((data.chunks!=null)?data.chunks:data.chunks_generados);
+  return (v==null)?null:v;
+}
+// Gestión de archivo: los PDF se procesan en el servidor (pdf.js); el
+// resto se lee como texto con FileReader y rellena los campos para revisar.
 function _ragFile(input,clienteId){
   var f=input&&input.files&&input.files[0];
   if(!f)return;
+  var ext=(f.name.split('.').pop()||'').toLowerCase();
+  if(ext==='pdf'){
+    _ragUploadFile(clienteId,f);
+    input.value='';
+    return;
+  }
   var nameEl=document.getElementById('rag-up-nombre'),textoEl=document.getElementById('rag-up-texto'),status=document.getElementById('rag-up-status');
   function setStatus(msg,color){if(status){status.textContent=msg;status.style.color=color||'var(--text2)'}}
-  var ext=(f.name.split('.').pop()||'').toLowerCase();
   setStatus('⏳ Leyendo '+f.name+'…','var(--accent2)');
   var reader=new FileReader();
   reader.onload=function(){
     var txt=String(reader.result||'');
     if(textoEl)textoEl.value=txt;
     if(nameEl&&!nameEl.value.trim())nameEl.value=f.name;
-    if(ext==='pdf'||ext==='doc'||ext==='docx'){
-      setStatus('⚠️ '+f.name+' leído como texto plano ('+txt.length+' caracteres). Los PDF/DOC pueden requerir limpieza: revisa el contenido y pulsa «Subir e indexar».','#f5c842');
+    if(ext==='doc'||ext==='docx'){
+      setStatus('⚠️ '+f.name+' leído como texto plano ('+txt.length+' caracteres). Los DOC/DOCX pueden requerir limpieza: revisa el contenido y pulsa «Subir e indexar».','#f5c842');
     }else{
       setStatus('📄 '+f.name+' cargado ('+txt.length+' caracteres). Revisa y pulsa «Subir e indexar».','#00d4aa');
     }
@@ -6681,6 +6693,32 @@ function _ragFile(input,clienteId){
   };
   reader.onerror=function(){setStatus('❌ No se pudo leer el archivo','#ff4d6d');input.value=''};
   reader.readAsText(f);
+}
+// Sube un archivo binario (PDF) a rag-ingest para extracción server-side.
+async function _ragUploadFile(clienteId,file){
+  var status=document.getElementById('rag-up-status'),btn=document.getElementById('rag-up-btn');
+  function setStatus(msg,color){if(status){status.textContent=msg;status.style.color=color||'var(--text2)'}}
+  if(btn)btn.disabled=true;
+  setStatus('⏳ Subiendo «'+file.name+'» y extrayendo el texto en el servidor…','var(--accent2)');
+  try{
+    var fd=new FormData();
+    fd.append('cliente_id',clienteId);
+    fd.append('file',file,file.name);
+    var res=await fetch(RAG_INGEST_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},body:fd});
+    var data=null;try{data=await res.json()}catch(e){}
+    if(!res.ok||(data&&data.ok===false)){
+      var emsg=(data&&(data.error||data.message))||('HTTP '+res.status);
+      setStatus('❌ Error: '+emsg,'#ff4d6d');if(btn)btn.disabled=false;return;
+    }
+    var chunks=_ragChunks(data),chars=(data&&data.caracteres_extraidos);
+    setStatus('✅ PDF indexado'+(chunks!=null?(' · '+chunks+' chunks'):'')+(chars!=null?(' · '+chars+' caracteres'):''),'#00d4aa');
+    if(typeof _wmToast==='function')_wmToast('📚 PDF procesado en el servidor');
+    var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(clienteId)})[0]||{};
+    _ragLoad(clienteId,r.pack);
+  }catch(e){
+    setStatus('❌ Error de red: '+(e&&e.message?e.message:'desconocido'),'#ff4d6d');
+  }
+  if(btn)btn.disabled=false;
 }
 window._ragUpload=_ragUpload;
 window._ragDelete=_ragDelete;
