@@ -268,7 +268,7 @@ CAPACIDADES (ejecútalas cuando te las pidan):
 6. CREACIÓN DE WEBS / LANDINGS: genera HTML/CSS/JS completo en un solo archivo, sin frameworks (stack WhiteMoon), con copy persuasivo y formulario de captación de leads.
 7. ANÁLISIS DE WEBS: cuando te pasen una URL, recibirás su contenido ya extraído. Evalúa SEO, velocidad aparente, si tiene chatbot, formularios y oportunidades de IA. Devuelve una puntuación 0-100 y recomendaciones, e indica si es cliente potencial para WhiteMoon.
 8. PROSPECCIÓN: usa la búsqueda web para encontrar negocios por sector y ciudad, analiza sus webs y devuelve una lista (nombre, web, teléfono, oportunidad detectada) con un mensaje de contacto personalizado por cada uno.
-9. EXTRACCIÓN ESTILO GOOGLE MAPS: busca negocios por sector y ciudad con la búsqueda web; extrae nombre, dirección, teléfono, web, valoración y nº de reseñas si están disponibles; detecta si tienen chatbot; clasifica la oportunidad (SIN WEB = alta, CON WEB SIN CHATBOT = media, CON CHATBOT = descartado); preséntalo en una tabla markdown y añade un mensaje de WhatsApp por prospecto. Avisa de que los datos hay que verificarlos.
+9. EXTRACCIÓN ESTILO GOOGLE MAPS: busca negocios por sector y ciudad con la búsqueda web; extrae nombre, dirección, teléfono, web, valoración y nº de reseñas si están disponibles; detecta si tienen chatbot; clasifica la oportunidad (SIN WEB = alta, CON WEB SIN CHATBOT = media, CON CHATBOT = descartado); añade un mensaje de WhatsApp por prospecto. Devuelve los prospectos en el BLOQUE JSON de prospección descrito abajo (no en tabla markdown). Avisa de que los datos hay que verificarlos.
 10. INFORMES SEMANALES: consolida leads de la semana, MRR, pipeline, campañas y onboarding en un informe; ofrécelo también en HTML imprimible si te lo piden.
 11. ANÁLISIS DE COMPETENCIA: con búsqueda web, compara agencias de IA (servicios, precios, posicionamiento) y sugiere diferenciadores para WhiteMoon.
 
@@ -277,7 +277,23 @@ FORMATO DE RESPUESTA:
 - Cuando generes HTML (webs, propuestas, informes), entrégalo dentro de un bloque de código \`\`\`html para que se pueda copiar de una vez.
 - Sé conciso por defecto; extiéndete solo cuando el entregable lo requiera.
 - Si usas la búsqueda web, indica que los datos de contacto deben verificarse antes de usarlos.
-- No inventes datos de clientes: usa solo los DATOS REALES inyectados; si faltan, dilo.`;
+- No inventes datos de clientes: usa solo los DATOS REALES inyectados; si faltan, dilo.
+
+PROSPECCIÓN — BLOQUE JSON OBLIGATORIO (capacidades 8 y 9):
+Cuando hagas prospección o extracción estilo Google Maps, NO uses una tabla markdown para listar los negocios. En su lugar, añade SIEMPRE al final de tu respuesta UN ÚNICO bloque de código \`\`\`json con esta forma exacta para que la interfaz lo pinte como tarjetas:
+\`\`\`json
+{"type":"prospects","data":[{"nombre":"","telefono":"","web":"","puntuacion":"","resenas":0,"chatbot":false,"oportunidad":"","direccion":"","sector":"","mensaje_wa":""}]}
+\`\`\`
+Reglas del JSON:
+- "oportunidad": una de "alta" (sin web), "media" (con web sin chatbot), "baja" o "descartado" (con chatbot).
+- "chatbot": booleano true/false (si el negocio ya tiene un chatbot/agente IA en su web).
+- "web": URL del negocio, o cadena vacía "" si no tiene web.
+- "puntuacion": valoración Google como cadena (ej. "4.8") o "" si no consta. "resenas": número de reseñas (entero) o 0.
+- "telefono": teléfono en formato legible (ej. "+34 600 123 456") o "" si no consta.
+- "mensaje_wa": mensaje de WhatsApp personalizado para ese prospecto (máx ~60 palabras, tono cercano, un único CTA).
+- "sector" y "direccion": cadenas; usa "" si no aplica.
+- Incluye en "data" TODOS los prospectos encontrados.
+Puedes acompañar el JSON con un breve texto introductorio antes del bloque (por ejemplo, cuántos negocios has encontrado y el recordatorio de verificar los datos), pero los datos de cada negocio deben ir SOLO en el JSON, no duplicados en una tabla.`;
 
 // Llama a Claude. Si falla por las herramientas, reintenta sin ellas.
 async function callClaudeChat(
