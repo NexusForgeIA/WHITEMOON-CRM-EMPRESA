@@ -1022,13 +1022,13 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
       <div style="font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:6px">Elite</div>
       <div style="font-size:.78rem;color:var(--text2);margin-bottom:14px;line-height:1.55">Solución completa con agentes IA, RAG y estrategia digital.</div>
       <div style="font-size:2.4rem;font-weight:900;background:linear-gradient(135deg,#ff8c42,#ffb380);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:4px;letter-spacing:-.02em">8.500€<span style="font-size:1rem;color:var(--text2);-webkit-text-fill-color:var(--text2)"> setup</span></div>
-      <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px">desde 599€/mes</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-bottom:14px">599€/mes</div>
       <div style="font-size:.74rem;color:var(--text2);line-height:1.9;margin-bottom:14px">
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#00d4aa;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>Agentes IA multi-tarea</div>
         <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#00d4aa;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>RAG sobre documentación interna</div>
         <div style="display:flex;align-items:center;gap:7px"><svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:#00d4aa;fill:none;stroke-width:3;flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>Estrategia digital trimestral</div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="copyTxt('Elite — 8.500€ setup · desde 599€/mes. Solución completa con agentes IA, RAG y estrategia digital. IVA no incluido.');this.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; style=&quot;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:3&quot;><polyline points=&quot;20 6 9 17 4 12&quot;/></svg>Copiado';setTimeout((b=>()=>b.innerHTML='Copiar precio')(this),1600)" style="width:100%;justify-content:center">Copiar precio</button>
+      <button class="btn btn-ghost btn-sm" onclick="copyTxt('Elite — 8.500€ setup · 599€/mes. Solución completa con agentes IA, RAG y estrategia digital. IVA no incluido.');this.innerHTML='<svg viewBox=&quot;0 0 24 24&quot; style=&quot;width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:3&quot;><polyline points=&quot;20 6 9 17 4 12&quot;/></svg>Copiado';setTimeout((b=>()=>b.innerHTML='Copiar precio')(this),1600)" style="width:100%;justify-content:center">Copiar precio</button>
     </div>
   </div>
   <div class="card mb24" style="border-color:rgba(0,201,255,.35);background:linear-gradient(135deg,rgba(0,201,255,.04),rgba(124,77,255,.02))">
@@ -1057,7 +1057,7 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 Spark              →  499€ setup    + 199€/mes ⭐
 Core               →  1.800€ setup  + 199€/mes
 Scale              →  4.500€ setup  + 449€/mes
-Elite              →  8.500€ setup  · desde 599€/mes
+Elite              →  8.500€ setup  · 599€/mes
 ──────────────────────────────────────
 Auditoría IA       →  899€ pago único · informe 7 días · descontable
 
@@ -2783,7 +2783,7 @@ automocion: {
   ],
   solution: 'cualifican compradores 24/7 y calculan financiación al instante',
   callHours: 'entre 10:00-13:00',
-  ticket: 'Scale (4.500€ + 449€/mes) o Elite (8.500€ + desde 599€/mes)',
+  ticket: 'Scale (4.500€ + 449€/mes) o Elite (8.500€ + 599€/mes)',
   emailSubject: '¿Cuántos compradores pierde tu concesionario fuera de horario?',
   emailBody: 'Hola [nombre],\n\nSoy Cristobal de WhiteMoon.\n\nUna pregunta directa: ¿qué pasa cuando un comprador visita vuestra web a las 23h, ve el coche que quiere y no encuentra a nadie?\n\nSe va a la competencia.\n\nHemos desarrollado un agente IA específico para concesionarios que:\n✅ Cualifica al comprador — presupuesto, financiación o contado\n✅ Calcula la cuota mensual al instante\n✅ Informa del Plan Auto+ 2026 (hasta 4.500€ de ayuda)\n✅ Te manda el lead por WhatsApp listo para llamar\n\nPuedes ver la demo en vivo:\n👉 https://nexusforgeia.github.io/WHITEMOON-AUTOMOVILES/\n\nEscribe "BMW" en el chat y verás exactamente lo que recibiría tu equipo comercial.\n\n¿Tienes 10 minutos esta semana?\n\nSaludos,\nCristobal\nWhiteMoon · 643 199 580'
 }
@@ -3656,7 +3656,7 @@ function clientById(id){var a=getClients();for(var i=0;i<a.length;i++)if(a[i].id
 function openClientModal(existingId){
   closeModalById('client-modal');
   var c=existingId?clientById(existingId):null;
-  if(!c)c={name:'',sector:'',pack:'spark',mrr:149,setupOnce:0,startDate:new Date().toISOString().substring(0,10),phone:'',notes:'',status:'active',commissionPaid:false};
+  if(!c)c={name:'',sector:'',pack:'spark',mrr:199,setupOnce:0,startDate:new Date().toISOString().substring(0,10),phone:'',notes:'',status:'active',commissionPaid:false};
   var sectorOpts=SECTORS.map(function(s){return '<option'+(c.sector===s.s?' selected':'')+'>'+s.s+'</option>'}).join('');
   var statusOpts=[
     {id:'active',label:'Activo'},{id:'paused',label:'En pausa'},{id:'cancelled',label:'Cancelado'}
@@ -3674,7 +3674,7 @@ function openClientModal(existingId){
 +'<option value="spark"'+(c.pack==='spark'?' selected':'')+'>Spark — 499€ setup + 199€/mes</option>'
 +'<option value="core"'+(c.pack==='core'?' selected':'')+'>Core — 1.800€ setup + 199€/mes</option>'
 +'<option value="scale"'+(c.pack==='scale'?' selected':'')+'>Scale — 4.500€ setup + 449€/mes</option>'
-+'<option value="elite"'+(c.pack==='elite'?' selected':'')+'>Elite — 8.500€ setup + desde 599€/mes</option>'
++'<option value="elite"'+(c.pack==='elite'?' selected':'')+'>Elite — 8.500€ setup + 599€/mes</option>'
 +'<option value="audit"'+(c.pack==='audit'?' selected':'')+'>Auditoría IA — 899€ pago único</option>'
 +'</select></div>'
 +'<div class="field-group"><span class="field-label">Estado</span><select class="select" id="cl-status">'+statusOpts+'</select></div>'
@@ -3696,7 +3696,7 @@ function openClientModal(existingId){
 function _onPackChange(){
   var p=$('cl-pack').value;
   var defaults={
-    spark:{mrr:149,setup:0},
+    spark:{mrr:199,setup:499},
     core:{mrr:199,setup:1800},
     scale:{mrr:449,setup:4500},
     elite:{mrr:599,setup:8500},
@@ -3755,9 +3755,9 @@ function renderMRRDashboard(){
   var goal=getMRRGoal();
   var pct=goal>0?Math.min(100,Math.round(mrr*100/goal)):0;
   var pctReal=goal>0?Math.round(mrr*100/goal):0;
-  var sparkMrr=clients.filter(function(c){return c.pack==='spark'||c.pack==='advance'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
-  var webMrr=clients.filter(function(c){var p=c.pack;return p==='core'||p==='scale'||p==='elite'||p==='pyme'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
-  var clientsForGoal=Math.ceil(goal/149);
+  var sparkMrr=clients.filter(function(c){return c.pack==='spark'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
+  var webMrr=clients.filter(function(c){var p=c.pack;return p==='core'||p==='scale'||p==='elite'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
+  var clientsForGoal=Math.ceil(goal/199);
 
   // History bars (last 6 months from history + current)
   var hist=getMRRHistory();
@@ -3807,7 +3807,7 @@ function renderClientsList(){
 +'<div class="cl-row cl-head"><div>Cliente</div><div>Pack</div><div>MRR</div><div>Alta</div><div>Estado</div><div></div></div>';
   clients.forEach(function(c){
     var statusBadge={active:'<span class="cl-badge cl-active">Activo</span>',paused:'<span class="cl-badge cl-paused">En pausa</span>',cancelled:'<span class="cl-badge cl-cancelled">Cancelado</span>'}[c.status]||'';
-    var packLabels={spark:'Spark',core:'Core',scale:'Scale',elite:'Elite',audit:'Auditoría',advance:'Spark',pyme:'Core',orbit:'Elite'};
+    var packLabels={spark:'Spark',core:'Core',scale:'Scale',elite:'Elite',audit:'Auditoría'};
     var packLabel=packLabels[c.pack]||(c.pack||'—');
     html+='<div class="cl-row'+(c.status==='cancelled'?' cl-dim':'')+'"><div><div class="cl-name">'+c.name+'</div>'+(c.sector?'<div class="cl-meta">'+c.sector+'</div>':'')+(c.phone?'<div class="cl-meta">'+c.phone+'</div>':'')+'</div><div><span class="cl-pack">'+packLabel+'</span></div><div><b>'+(+c.mrr||0)+'€/mes</b>'+(c.setupOnce?'<div class="cl-meta">+'+c.setupOnce+'€ setup</div>':'')+'</div><div class="cl-meta">'+(c.startDate||'—')+'</div><div>'+statusBadge+'</div><div class="cl-actions"><button class="btn btn-ghost btn-xs" onclick="openClientModal(\''+c.id+'\')">Editar</button><button class="btn btn-ghost btn-xs" onclick="deleteClient(\''+c.id+'\')" style="color:var(--red2)">×</button></div></div>';
     if(c.notes)html+='<div class="cl-notes">📝 '+c.notes+'</div>';
@@ -6502,7 +6502,7 @@ function openObDetail(id){
     +_wmDtRow('URL web cliente',_wmLink(r.url_web_cliente))
     +_wmDtRow('Repo GitHub',_wmLink(r.repo_github))
     +_wmDtRow('Notas',notasHtml)
-    +_wmDtRow('System prompt Laura',promptHtml);
+    +_wmDtRow('System prompt Orion IA',promptHtml);
   var fiscal=_wmDtRow('Dirección',_wmTxt(r.direccion))
     +_wmDtRow('CIF',_wmTxt(r.cif))
     +_wmDtRow('Persona de contacto',_wmTxt(r.persona_contacto));
@@ -6756,7 +6756,7 @@ function _wmObEdit(id){
     +'<div class="field-group"><span class="field-label">Persona de contacto</span><input class="input" id="ob-e-contacto" value="'+_wmE(r.persona_contacto==null?'':r.persona_contacto)+'"></div>'
     +'</div>'
     +'<div class="field-group mb12"><span class="field-label">Notas</span><textarea class="input" id="ob-e-notas" rows="3" style="resize:vertical">'+_wmE(r.notas==null?'':r.notas)+'</textarea></div>'
-    +'<div class="field-group mb12"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px"><span class="field-label" style="margin:0">System prompt de Laura IA (agente)</span><button class="btn btn-ai btn-xs" id="ob-e-genprompt" onclick="_wmObGenPrompt(\''+_wmE(r.id)+'\')" title="Generar con IA a partir de nombre, sector, pack y web">🤖 Generar system prompt</button></div><textarea class="input mono" id="ob-e-agente-prompt" rows="7" style="resize:vertical;font-size:.74rem" placeholder="Genera el system prompt con IA o escríbelo manualmente…">'+_wmE(r.agente_system_prompt==null?'':r.agente_system_prompt)+'</textarea></div>'
+    +'<div class="field-group mb12"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px"><span class="field-label" style="margin:0">System prompt de Orion IA (agente)</span><button class="btn btn-ai btn-xs" id="ob-e-genprompt" onclick="_wmObGenPrompt(\''+_wmE(r.id)+'\')" title="Generar con IA a partir de nombre, sector, pack y web">🤖 Generar system prompt</button></div><textarea class="input mono" id="ob-e-agente-prompt" rows="7" style="resize:vertical;font-size:.74rem" placeholder="Genera el system prompt con IA o escríbelo manualmente…">'+_wmE(r.agente_system_prompt==null?'':r.agente_system_prompt)+'</textarea></div>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-p btn-sm" id="ob-e-save" onclick="_wmObSaveEdit(\''+_wmE(r.id)+'\')">💾 Guardar</button><button class="btn btn-ghost btn-sm" onclick="openObDetail(\''+_wmE(r.id)+'\')">Cancelar</button></div>'
     +'</div>';
   document.body.appendChild(modal);

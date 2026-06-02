@@ -41,7 +41,7 @@ const json = (body: unknown, status = 200) =>
 
 // ── Contexto común de marca ──────────────────────────────────────
 const BRAND = `WhiteMoon es una agencia española que implanta agentes de IA (chatbots) y soluciones digitales para negocios locales (clínicas dentales, restaurantes, despachos legales, gestorías, talleres, inmobiliarias, etc.).
-"Laura" es el agente conversacional de IA que WhiteMoon despliega para sus clientes.
+"Orion IA" es el agente conversacional de IA que WhiteMoon despliega para sus clientes.
 Escribe SIEMPRE en español de España, tono profesional pero cercano, tratando de "tú". Sé concreto y comercial, evita relleno y promesas que no se puedan cumplir. Plazos de entrega: "5-7 días laborables".`;
 
 const clean = (v: unknown) => (v == null ? "" : String(v)).trim();
@@ -69,14 +69,14 @@ function buildRequest(
       return { system, user, json: true, maxTokens: 700 };
     }
 
-    // ── ONBOARDING: generar system prompt de Laura IA ──────────────
+    // ── ONBOARDING: generar system prompt de Orion IA ──────────────
     case "onboarding": {
       const system =
-        `${BRAND}\n\nEres un experto en diseño de agentes conversacionales. Generas el SYSTEM PROMPT completo y listo para producción del agente "Laura" de un cliente concreto de WhiteMoon.\n` +
-        `El system prompt debe estar escrito en español, en segunda persona dirigida al agente ("Eres Laura..."), e incluir: identidad y rol, tono de voz, objetivos (captar/cualificar/agendar), qué datos recoge, qué NO debe hacer (no inventar precios ni diagnósticos, derivar a humano cuando proceda), y estilo de respuesta (breve, una pregunta a la vez).\n` +
+        `${BRAND}\n\nEres un experto en diseño de agentes conversacionales. Generas el SYSTEM PROMPT completo y listo para producción del agente "Orion IA" de un cliente concreto de WhiteMoon.\n` +
+        `El system prompt debe estar escrito en español, en segunda persona dirigida al agente ("Eres Orion IA..."), e incluir: identidad y rol, tono de voz, objetivos (captar/cualificar/agendar), qué datos recoge, qué NO debe hacer (no inventar precios ni diagnósticos, derivar a humano cuando proceda), y estilo de respuesta (breve, una pregunta a la vez).\n` +
         `Devuelve ÚNICAMENTE el texto del system prompt, sin comentarios, sin markdown, sin comillas envolventes.`;
       const user =
-        `Genera el system prompt de Laura para este cliente:\n` +
+        `Genera el system prompt de Orion IA para este cliente:\n` +
         `- Nombre del cliente/negocio: ${clean(ctx.cliente_nombre) || "(sin nombre)"}\n` +
         `- Sector: ${clean(ctx.sector) || "(genérico)"}\n` +
         `- Pack contratado: ${clean(ctx.pack) || "(no especificado)"}\n` +
@@ -264,7 +264,7 @@ CAPACIDADES (ejecútalas cuando te las pidan):
 2. PROPUESTAS / PRESENTACIONES: genera la propuesta completa en HTML autocontenido listo para imprimir o enviar (precios WhiteMoon, beneficios, ROI estimado y casos de uso del sector).
 3. EMAILS y WHATSAPP: mensajes personalizados por sector con estructura AIDA (atención, interés, deseo, acción), listos para copiar.
 4. ANÁLISIS DE PIPELINE: usa los DATOS REALES inyectados abajo para responder (leads de la semana, MRR, conversiones, próximos vencimientos) con un análisis accionable.
-5. SYSTEM PROMPTS de Laura IA: genera el system prompt completo del agente para un sector/cliente, listo para pegar en el panel CDN.
+5. SYSTEM PROMPTS de Orion IA: genera el system prompt completo del agente para un sector/cliente, listo para pegar en el panel CDN.
 6. CREACIÓN DE WEBS / LANDINGS: genera HTML/CSS/JS completo en un solo archivo, sin frameworks (stack WhiteMoon), con copy persuasivo y formulario de captación de leads.
 7. ANÁLISIS DE WEBS: cuando te pasen una URL, recibirás su contenido ya extraído. Evalúa SEO, velocidad aparente, si tiene chatbot, formularios y oportunidades de IA. Devuelve una puntuación 0-100 y recomendaciones, e indica si es cliente potencial para WhiteMoon.
 8. PROSPECCIÓN: usa la búsqueda web para encontrar negocios por sector y ciudad, analiza sus webs y devuelve una lista (nombre, web, teléfono, oportunidad detectada) con un mensaje de contacto personalizado por cada uno.
