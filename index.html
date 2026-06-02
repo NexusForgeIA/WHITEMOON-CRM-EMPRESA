@@ -3378,7 +3378,7 @@ function _computeROI(visits,convPct,ticket,lost){
   var leadsFromCalls=lost*4*0.6; // 60% of lost calls recovered, 4 weeks
   var extra=Math.max(0,(leads1-leads0)+leadsFromCalls);
   var revenue=extra*ticket;
-  var monthlyCost=149,setup=0;
+  var monthlyCost=199,setup=0;
   var roi1=revenue-monthlyCost-setup;
   var roi2=revenue-monthlyCost;
   var totalRecover=monthlyCost+setup;
@@ -5434,7 +5434,7 @@ async function generateWebDemo(idx){
     arr.unshift({
       id:capUid(),negocio:'',sector:'',zona:'',canal:'WhatsApp',
       estado:'contactado',d1:false,d3:false,d7:false,
-      notas:'',importe:149,fecha:new Date().toISOString()
+      notas:'',importe:199,fecha:new Date().toISOString()
     });
     capSave(arr);
     renderCaptacion();
