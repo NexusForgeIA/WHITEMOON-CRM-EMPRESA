@@ -544,18 +544,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 .score-fill.sf-blue{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
 .score-fill.sf-green{background:linear-gradient(90deg,#00d4aa,#1fddb8)}
 .score-vender-badge{display:inline-block;background:linear-gradient(135deg,#00d4aa,#00b894);color:#fff;font-size:.6rem;font-weight:900;letter-spacing:.1em;padding:3px 8px;border-radius:8px;margin-left:6px;animation:hc-new-pulse 1.8s ease-in-out infinite}
-/* Sidebar MRR bar */
-.sb-mrr-card{margin:8px 14px 4px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px}
-.sb-mrr-head{display:flex;justify-content:space-between;align-items:baseline;font-size:.6rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;font-weight:700;margin-bottom:4px}
-.sb-mrr-vals{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--text);font-weight:700;margin-bottom:6px}
-.sb-mrr-vals .sb-mrr-now{color:var(--accent2)}
-.sb-mrr-vals .sb-mrr-goal{color:var(--muted)}
-.sb-mrr-bar{height:7px;background:var(--bg2);border-radius:5px;overflow:hidden;border:1px solid var(--border)}
-.sb-mrr-fill{height:100%;transition:width .6s ease-out;background:linear-gradient(90deg,#7c4dff,#9d70ff)}
-.sb-mrr-fill.sf-red{background:linear-gradient(90deg,#ef4444,#f87171)}
-.sb-mrr-fill.sf-orange{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
-.sb-mrr-fill.sf-blue{background:linear-gradient(90deg,#3b82f6,#60a5fa)}
-.sb-mrr-fill.sf-green{background:linear-gradient(90deg,#00d4aa,#1fddb8)}
 /* Drag & Drop pipeline */
 .pipe-item[draggable=true]{cursor:grab}
 .pipe-item.dragging{opacity:.45;cursor:grabbing}
@@ -699,14 +687,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
       <span><span class="pill-label">Analizados</span> <b id="hc-an">0</b></span>
       <div class="stat-dot"></div>
     </div>
-    <div class="stat-pill pill-mrr mrr-pill" title="MRR mensual recurrente">
-      <div class="pill-icobox"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-      <span><span class="pill-label">MRR</span> <b id="hc-mrr">0€</b></span>
-    </div>
-    <div class="stat-pill pill-goal" title="Progreso al objetivo MRR">
-      <div class="pill-icobox"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
-      <span><span class="pill-label">Meta</span> <b id="hc-goal">0%</b></span>
-    </div>
     <button type="button" id="hc-new-leads" onclick="goPage('p-leads-web',null);if(typeof renderLeadsWeb==='function')renderLeadsWeb()" title="Leads nuevos sin atender" style="display:none;align-items:center;gap:6px;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none;border-radius:999px;padding:6px 12px;font-size:.72rem;font-weight:700;cursor:pointer;animation:hc-new-pulse 1.6s ease-in-out infinite;font-family:'Sora',sans-serif">🔔 <span id="hc-new-leads-num">0</span> leads nuevos</button>
   </div>
   <div class="header-right">
@@ -742,16 +722,6 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
       🤖 Asistente IA
       <span class="nav-badge nb-p">Claude</span>
     </button>
-    <button class="nav-item" onclick="goPage('p-clients',this);refreshClientsPage()">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6"/><path d="M23 11h-6"/></svg></div>
-      Clientes
-      <span class="nav-badge nb-g" id="sb-clients">0</span>
-    </button>
-    <div class="sb-mrr-card" id="sb-mrr-card" title="Progreso al objetivo MRR">
-      <div class="sb-mrr-head"><span>Objetivo MRR</span><span id="sb-mrr-pct">0%</span></div>
-      <div class="sb-mrr-vals"><span class="sb-mrr-now" id="sb-mrr-now">0€</span> / <span class="sb-mrr-goal" id="sb-mrr-goal">0€</span></div>
-      <div class="sb-mrr-bar"><div class="sb-mrr-fill" id="sb-mrr-fill" style="width:0%"></div></div>
-    </div>
     <button class="nav-item" onclick="goPage('p-leads-web',this);renderLeadsWeb()">
       <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
       📥 Leads Web
@@ -788,28 +758,9 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
   </div>
   <div class="sb-section">
     <div class="sb-label">WhiteMoon OS</div>
-    <button class="nav-item" onclick="goPage('p-onboarding',this);renderWmOnboarding()">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-      🚀 Onboarding
-      <span class="nav-badge nb-c" id="sb-onboarding">0</span>
-    </button>
-    <button class="nav-item" onclick="goPage('p-success',this);renderWmSuccess()">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
-      💚 Client Success
-      <span class="nav-badge nb-o" id="sb-success">0</span>
-    </button>
-    <button class="nav-item" onclick="goPage('p-upsell',this);renderWmUpsell()">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
-      📈 Upsell
-      <span class="nav-badge nb-g" id="sb-upsell">0</span>
-    </button>
     <button class="nav-item" onclick="goPage('p-casos',this);renderWmCasos()">
       <div class="nav-ico"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
       ⭐ Casos de éxito
-    </button>
-    <button class="nav-item" onclick="goPage('p-dashboard',this);renderWmDashboard()">
-      <div class="nav-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div>
-      📊 Dashboard
     </button>
   </div>
   <div class="sb-section">
@@ -1071,21 +1022,6 @@ Todos los planes: Sin permanencia · IVA no incluido
 </div>
 
 <!-- CLIENTES -->
-<div class="page" id="p-clients">
-  <div class="page-head">
-    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes</div>
-    <div class="page-sub">Historial de clientes cerrados, MRR y comisiones. Datos sincronizados con Supabase (tabla <b style="color:var(--accent2)">clients</b>).</div>
-  </div>
-  <div class="g4 mb16" id="cl-summary"></div>
-  <div class="card mb16" id="cl-mrr-dashboard"></div>
-  <div class="card mb16">
-    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes registrados</div>
-      <button class="btn btn-p btn-sm" onclick="openClientModal()">➕ Añadir cliente</button>
-    </div>
-    <div id="cl-list"></div>
-  </div>
-  <div class="card" id="cl-commissions"></div>
-</div>
 
 <!-- PIPELINE -->
 <div class="page" id="p-pipeline">
@@ -1119,48 +1055,8 @@ Todos los planes: Sin permanencia · IVA no incluido
 .wm-sub-hd{font-size:.7rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin:4px 0 10px;display:flex;align-items:center;gap:7px}
 </style>
 
-<!-- ONBOARDING -->
-<div class="page" id="p-onboarding">
-  <div class="page-head">
-    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>🚀 Onboarding</div>
-    <div class="page-sub">Clientes en proceso de onboarding (tabla <b style="color:var(--accent2)">onboarding_clientes</b>). Día actual, % de progreso y semáforo de estado.</div>
-  </div>
-  <div class="g4 mb16" id="wm-ob-kpis"></div>
-  <div class="card">
-    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>Clientes en onboarding</div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-p btn-sm" onclick="openOnboardModal()">➕ Añadir cliente</button>
-        <button class="btn btn-ghost btn-sm" onclick="renderWmOnboarding()">↻ Actualizar</button>
-      </div>
-    </div>
-    <div id="wm-ob-list"><div class="wm-loading">Cargando…</div></div>
-  </div>
-</div>
 
-<!-- CLIENT SUCCESS -->
-<div class="page" id="p-success">
-  <div class="page-head">
-    <div class="page-title"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>💚 Client Success</div>
-    <div class="page-sub">Salud de cartera calculada en tiempo real desde <b style="color:var(--accent2)">onboarding_clientes</b> + <b style="color:var(--accent2)">upsell_oportunidades</b>. Prioriza clientes en riesgo y detecta oportunidades.</div>
-  </div>
-  <div class="g4 mb16" id="wm-cs-kpis"></div>
-  <div id="wm-cs-content"><div class="wm-loading">Cargando…</div></div>
-</div>
 
-<!-- UPSELL -->
-<div class="page" id="p-upsell">
-  <div class="page-head">
-    <div class="page-title"><svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>📈 Upsell</div>
-    <div class="page-sub">Oportunidades de upsell detectadas (tabla <b style="color:var(--accent2)">upsell_oportunidades</b>). Pack actual → propuesto, diferencia de MRR y estado editable.</div>
-  </div>
-  <div class="g4 mb16" id="wm-up-kpis"></div>
-  <div class="card">
-    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Oportunidades detectadas</div>
-      <button class="btn btn-ghost btn-sm" onclick="renderWmUpsell()">↻ Actualizar</button>
-    </div>
-    <div id="wm-up-list"><div class="wm-loading">Cargando…</div></div>
-  </div>
-</div>
 
 <!-- CASOS DE ÉXITO -->
 <div class="page" id="p-casos">
@@ -1180,15 +1076,6 @@ Todos los planes: Sin permanencia · IVA no incluido
   </div>
 </div>
 
-<!-- DASHBOARD -->
-<div class="page" id="p-dashboard">
-  <div class="page-head">
-    <div class="page-title"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>📊 Dashboard</div>
-    <div class="page-sub">KPIs en tiempo real desde Supabase y progreso hacia los OKRs de Q2 2026. <button class="btn btn-ghost btn-xs" onclick="renderWmDashboard()" style="margin-left:6px">↻ Actualizar</button></div>
-  </div>
-  <div class="g4 mb16" id="wm-dash-kpis"><div class="wm-loading">Cargando…</div></div>
-  <div class="card" id="wm-dash-okr"></div>
-</div>
 
 <!-- LEADS WEB — chatbot whitemoon.es -->
 <div class="page" id="p-leads-web">
@@ -1583,10 +1470,6 @@ Todos los planes: Sin permanencia · IVA no incluido
   <button class="bn-item" data-page="p-pipeline" onclick="goPage('p-pipeline',null);renderPipeline();_bnActivate(this)">
     <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg>
     Pipeline
-  </button>
-  <button class="bn-item" data-page="p-clients" onclick="goPage('p-clients',null);refreshClientsPage();_bnActivate(this)">
-    <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
-    Clientes
   </button>
   <button class="bn-item" data-page="p-pricing" onclick="goPage('p-pricing',null);_bnActivate(this)">
     <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
@@ -3616,275 +3499,9 @@ function closeModalById(id){var m=$(id);if(m)m.remove()}
 // NIVEL 3 — Clientes · MRR Dashboard · Comisiones
 // ═══════════════════════════════════════
 
-function getClients(){try{return JSON.parse(localStorage.getItem('wm_clients')||'[]')}catch(e){return []}}
-function saveClients(a){try{localStorage.setItem('wm_clients',JSON.stringify(a))}catch(e){}}
-function getMRR(){return getClients().filter(function(c){return c.status==='active'}).reduce(function(s,c){return s+(+c.mrr||0)},0)}
-function getActiveClientCount(){return getClients().filter(function(c){return c.status==='active'}).length}
-function getMRRGoal(){return parseInt(localStorage.getItem('wm_mrr_goal')||'2000',10)}
-function setMRRGoal(g){localStorage.setItem('wm_mrr_goal',String(parseInt(g,10)||0));refreshClientsPage();updateHeaderMRR();if(typeof _syncSettings==='function')_syncSettings()}
-function getMRRHistory(){try{return JSON.parse(localStorage.getItem('wm_mrr_history')||'{}')}catch(e){return {}}}
-function setMRRHistory(h){try{localStorage.setItem('wm_mrr_history',JSON.stringify(h))}catch(e){}}
-function getCommissionConfig(){try{var c=JSON.parse(localStorage.getItem('wm_commission_config')||'{}');return {pctSetup:c.pctSetup!=null?c.pctSetup:20,pctMonthly:c.pctMonthly!=null?c.pctMonthly:10,salesName:c.salesName||''}}catch(e){return {pctSetup:20,pctMonthly:10,salesName:''}}}
-function saveCommissionConfig(c){try{localStorage.setItem('wm_commission_config',JSON.stringify(c))}catch(e){}if(typeof _syncSettings==='function')_syncSettings()}
-
-function addClient(c){
-  var arr=getClients();
-  c.id='c_'+Date.now()+'_'+Math.random().toString(36).substring(2,7);
-  arr.push(c);saveClients(arr);refreshClientsPage();updateHeaderMRR();
-  if(typeof _syncClientUpsert==='function')_syncClientUpsert(c);
-  return c.id;
-}
-
-function updateClient(id,patch){
-  var arr=getClients();
-  var updated=null;
-  for(var i=0;i<arr.length;i++)if(arr[i].id===id){for(var k in patch)arr[i][k]=patch[k];updated=arr[i];break}
-  saveClients(arr);refreshClientsPage();updateHeaderMRR();
-  if(updated&&typeof _syncClientUpsert==='function')_syncClientUpsert(updated);
-}
-
-function deleteClient(id){
-  if(!confirm('¿Eliminar este cliente? No se puede deshacer.'))return;
-  saveClients(getClients().filter(function(c){return c.id!==id}));
-  refreshClientsPage();updateHeaderMRR();
-  if(typeof _syncClientDelete==='function')_syncClientDelete(id);
-}
-
-function clientById(id){var a=getClients();for(var i=0;i<a.length;i++)if(a[i].id===id)return a[i];return null}
-
-// ═══ MODAL CLIENTE ═══
-function openClientModal(existingId){
-  closeModalById('client-modal');
-  var c=existingId?clientById(existingId):null;
-  if(!c)c={name:'',sector:'',pack:'spark',mrr:199,setupOnce:0,startDate:new Date().toISOString().substring(0,10),phone:'',notes:'',status:'active',commissionPaid:false};
-  var sectorOpts=SECTORS.map(function(s){return '<option'+(c.sector===s.s?' selected':'')+'>'+s.s+'</option>'}).join('');
-  var statusOpts=[
-    {id:'active',label:'Activo'},{id:'paused',label:'En pausa'},{id:'cancelled',label:'Cancelado'}
-  ].map(function(s){return '<option value="'+s.id+'"'+(c.status===s.id?' selected':'')+'>'+s.label+'</option>'}).join('');
-  var modal=document.createElement('div');
-  modal.className='modal-overlay';modal.id='client-modal';
-  modal.onclick=function(e){if(e.target===modal)closeModalById('client-modal')};
-  modal.innerHTML='<div class="modal-box" style="max-width:560px"><div class="modal-title">'+(existingId?'✏️ Editar cliente':'➕ Añadir cliente')+'<button class="modal-close" onclick="closeModalById(\'client-modal\')">×</button></div>'
-+'<div class="g2 mb12">'
-+'<div class="field-group"><span class="field-label">Nombre del negocio</span><input class="input" id="cl-name" value="'+(c.name||'').replace(/"/g,'&quot;')+'"></div>'
-+'<div class="field-group"><span class="field-label">Sector</span><select class="select" id="cl-sector"><option value="">— Sin sector —</option>'+sectorOpts+'</select></div>'
-+'</div>'
-+'<div class="g2 mb12">'
-+'<div class="field-group"><span class="field-label">Pack contratado</span><select class="select" id="cl-pack" onchange="_onPackChange()">'
-+'<option value="spark"'+(c.pack==='spark'?' selected':'')+'>Spark — 499€ setup + 199€/mes</option>'
-+'<option value="core"'+(c.pack==='core'?' selected':'')+'>Core — 1.800€ setup + 199€/mes</option>'
-+'<option value="scale"'+(c.pack==='scale'?' selected':'')+'>Scale — 4.500€ setup + 449€/mes</option>'
-+'<option value="elite"'+(c.pack==='elite'?' selected':'')+'>Elite — 8.500€ setup + 599€/mes</option>'
-+'<option value="audit"'+(c.pack==='audit'?' selected':'')+'>Auditoría IA — 899€ pago único</option>'
-+'</select></div>'
-+'<div class="field-group"><span class="field-label">Estado</span><select class="select" id="cl-status">'+statusOpts+'</select></div>'
-+'</div>'
-+'<div class="g2 mb12">'
-+'<div class="field-group"><span class="field-label">MRR (€/mes)</span><input class="input mono" type="number" id="cl-mrr" value="'+(c.mrr||0)+'"></div>'
-+'<div class="field-group"><span class="field-label">Setup pagado (€)</span><input class="input mono" type="number" id="cl-setup" value="'+(c.setupOnce||0)+'"></div>'
-+'</div>'
-+'<div class="g2 mb12">'
-+'<div class="field-group"><span class="field-label">Fecha de alta</span><input class="input mono" type="date" id="cl-date" value="'+(c.startDate||'')+'"></div>'
-+'<div class="field-group"><span class="field-label">Teléfono</span><input class="input mono" id="cl-phone" value="'+(c.phone||'').replace(/"/g,'&quot;')+'"></div>'
-+'</div>'
-+'<div class="field-group mb12"><span class="field-label">Notas</span><textarea class="textarea" id="cl-notes" style="font-family:Sora,sans-serif;font-size:.78rem;min-height:60px">'+(c.notes||'')+'</textarea></div>'
-+'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p btn-sm" onclick="_saveClient('+(existingId?'\''+existingId+'\'':'null')+')">💾 Guardar</button>'+(existingId?'<button class="btn btn-ghost btn-sm" onclick="deleteClient(\''+existingId+'\');closeModalById(\'client-modal\')" style="color:var(--red2)">🗑️ Eliminar</button>':'')+'<button class="btn btn-ghost btn-sm" onclick="closeModalById(\'client-modal\')">Cancelar</button></div>'
-+'</div>';
-  document.body.appendChild(modal);
-}
-
-function _onPackChange(){
-  var p=$('cl-pack').value;
-  var defaults={
-    spark:{mrr:199,setup:499},
-    core:{mrr:199,setup:1800},
-    scale:{mrr:449,setup:4500},
-    elite:{mrr:599,setup:8500},
-    audit:{mrr:0,setup:899}
-  };
-  var d=defaults[p]||{mrr:0,setup:0};
-  $('cl-mrr').value=d.mrr;
-  $('cl-setup').value=d.setup;
-}
-
-function _saveClient(id){
-  var c={
-    name:$('cl-name').value.trim()||'Cliente sin nombre',
-    sector:$('cl-sector').value,
-    pack:$('cl-pack').value,
-    status:$('cl-status').value,
-    mrr:parseInt($('cl-mrr').value,10)||0,
-    setupOnce:parseInt($('cl-setup').value,10)||0,
-    startDate:$('cl-date').value,
-    phone:$('cl-phone').value.trim(),
-    notes:$('cl-notes').value.trim()
-  };
-  if(id){updateClient(id,c)}
-  else{c.commissionPaid=false;addClient(c)}
-  showToast(id?'Cliente actualizado':'Cliente añadido');
-  closeModalById('client-modal');
-}
-
-// ═══ RENDER CLIENTES PAGE ═══
-function refreshClientsPage(){
-  if(!$('p-clients'))return;
-  renderClientsSummary();
-  renderMRRDashboard();
-  renderClientsList();
-  renderCommissions();
-}
-
-function renderClientsSummary(){
-  var clients=getClients();
-  var active=clients.filter(function(c){return c.status==='active'}).length;
-  var paused=clients.filter(function(c){return c.status==='paused'}).length;
-  var cancelled=clients.filter(function(c){return c.status==='cancelled'}).length;
-  var mrr=getMRR();
-  var arr=mrr*12;
-  var html=''
-+'<div class="card card-sm" style="border-color:rgba(0,212,170,.3);background:rgba(0,212,170,.04)"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green2);margin-bottom:5px">Activos</div><div class="big-num" style="color:var(--green2)">'+active+'</div></div>'
-+'<div class="card card-sm" style="border-color:var(--accent-border);background:var(--accent-dim)"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:5px">MRR total</div><div class="big-num" style="color:var(--accent)">'+mrr+'€</div></div>'
-+'<div class="card card-sm" style="border-color:rgba(234,179,8,.3);background:rgba(234,179,8,.04)"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:5px">ARR estimado</div><div class="big-num" style="color:var(--gold2)">'+arr.toLocaleString('es-ES')+'€</div></div>'
-+'<div class="card card-sm"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text2);margin-bottom:5px">Pausa / Cancelados</div><div class="big-num" style="color:var(--text2)">'+paused+' / '+cancelled+'</div></div>';
-  $('cl-summary').innerHTML=html;
-}
-
-function renderMRRDashboard(){
-  var clients=getClients().filter(function(c){return c.status==='active'});
-  var mrr=getMRR();
-  var goal=getMRRGoal();
-  var pct=goal>0?Math.min(100,Math.round(mrr*100/goal)):0;
-  var pctReal=goal>0?Math.round(mrr*100/goal):0;
-  var sparkMrr=clients.filter(function(c){return c.pack==='spark'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
-  var webMrr=clients.filter(function(c){var p=c.pack;return p==='core'||p==='scale'||p==='elite'}).reduce(function(s,c){return s+(+c.mrr||0)},0);
-  var clientsForGoal=Math.ceil(goal/199);
-
-  // History bars (last 6 months from history + current)
-  var hist=getMRRHistory();
-  var months=[];
-  var now=new Date();
-  for(var i=5;i>=0;i--){
-    var dt=new Date(now.getFullYear(),now.getMonth()-i,1);
-    var key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');
-    var label=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][dt.getMonth()];
-    var val=i===0?mrr:(hist[key]||0); // current month auto from clients
-    months.push({key:key,label:label,val:val});
-  }
-  var maxVal=Math.max.apply(null,months.map(function(m){return m.val})).toString();
-  maxVal=Math.max(parseInt(maxVal,10),goal,100);
-  var barsHTML=months.map(function(m,i){
-    var h=Math.max(2,Math.round(m.val*100/maxVal));
-    var isCurrent=i===5;
-    return '<div class="mrr-bar-col"><div class="mrr-bar-val">'+m.val+'€</div><div class="mrr-bar-track"><div class="mrr-bar-fill'+(isCurrent?' mrr-bar-now':'')+'" style="height:'+h+'%"></div></div><div class="mrr-bar-label">'+m.label+(isCurrent?' (act)':'')+'</div>'+(!isCurrent?'<input type="number" class="mrr-bar-edit" value="'+m.val+'" data-key="'+m.key+'" oninput="addMRRMonth(this.dataset.key,parseInt(this.value,10)||0)">':'')+'</div>';
-  }).join('');
-
-  var projection=mrr*12;
-  var html='<div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><polyline points="7 16 11 12 15 16 21 10"/></svg>Dashboard MRR</div></div>'
-+'<div class="g2 mb12">'
-+'<div><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">MRR actual</div><div style="font-family:\'Space Mono\',monospace;font-size:2.4rem;font-weight:800;color:var(--green2);line-height:1">'+mrr+'€<span style="font-size:.9rem;color:var(--text2);font-weight:500">/mes</span></div></div>'
-+'<div><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px">Objetivo mensual</div><div style="display:flex;align-items:center;gap:8px"><input type="number" class="input mono" id="cl-goal" value="'+goal+'" style="width:140px;font-size:1.2rem;font-weight:700;color:var(--accent)" onchange="setMRRGoal(this.value)"><span style="color:var(--muted)">€/mes</span></div></div>'
-+'</div>'
-+'<div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--text2);margin-bottom:5px"><span>Progreso al objetivo</span><span style="color:'+(pctReal>=100?'var(--green2)':'var(--accent)')+';font-weight:700">'+pctReal+'%</span></div>'
-+'<div class="progress" style="height:8px;margin-bottom:14px"><div class="pf '+(pctReal>=100?'pf-g':'pf-a')+'" style="width:'+pct+'%"></div></div>'
-+'<div style="font-size:.7rem;color:var(--text2);margin-bottom:7px;font-weight:600;letter-spacing:.05em">📊 Últimos 6 meses</div>'
-+'<div class="mrr-chart">'+barsHTML+'</div>'
-+'<div class="g2" style="margin-top:14px;gap:12px">'
-+'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Spark</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--accent)">'+sparkMrr+'€/mes</div></div>'
-+'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Core / Scale / Elite</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--gold2)">'+webMrr+'€/mes</div></div>'
-+'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Proyección 12m</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--green2)">'+projection.toLocaleString('es-ES')+'€</div></div>'
-+'<div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:11px"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Sparks para meta</div><div style="font-family:\'Space Mono\',monospace;font-size:1.05rem;font-weight:700;color:var(--text)">'+clientsForGoal+' clientes</div></div>'
-+'</div>';
-  $('cl-mrr-dashboard').innerHTML=html;
-}
-
-function renderClientsList(){
-  var clients=getClients();
-  if(!clients.length){$('cl-list').innerHTML='<div style="text-align:center;padding:30px;color:var(--muted);font-size:.8rem">Sin clientes registrados todavía. Pulsa <b style="color:var(--accent)">➕ Añadir cliente</b> arriba para registrar el primero.</div>';return}
-  // Sort: active first, then paused, then cancelled
-  var orderS={active:0,paused:1,cancelled:2};
-  clients.sort(function(a,b){return (orderS[a.status]||9)-(orderS[b.status]||9)});
-  var html='<div class="cl-table">'
-+'<div class="cl-row cl-head"><div>Cliente</div><div>Pack</div><div>MRR</div><div>Alta</div><div>Estado</div><div></div></div>';
-  clients.forEach(function(c){
-    var statusBadge={active:'<span class="cl-badge cl-active">Activo</span>',paused:'<span class="cl-badge cl-paused">En pausa</span>',cancelled:'<span class="cl-badge cl-cancelled">Cancelado</span>'}[c.status]||'';
-    var packLabels={spark:'Spark',core:'Core',scale:'Scale',elite:'Elite',audit:'Auditoría'};
-    var packLabel=packLabels[c.pack]||(c.pack||'—');
-    html+='<div class="cl-row'+(c.status==='cancelled'?' cl-dim':'')+'"><div><div class="cl-name">'+c.name+'</div>'+(c.sector?'<div class="cl-meta">'+c.sector+'</div>':'')+(c.phone?'<div class="cl-meta">'+c.phone+'</div>':'')+'</div><div><span class="cl-pack">'+packLabel+'</span></div><div><b>'+(+c.mrr||0)+'€/mes</b>'+(c.setupOnce?'<div class="cl-meta">+'+c.setupOnce+'€ setup</div>':'')+'</div><div class="cl-meta">'+(c.startDate||'—')+'</div><div>'+statusBadge+'</div><div class="cl-actions"><button class="btn btn-ghost btn-xs" onclick="openClientModal(\''+c.id+'\')">Editar</button><button class="btn btn-ghost btn-xs" onclick="deleteClient(\''+c.id+'\')" style="color:var(--red2)">×</button></div></div>';
-    if(c.notes)html+='<div class="cl-notes">📝 '+c.notes+'</div>';
-  });
-  html+='</div>';
-  $('cl-list').innerHTML=html;
-}
-
-function renderCommissions(){
-  var cfg=getCommissionConfig();
-  var clients=getClients();
-  var totalSetupComm=0,paidSetup=0,pendingSetup=0,monthlyComm=0;
-  clients.forEach(function(c){
-    if(c.status==='cancelled')return;
-    var setupC=(+c.setupOnce||0)*cfg.pctSetup/100;
-    if(c.commissionPaid)paidSetup+=setupC;else pendingSetup+=setupC;
-    totalSetupComm+=setupC;
-    if(c.status==='active')monthlyComm+=(+c.mrr||0)*cfg.pctMonthly/100;
-  });
-  var yearComm=monthlyComm*12;
-  var rowsHTML='';
-  clients.forEach(function(c){
-    if(c.status==='cancelled')return;
-    var setupC=Math.round((+c.setupOnce||0)*cfg.pctSetup/100*100)/100;
-    var monthlyC=c.status==='active'?Math.round((+c.mrr||0)*cfg.pctMonthly/100*100)/100:0;
-    rowsHTML+='<div class="cl-row"><div class="cl-name">'+c.name+'</div><div><b>'+setupC+'€</b><div class="cl-meta">setup</div></div><div><b>'+monthlyC+'€</b><div class="cl-meta">/mes</div></div><div>'+(c.commissionPaid?'<span class="cl-badge cl-active">Pagada</span>':'<span class="cl-badge cl-paused">Pendiente</span>')+'</div><div><button class="btn btn-ghost btn-xs" onclick="updateClient(\''+c.id+'\',{commissionPaid:'+(!c.commissionPaid)+'})">'+(c.commissionPaid?'Marcar pendiente':'Marcar pagada')+'</button></div></div>';
-  });
-  if(!rowsHTML)rowsHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:.78rem">Sin clientes activos para calcular comisiones.</div>';
-
-  var html='<div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>💰 Comisiones</div></div>'
-+'<div class="g3 mb12">'
-+'<div class="field-group"><span class="field-label">% comisión sobre setup</span><input type="number" class="input mono" id="cm-pctSetup" value="'+cfg.pctSetup+'" min="0" max="100" onchange="_saveCmConfig()"></div>'
-+'<div class="field-group"><span class="field-label">% comisión sobre mensual</span><input type="number" class="input mono" id="cm-pctMonthly" value="'+cfg.pctMonthly+'" min="0" max="100" onchange="_saveCmConfig()"></div>'
-+'<div class="field-group"><span class="field-label">Nombre comercial</span><input class="input" id="cm-salesName" value="'+(cfg.salesName||'').replace(/"/g,'&quot;')+'" placeholder="(opcional)" onchange="_saveCmConfig()"></div>'
-+'</div>'
-+'<div class="g4 mb12" style="gap:10px">'
-+'<div class="card card-sm" style="border-color:rgba(0,212,170,.3)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--green2);margin-bottom:4px">Setup pagadas</div><div class="big-num" style="color:var(--green2);font-size:1.4rem">'+paidSetup.toFixed(0)+'€</div></div>'
-+'<div class="card card-sm" style="border-color:rgba(255,140,66,.3)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--orange2);margin-bottom:4px">Setup pendientes</div><div class="big-num" style="color:var(--orange2);font-size:1.4rem">'+pendingSetup.toFixed(0)+'€</div></div>'
-+'<div class="card card-sm" style="border-color:var(--accent-border)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:4px">Mensual recurrente</div><div class="big-num" style="color:var(--accent);font-size:1.4rem">'+monthlyComm.toFixed(0)+'€</div></div>'
-+'<div class="card card-sm" style="border-color:rgba(234,179,8,.3)"><div style="font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold2);margin-bottom:4px">Año (proy.)</div><div class="big-num" style="color:var(--gold2);font-size:1.4rem">'+yearComm.toFixed(0)+'€</div></div>'
-+'</div>'
-+'<div class="cl-table cl-cmt-table"><div class="cl-row cl-head"><div>Cliente</div><div>Setup</div><div>Mensual</div><div>Estado</div><div></div></div>'+rowsHTML+'</div>';
-  $('cl-commissions').innerHTML=html;
-}
-
-function _saveCmConfig(){
-  saveCommissionConfig({
-    pctSetup:parseFloat($('cm-pctSetup').value)||0,
-    pctMonthly:parseFloat($('cm-pctMonthly').value)||0,
-    salesName:$('cm-salesName').value.trim()
-  });
-  renderCommissions();
-}
-
-function updateHeaderMRR(){
-  var mrr=getMRR();var goal=getMRRGoal();
-  var pct=goal>0?Math.min(999,Math.round(mrr*100/goal)):0;
-  var fmt=function(n){return n>=1000?(n/1000).toFixed(1)+'k':n};
-  var el1=$('hc-mrr');if(el1)el1.textContent=fmt(mrr)+'€';
-  var el2=$('hc-goal');if(el2)el2.textContent=pct+'%';
-  var elSb=$('sb-clients');if(elSb)elSb.textContent=getActiveClientCount();
-  // Sidebar MRR bar
-  var now=$('sb-mrr-now'),g=$('sb-mrr-goal'),f=$('sb-mrr-fill'),p=$('sb-mrr-pct');
-  if(now)now.textContent=fmt(mrr)+'€';
-  if(g)g.textContent=fmt(goal)+'€';
-  if(p)p.textContent=pct+'%';
-  if(f){
-    f.style.width=Math.min(100,pct)+'%';
-    f.classList.remove('sf-red','sf-orange','sf-blue','sf-green');
-    var cls=pct>=100?'sf-green':pct>=70?'sf-blue':pct>=40?'sf-orange':'sf-red';
-    f.classList.add(cls);
-  }
-}
 
 // Init on load
 document.addEventListener('DOMContentLoaded',function(){
-  updateHeaderMRR();
   renderPipeline();
 });
 
@@ -3974,10 +3591,8 @@ async function login(){
     currentUser=resp.data;
     sessionStorage.setItem('wm_user',JSON.stringify(resp.data));
     showApp();
-    await Promise.all([loadProspectsFromBD(),loadClientsFromBD(),loadSettingsFromBD()]);
+    await Promise.all([loadProspectsFromBD()]);
     renderProsResults();
-    refreshClientsPage();
-    updateHeaderMRR();
     updateCounters();
     renderPipeline();
     showToast('Bienvenido/a, '+(currentUser.name||currentUser.email));
@@ -4158,86 +3773,6 @@ async function _syncProspectStatus(domain,status,notes,lastContact){
   }catch(e){console.warn('syncProspectStatus:',e)}
 }
 
-// ═══ Client sync ═══
-async function loadClientsFromBD(){
-  if(!currentUser)return;
-  var s=_initSb();if(!s)return;
-  try{
-    var resp=await s.from('clients').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:false});
-    if(resp.error||!resp.data)return;
-    var local=resp.data.map(function(r){
-      return {
-        id:r.id,name:r.name,sector:r.sector||'',pack:r.pack||'spark',
-        mrr:r.mrr||0,setupOnce:r.setup_once||0,startDate:r.start_date||'',
-        phone:r.phone||'',notes:r.notes||'',status:r.status||'active',commissionPaid:!!r.commission_paid
-      };
-    });
-    saveClients(local);
-  }catch(e){console.warn('loadClients:',e)}
-}
-
-async function _syncClientUpsert(c){
-  if(!currentUser)return;
-  var s=_initSb();if(!s)return;
-  try{
-    var rec={
-      user_id:currentUser.id,name:c.name,sector:c.sector||'',pack:c.pack||'spark',
-      mrr:c.mrr||0,setup_once:c.setupOnce||0,start_date:c.startDate||null,
-      phone:c.phone||'',notes:c.notes||'',status:c.status||'active',commission_paid:!!c.commissionPaid
-    };
-    var localId=c.id;
-    if(localId&&typeof localId==='string'&&localId.indexOf('c_')===0){
-      // local-only id; insert and replace
-      var ins=await s.from('clients').insert(rec).select().single();
-      if(ins.data&&ins.data.id){
-        var arr=getClients();
-        for(var i=0;i<arr.length;i++)if(arr[i].id===localId){arr[i].id=ins.data.id;break}
-        saveClients(arr);
-      }
-    }else if(localId){
-      rec.id=localId;
-      await s.from('clients').upsert(rec);
-    }
-  }catch(e){console.warn('syncClient:',e)}
-}
-
-async function _syncClientDelete(id){
-  if(!currentUser||!id||(typeof id==='string'&&id.indexOf('c_')===0))return;
-  var s=_initSb();if(!s)return;
-  try{await s.from('clients').delete().eq('id',id)}catch(e){console.warn('deleteClient:',e)}
-}
-
-// ═══ Settings sync ═══
-async function loadSettingsFromBD(){
-  if(!currentUser)return;
-  var s=_initSb();if(!s)return;
-  try{
-    var resp=await s.from('settings').select('*').eq('user_id',currentUser.id).maybeSingle();
-    if(resp&&resp.data){
-      localStorage.setItem('wm_mrr_goal',String(resp.data.mrr_goal||2000));
-      localStorage.setItem('wm_commission_config',JSON.stringify({
-        pctSetup:resp.data.commission_setup!=null?resp.data.commission_setup:20,
-        pctMonthly:resp.data.commission_monthly!=null?resp.data.commission_monthly:10,
-        salesName:resp.data.agent_name||''
-      }));
-    }
-  }catch(e){console.warn('loadSettings:',e)}
-}
-
-async function _syncSettings(){
-  if(!currentUser)return;
-  var s=_initSb();if(!s)return;
-  var cfg=getCommissionConfig();
-  try{
-    await s.from('settings').upsert({
-      user_id:currentUser.id,
-      mrr_goal:getMRRGoal(),
-      commission_setup:cfg.pctSetup,
-      commission_monthly:cfg.pctMonthly,
-      agent_name:cfg.salesName||''
-    },{onConflict:'user_id'});
-  }catch(e){console.warn('syncSettings:',e)}
-}
 
 // ═══ Init ═══
 document.addEventListener('DOMContentLoaded',async function(){
@@ -4246,10 +3781,8 @@ document.addEventListener('DOMContentLoaded',async function(){
   if(stored){try{currentUser=JSON.parse(stored)}catch(e){currentUser=null}}
   if(currentUser){
     showApp();
-    await Promise.all([loadProspectsFromBD(),loadClientsFromBD(),loadSettingsFromBD()]);
+    await Promise.all([loadProspectsFromBD()]);
     renderProsResults();
-    refreshClientsPage();
-    updateHeaderMRR();
     updateCounters();
     renderPipeline();
   }else{
@@ -5505,10 +5038,10 @@ async function generateWebDemo(idx){
     var rate=function(a,b){return b>0?Math.round(a/b*100):0};
     var mrrPotencial=arr.filter(function(p){return p.estado==='propuesta'||p.estado==='reunion'}).reduce(function(s,p){return s+(parseFloat(p.importe)||0)},0);
 
-    // Tasa de cierre real: leads captados → clientes activos
-    var activeClients=(typeof getActiveClientCount==='function')?getActiveClientCount():0;
+    // Tasa de cierre real: prospectos contactados → cerrados en pipeline
+    var cerrados=acc.cerrado;
     var totalLeads=acc.contactado;
-    var closeRate=totalLeads>0?Math.round(activeClients/totalLeads*100):0;
+    var closeRate=totalLeads>0?Math.round(cerrados/totalLeads*100):0;
 
     var kpis=[
       {label:'Contactados',num:acc.contactado,sub:'total prospectos',cls:''},
@@ -5516,7 +5049,7 @@ async function generateWebDemo(idx){
       {label:'Reuniones',num:acc.reunion,sub:rate(acc.reunion,acc.respondio)+'% de respondieron',cls:'k-rate'},
       {label:'Propuestas',num:acc.propuesta,sub:rate(acc.propuesta,acc.reunion)+'% de reuniones',cls:'k-rate'},
       {label:'Cierres',num:acc.cerrado,sub:rate(acc.cerrado,acc.contactado)+'% global',cls:'k-rate'},
-      {label:'Tasa de cierre',num:closeRate+'%',sub:totalLeads+' leads → '+activeClients+' clientes',cls:'k-rate'},
+      {label:'Tasa de cierre',num:closeRate+'%',sub:totalLeads+' leads → '+cerrados+' cerrados',cls:'k-rate'},
       {label:'MRR potencial',num:mrrPotencial.toLocaleString('es-ES')+'€',sub:'reuniones + propuestas',cls:'k-mrr'},
       {label:'MRR cerrado mes',num:mrrMonth.toLocaleString('es-ES')+'€',sub:now.toLocaleString('es-ES',{month:'long'}),cls:'k-mrr'},
       {label:'Descartados',num:counts.descartado,sub:'no encajan',cls:''}
@@ -6412,11 +5945,8 @@ window._pushNotif=function(title,body){
 
 <script>
 // ═══════════════════════════════════════════════════════════
-// WHITEMOON OS — Onboarding · Client Success · Upsell ·
-// Casos de éxito · Dashboard  (lectura directa de Supabase)
+// WHITEMOON OS — Casos de éxito (lectura directa de Supabase)
 // ═══════════════════════════════════════════════════════════
-var WM_PACK_PRICE={spark:199,core:199,scale:449,elite:599};
-var WM_PACK_SETUP={spark:499,core:1800,scale:4500,elite:8500};
 var WM_PACK_LABELS={spark:'Spark',core:'Core','core-rag':'Core RAG',scale:'Scale',elite:'Elite'};
 var WM_SB_CACHE={onboarding:[],upsell:[],casos:[],referidos:[],leads:[]};
 
@@ -6425,545 +5955,6 @@ function _wmE(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,
 function _wmPack(p){return WM_PACK_LABELS[p]||(p?(''+p).charAt(0).toUpperCase()+(''+p).slice(1):'—')}
 function _wmKpi(label,val,color){return '<div class="card card-sm" style="border-color:'+color+'33"><div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:'+color+';margin-bottom:5px">'+_wmE(label)+'</div><div class="big-num" style="color:'+color+'">'+val+'</div></div>'}
 function _wmToast(m){if(typeof showToast==='function')showToast(m);else console.log(m)}
-
-function _wmPhone(p){p=(''+(p||'')).replace(/[^0-9+]/g,'');if(!p)return '';if(p.charAt(0)==='+')return p.substring(1);p=p.replace(/^0+/,'');if(p.length===9)p='34'+p;return p}
-function _wmWa(phone,msg){var p=_wmPhone(phone);if(!p){_wmToast('Este cliente no tiene teléfono guardado');return}window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank','noopener')}
-
-// Semáforo de estado de un cliente en onboarding
-function _wmObStatus(r){
-  var est=r.estado||'pendiente';
-  if(est==='completado')return {c:'g',label:'Completado'};
-  if(est==='pausado')return {c:'r',label:'Pausado'};
-  var ref=r.dia_iniciado_at||r.fecha_inicio;
-  if(ref){var days=(Date.now()-new Date(ref).getTime())/86400000;if(days>3)return {c:'r',label:'Estancado · '+Math.floor(days)+'d'}}
-  if(est==='pendiente')return {c:'y',label:'Pendiente de iniciar'};
-  return {c:'y',label:'En progreso'};
-}
-function _wmObPct(r){if(r.estado==='completado')return 100;var d=parseInt(r.dia_actual,10)||0;return Math.max(0,Math.min(100,Math.round(d/7*100)))}
-
-// ─── ONBOARDING ───
-async function renderWmOnboarding(){
-  var list=document.getElementById('wm-ob-list'),kpi=document.getElementById('wm-ob-kpis');
-  if(!list)return;
-  list.innerHTML='<div class="wm-loading">Cargando onboarding…</div>';
-  var s=_wmSb();
-  if(!s){list.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
-  var resp=await s.from('onboarding_clientes').select('*').order('fecha_inicio',{ascending:false,nullsFirst:false});
-  if(resp.error){list.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(resp.error.message||resp.error)+'</div>';return}
-  var rows=resp.data||[];WM_SB_CACHE.onboarding=rows;
-  var completados=rows.filter(function(r){return r.estado==='completado'}).length;
-  var enOb=rows.filter(function(r){return r.estado!=='completado'&&r.estado!=='pausado'}).length;
-  var paus=rows.filter(function(r){return r.estado==='pausado'}).length;
-  if(kpi)kpi.innerHTML=_wmKpi('Total',rows.length,'#7c3aed')+_wmKpi('Completados',completados,'#00d4aa')+_wmKpi('En onboarding',enOb,'#eab308')+_wmKpi('Pausados',paus,'#ef4444');
-  var sbb=document.getElementById('sb-onboarding');if(sbb)sbb.textContent=enOb;
-  if(!rows.length){list.innerHTML='<div class="wm-empty">Sin clientes en onboarding todavía.</div>';return}
-  list.innerHTML=rows.map(function(r){
-    var st=_wmObStatus(r),pct=_wmObPct(r);
-    return '<div class="wm-row">'
-      +'<span class="wm-dot wm-dot-'+st.c+'" title="'+_wmE(st.label)+'"></span>'
-      +'<div class="wm-grow"><div class="wm-name">'+_wmE(r.cliente_nombre)+' <span class="wm-meta">· '+_wmE(r.sector||'—')+' · '+_wmPack(r.pack)+'</span></div>'
-      +'<div class="wm-meta">Día '+(parseInt(r.dia_actual,10)||0)+'/7 · '+_wmE(st.label)+'</div>'
-      +'<div class="wm-prog"><div style="width:'+pct+'%"></div></div></div>'
-      +'<div style="text-align:right;flex-shrink:0"><div class="wm-name" style="font-size:1rem">'+pct+'%</div>'
-      +'<button class="btn btn-ghost btn-xs" onclick="openObDetail(\''+_wmE(r.id)+'\')" style="margin-top:4px">Ver detalle</button></div>'
-      +'</div>';
-  }).join('');
-}
-
-// ─── DETALLE DE CLIENTE (modal interno, sin redirección) ───
-function _wmPackFull(p){
-  if(!p)return '—';
-  var label=_wmPack(p),setup=WM_PACK_SETUP[p],month=WM_PACK_PRICE[p],parts=[];
-  if(setup!=null)parts.push(setup+'€ setup');
-  if(month!=null)parts.push(month+'€/mes');
-  return _wmE(label)+(parts.length?' · '+parts.join(' + '):'');
-}
-function _wmTxt(v){return (v==null||v==='')?'—':_wmE(v)}
-function _wmDate(v){if(!v)return '—';var d=new Date(v);if(isNaN(d.getTime()))return _wmE(v);return d.toLocaleDateString('es-ES',{year:'numeric',month:'short',day:'numeric'})}
-function _wmLink(v){if(!v)return '—';var url=(''+v).trim();if(!url)return '—';var href=/^https?:\/\//i.test(url)?url:'https://'+url;return '<a href="'+_wmE(href)+'" target="_blank" rel="noopener" style="color:var(--accent2);word-break:break-all">'+_wmE(url)+'</a>'}
-function _wmDtRow(label,html){return '<div style="display:flex;justify-content:space-between;gap:14px;padding:9px 0;border-bottom:1px solid var(--border2)"><span style="color:var(--text2);font-size:.74rem;letter-spacing:.04em;flex-shrink:0">'+label+'</span><span style="text-align:right;font-size:.84rem;color:var(--text);max-width:64%;word-break:break-word">'+html+'</span></div>'}
-
-function openObDetail(id){
-  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(id)})[0];
-  if(!r){_wmToast('Cliente no encontrado');return}
-  closeModalById('ob-detail-modal');
-  var tokenHtml=r.token_cdn?'<span class="mono">'+_wmE(r.token_cdn)+'</span> <button class="btn btn-ghost btn-xs" style="padding:1px 6px" onclick="copyTxt(\''+_wmE(r.token_cdn)+'\')">📋</button>':'—';
-  var emailHtml=r.cliente_email?'<a href="mailto:'+_wmE(r.cliente_email)+'" style="color:var(--accent2)">'+_wmE(r.cliente_email)+'</a>':'—';
-  var notasHtml=r.notas?'<span style="white-space:pre-wrap">'+_wmE(r.notas)+'</span>':'—';
-  var promptHtml=r.agente_system_prompt?'<span style="white-space:pre-wrap;font-family:\'Space Mono\',monospace;font-size:.72rem">'+_wmE(r.agente_system_prompt)+'</span>':'<span style="color:var(--muted)">— (genera uno desde Editar)</span>';
-  var rows=_wmDtRow('Nombre completo',_wmTxt(r.cliente_nombre))
-    +_wmDtRow('Email',emailHtml)
-    +_wmDtRow('Teléfono',_wmTxt(r.cliente_telefono))
-    +_wmDtRow('Sector',_wmTxt(r.sector))
-    +_wmDtRow('Pack',_wmPackFull(r.pack))
-    +_wmDtRow('Token CDN',tokenHtml)
-    +_wmDtRow('Estado',_wmTxt(r.estado))
-    +_wmDtRow('Fecha inicio',_wmDate(r.fecha_inicio))
-    +_wmDtRow('URL web cliente',_wmLink(r.url_web_cliente))
-    +_wmDtRow('Repo GitHub',_wmLink(r.repo_github))
-    +_wmDtRow('Notas',notasHtml)
-    +_wmDtRow('System prompt Orion IA',promptHtml);
-  var fiscal=_wmDtRow('Dirección',_wmTxt(r.direccion))
-    +_wmDtRow('CIF',_wmTxt(r.cif))
-    +_wmDtRow('Persona de contacto',_wmTxt(r.persona_contacto));
-  var ragHtml=_ragEligible(r.pack)?_ragSectionHtml(r.id,r.pack):'';
-  var modal=document.createElement('div');
-  modal.className='modal-overlay';modal.id='ob-detail-modal';
-  modal.onclick=function(e){if(e.target===modal)closeModalById('ob-detail-modal')};
-  modal.innerHTML='<div class="modal-box" style="max-width:520px"><div class="modal-title">🚀 Detalle de cliente · '+_wmE(r.cliente_nombre||'')+'<button class="modal-close" onclick="closeModalById(\'ob-detail-modal\')">×</button></div>'
-    +'<div>'+rows+'</div>'
-    +'<div style="font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin:16px 0 2px">Datos fiscales</div>'
-    +'<div>'+fiscal+'</div>'
-    +ragHtml
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-p btn-sm" onclick="_wmObEdit(\''+_wmE(r.id)+'\')">✏️ Editar</button><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'ob-detail-modal\')">Cerrar</button></div>'
-    +'</div>';
-  document.body.appendChild(modal);
-  if(ragHtml)_ragLoad(r.id,r.pack);
-}
-
-// ─── DOCUMENTOS RAG (solo packs core-rag / scale / elite) ───
-var RAG_INGEST_URL=SUPABASE_URL+'/functions/v1/rag-ingest';
-var RAG_CHAT_URL=SUPABASE_URL+'/functions/v1/rag-chat';
-var RAG_PACK_LIMIT={'core-rag':100,'scale':500,'elite':Infinity};
-function _ragEligible(pack){return Object.prototype.hasOwnProperty.call(RAG_PACK_LIMIT,pack)}
-function _ragBadge(estado){
-  var m={procesando:{l:'PROCESANDO',c:'#f5c842'},listo:{l:'LISTO',c:'#00d4aa'},error:{l:'ERROR',c:'#ff4d6d'}};
-  var b=m[estado]||{l:(estado||'—').toUpperCase(),c:'#8888a0'};
-  return '<span class="rag-badge" style="background:'+b.c+'1f;color:'+b.c+';border-color:'+b.c+'66">'+b.l+'</span>';
-}
-function _ragSectionHtml(clienteId,pack){
-  var limit=RAG_PACK_LIMIT[pack];
-  var limTxt=(limit===Infinity)?'ilimitado':limit;
-  var idEsc=_wmE(clienteId);
-  return '<div class="rag-sec-title">📚 Documentos RAG <span style="color:var(--muted);font-weight:600;text-transform:none;letter-spacing:0">· pack '+_wmE(_wmPack(pack))+' (límite '+limTxt+')</span></div>'
-    +'<div id="rag-stats"></div>'
-    +'<div id="rag-list" style="margin-top:10px"><div class="rag-empty">Cargando documentos…</div></div>'
-    +'<div class="rag-sec-title">📤 Subir nuevo documento</div>'
-    +'<div class="rag-upbox">'
-      +'<div style="margin-bottom:9px"><label class="btn btn-ghost btn-sm" style="cursor:pointer">📎 Subir archivo (PDF, TXT, DOC, DOCX)<input type="file" id="rag-up-file" accept=".pdf,.txt,.doc,.docx" style="display:none" onchange="_ragFile(this,\''+idEsc+'\')"></label><div style="font-size:.66rem;color:var(--muted);margin-top:5px">Los PDF se procesan en el servidor (texto limpio, sin ruido). TXT/DOC se cargan abajo para que los revises antes de indexar.</div></div>'
-      +'<div class="field-group" style="margin-bottom:9px"><span class="field-label">Nombre del documento</span><input class="input" id="rag-up-nombre" placeholder="Ej: Tarifas 2026.pdf"></div>'
-      +'<div class="field-group"><span class="field-label">Contenido (pega el texto o sube un archivo)</span><textarea class="input" id="rag-up-texto" rows="5" style="resize:vertical;font-size:.78rem" placeholder="Pega aquí el contenido del documento…"></textarea></div>'
-      +'<div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap"><button class="btn btn-p btn-sm" id="rag-up-btn" onclick="_ragUpload(\''+idEsc+'\')">📤 Subir e indexar</button><span class="rag-up-status" id="rag-up-status"></span></div>'
-    +'</div>'
-    +'<div class="rag-sec-title">⚙️ Script de instalación RAG</div>'
-    +'<div class="rag-script" id="rag-script">'+_wmE(_ragBuildScriptById(clienteId))+'</div>'
-    +'<button class="btn btn-ghost btn-sm" onclick="_ragCopyScript(\''+idEsc+'\')">📋 Copiar script</button>';
-}
-function _ragBuildScriptById(clienteId){
-  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(clienteId)})[0]||{};
-  return _ragBuildScript(r);
-}
-function _ragEscTpl(s){return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\$\{/g,'\\${')}
-function _ragBuildScript(r){
-  var sysPrompt=r.agente_system_prompt||('Eres el asistente de '+(r.cliente_nombre||'la empresa')+'. Responde solo con la información de los documentos indexados; si no la tienes, dilo y ofrece contactar con el equipo.');
-  return '<!-- WhiteMoon RAG · '+(r.cliente_nombre||'')+' -->\n'
-    +'<script>\n'
-    +'(function(){\n'
-    +'  var WM_RAG = {\n'
-    +'    clienteId: "'+(r.id||'')+'",\n'
-    +'    endpoint: "'+RAG_CHAT_URL+'",\n'
-    +'    apiKey: "'+SUPABASE_KEY+'",\n'
-    +'    systemPrompt: `'+_ragEscTpl(sysPrompt)+'`\n'
-    +'  };\n'
-    +'  window.wmRagChat = async function(pregunta){\n'
-    +'    var res = await fetch(WM_RAG.endpoint, {\n'
-    +'      method: "POST",\n'
-    +'      headers: { "Content-Type":"application/json", "apikey": WM_RAG.apiKey, "Authorization":"Bearer "+WM_RAG.apiKey },\n'
-    +'      body: JSON.stringify({ cliente_id: WM_RAG.clienteId, pregunta: pregunta, system_prompt: WM_RAG.systemPrompt })\n'
-    +'    });\n'
-    +'    var data = await res.json();\n'
-    +'    return data.respuesta || data.reply || "";\n'
-    +'  };\n'
-    +'})();\n'
-    +'</'+'script>';
-}
-async function _ragLoad(clienteId,pack){
-  var listEl=document.getElementById('rag-list'),statsEl=document.getElementById('rag-stats');
-  if(!listEl)return;
-  var s=_wmSb();
-  if(!s){listEl.innerHTML='<div class="rag-empty">Supabase no disponible.</div>';return}
-  var resp=await s.from('rag_archivos').select('*').eq('cliente_id',clienteId).order('created_at',{ascending:false});
-  if(resp.error){listEl.innerHTML='<div class="rag-empty">Error al cargar documentos: '+_wmE(resp.error.message||resp.error)+'</div>';return}
-  var rows=resp.data||[];
-  // Estadísticas
-  var limit=RAG_PACK_LIMIT[pack];
-  if(statsEl){
-    var limTxt=(limit===Infinity)?'∞':limit;
-    var pct=(limit===Infinity)?(rows.length?6:0):Math.min(100,Math.round(rows.length/limit*100));
-    statsEl.innerHTML='<div class="rag-stat-row"><span>Documentos indexados</span><b>'+rows.length+(limit===Infinity?'':' / '+limTxt)+'</b></div>'
-      +'<div class="rag-progress"><div style="width:'+pct+'%"></div></div>'
-      +(limit!==Infinity&&rows.length>=limit?'<div style="font-size:.68rem;color:#ff4d6d;margin-top:5px">Límite del pack alcanzado.</div>':'');
-  }
-  // Lista
-  if(!rows.length){listEl.innerHTML='<div class="rag-empty">Sin documentos subidos todavía.</div>';return}
-  listEl.innerHTML=rows.map(function(a){
-    var fecha=_wmDate(a.created_at);
-    var chunks=(a.chunks_generados||0)+' chunk'+((a.chunks_generados===1)?'':'s');
-    var err=(a.estado==='error'&&a.error_mensaje)?(' · '+_wmE(a.error_mensaje)):'';
-    return '<div class="rag-doc">'
-      +'<div class="rag-doc-main"><div class="rag-doc-name">'+_wmE(a.nombre_archivo||'(sin nombre)')+'</div>'
-      +'<div class="rag-doc-meta">'+chunks+' · '+fecha+err+'</div></div>'
-      +_ragBadge(a.estado)
-      +'<button class="rag-del" title="Eliminar documento" onclick="_ragDelete(\''+_wmE(a.id)+'\',\''+_wmE(clienteId)+'\',\''+_wmE(pack)+'\')">🗑️</button>'
-      +'</div>';
-  }).join('');
-}
-async function _ragUpload(clienteId){
-  var nombreEl=document.getElementById('rag-up-nombre'),textoEl=document.getElementById('rag-up-texto');
-  var btn=document.getElementById('rag-up-btn'),status=document.getElementById('rag-up-status');
-  var nombre=(nombreEl&&nombreEl.value||'').trim(),texto=(textoEl&&textoEl.value||'').trim();
-  function setStatus(msg,color){if(status){status.textContent=msg;status.style.color=color||'var(--text2)'}}
-  if(!nombre){setStatus('Indica el nombre del documento','#ff4d6d');return}
-  if(!texto){setStatus('Pega el contenido a indexar','#ff4d6d');return}
-  // Comprobación de límite con los datos ya cargados.
-  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(clienteId)})[0]||{};
-  var limit=RAG_PACK_LIMIT[r.pack];
-  if(btn)btn.disabled=true;
-  setStatus('⏳ Subiendo e indexando…','var(--accent2)');
-  try{
-    var res=await fetch(RAG_INGEST_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},
-      body:JSON.stringify({cliente_id:clienteId,nombre_archivo:nombre,texto:texto})
-    });
-    var data=null;try{data=await res.json()}catch(e){}
-    if(!res.ok||(data&&data.ok===false)){
-      var emsg=(data&&(data.error||data.message))||('HTTP '+res.status);
-      setStatus('❌ Error: '+emsg,'#ff4d6d');
-      if(btn)btn.disabled=false;
-      return;
-    }
-    var chunks=_ragChunks(data);
-    setStatus('✅ Documento indexado'+(chunks!=null?(' · '+chunks+' chunks'):''),'#00d4aa');
-    if(nombreEl)nombreEl.value='';if(textoEl)textoEl.value='';
-    if(typeof _wmToast==='function')_wmToast('📚 Documento enviado a indexar');
-    _ragLoad(clienteId,r.pack);
-  }catch(e){
-    setStatus('❌ Error de red: '+(e&&e.message?e.message:'desconocido'),'#ff4d6d');
-  }
-  if(btn)btn.disabled=false;
-}
-async function _ragDelete(archivoId,clienteId,pack){
-  if(!confirm('¿Eliminar este documento del índice RAG?'))return;
-  var s=_wmSb();
-  if(!s){_wmToast('Supabase no disponible');return}
-  try{
-    var del=await s.from('rag_archivos').delete().eq('id',archivoId);
-    if(del&&del.error){_wmToast('No se pudo eliminar: '+(del.error.message||''));return}
-    _wmToast('Documento eliminado');
-    _ragLoad(clienteId,pack);
-  }catch(e){_wmToast('Error: '+(e&&e.message?e.message:''))}
-}
-function _ragCopyScript(clienteId){
-  var script=_ragBuildScriptById(clienteId);
-  if(typeof copyTxt==='function')copyTxt(script);
-  else if(navigator.clipboard)navigator.clipboard.writeText(script);
-}
-// Lee el nº de chunks de la respuesta de rag-ingest (varias claves posibles).
-function _ragChunks(data){
-  if(!data)return null;
-  var v=(data.chunks_procesados!=null)?data.chunks_procesados:((data.chunks!=null)?data.chunks:data.chunks_generados);
-  return (v==null)?null:v;
-}
-// Gestión de archivo: los PDF se procesan en el servidor (pdf.js); el
-// resto se lee como texto con FileReader y rellena los campos para revisar.
-function _ragFile(input,clienteId){
-  var f=input&&input.files&&input.files[0];
-  if(!f)return;
-  var ext=(f.name.split('.').pop()||'').toLowerCase();
-  if(ext==='pdf'){
-    _ragUploadFile(clienteId,f);
-    input.value='';
-    return;
-  }
-  var nameEl=document.getElementById('rag-up-nombre'),textoEl=document.getElementById('rag-up-texto'),status=document.getElementById('rag-up-status');
-  function setStatus(msg,color){if(status){status.textContent=msg;status.style.color=color||'var(--text2)'}}
-  setStatus('⏳ Leyendo '+f.name+'…','var(--accent2)');
-  var reader=new FileReader();
-  reader.onload=function(){
-    var txt=String(reader.result||'');
-    if(textoEl)textoEl.value=txt;
-    if(nameEl&&!nameEl.value.trim())nameEl.value=f.name;
-    if(ext==='doc'||ext==='docx'){
-      setStatus('⚠️ '+f.name+' leído como texto plano ('+txt.length+' caracteres). Los DOC/DOCX pueden requerir limpieza: revisa el contenido y pulsa «Subir e indexar».','#f5c842');
-    }else{
-      setStatus('📄 '+f.name+' cargado ('+txt.length+' caracteres). Revisa y pulsa «Subir e indexar».','#00d4aa');
-    }
-    input.value='';
-  };
-  reader.onerror=function(){setStatus('❌ No se pudo leer el archivo','#ff4d6d');input.value=''};
-  reader.readAsText(f);
-}
-// Sube un archivo binario (PDF) a rag-ingest para extracción server-side.
-async function _ragUploadFile(clienteId,file){
-  var status=document.getElementById('rag-up-status'),btn=document.getElementById('rag-up-btn');
-  function setStatus(msg,color){if(status){status.textContent=msg;status.style.color=color||'var(--text2)'}}
-  if(btn)btn.disabled=true;
-  setStatus('⏳ Subiendo «'+file.name+'» y extrayendo el texto en el servidor…','var(--accent2)');
-  try{
-    var fd=new FormData();
-    fd.append('cliente_id',clienteId);
-    fd.append('file',file,file.name);
-    var res=await fetch(RAG_INGEST_URL,{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY},body:fd});
-    var data=null;try{data=await res.json()}catch(e){}
-    if(!res.ok||(data&&data.ok===false)){
-      var emsg=(data&&(data.error||data.message))||('HTTP '+res.status);
-      setStatus('❌ Error: '+emsg,'#ff4d6d');if(btn)btn.disabled=false;return;
-    }
-    var chunks=_ragChunks(data),chars=(data&&data.caracteres_extraidos);
-    setStatus('✅ PDF indexado'+(chunks!=null?(' · '+chunks+' chunks'):'')+(chars!=null?(' · '+chars+' caracteres'):''),'#00d4aa');
-    if(typeof _wmToast==='function')_wmToast('📚 PDF procesado en el servidor');
-    var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(clienteId)})[0]||{};
-    _ragLoad(clienteId,r.pack);
-  }catch(e){
-    setStatus('❌ Error de red: '+(e&&e.message?e.message:'desconocido'),'#ff4d6d');
-  }
-  if(btn)btn.disabled=false;
-}
-window._ragUpload=_ragUpload;
-window._ragDelete=_ragDelete;
-window._ragCopyScript=_ragCopyScript;
-window._ragFile=_ragFile;
-
-// ─── DETALLE: MODO EDICIÓN ───
-function _wmObDateInput(v){if(!v)return '';var d=new Date(v);if(isNaN(d.getTime()))return '';return d.toISOString().slice(0,10)}
-function _wmObEdit(id){
-  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return String(x.id)===String(id)})[0];
-  if(!r){_wmToast('Cliente no encontrado');return}
-  closeModalById('ob-detail-modal');
-  var sectorOpts='<option value="">— Sin sector —</option>'+WM_OB_SECTORS.map(function(p){return '<option value="'+p[0]+'"'+(r.sector===p[0]?' selected':'')+'>'+_wmE(p[1])+'</option>'}).join('');
-  var packOpts='<option value="">— Sin pack —</option>'+['spark','core','core-rag','scale','elite'].map(function(p){return '<option value="'+p+'"'+(r.pack===p?' selected':'')+'>'+_wmE(_wmPack(p))+'</option>'}).join('');
-  function inp(idf,label,val,extra){return '<div class="field-group mb12"><span class="field-label">'+label+'</span><input class="input'+(extra||'')+'" id="'+idf+'" value="'+_wmE(val==null?'':val)+'"></div>'}
-  var modal=document.createElement('div');
-  modal.className='modal-overlay';modal.id='ob-detail-modal';
-  modal.onclick=function(e){if(e.target===modal)closeModalById('ob-detail-modal')};
-  modal.innerHTML='<div class="modal-box" style="max-width:520px"><div class="modal-title">✏️ Editar cliente<button class="modal-close" onclick="closeModalById(\'ob-detail-modal\')">×</button></div>'
-    +inp('ob-e-nombre','Nombre completo',r.cliente_nombre)
-    +'<div class="g2 mb12">'
-    +'<div class="field-group"><span class="field-label">Email</span><input class="input mono" id="ob-e-email" value="'+_wmE(r.cliente_email==null?'':r.cliente_email)+'"></div>'
-    +'<div class="field-group"><span class="field-label">Teléfono</span><input class="input mono" id="ob-e-telefono" value="'+_wmE(r.cliente_telefono==null?'':r.cliente_telefono)+'"></div>'
-    +'</div>'
-    +'<div class="g2 mb12">'
-    +'<div class="field-group"><span class="field-label">Sector</span><select class="select" id="ob-e-sector">'+sectorOpts+'</select></div>'
-    +'<div class="field-group"><span class="field-label">Pack</span><select class="select" id="ob-e-pack">'+packOpts+'</select></div>'
-    +'</div>'
-    +'<div class="field-group mb12"><span class="field-label">Fecha inicio</span><input class="input" type="date" id="ob-e-fecha" value="'+_wmObDateInput(r.fecha_inicio)+'"></div>'
-    +inp('ob-e-url','URL web cliente',r.url_web_cliente,' mono')
-    +inp('ob-e-repo','Repo GitHub',r.repo_github,' mono')
-    +inp('ob-e-direccion','Dirección',r.direccion)
-    +'<div class="g2 mb12">'
-    +'<div class="field-group"><span class="field-label">CIF</span><input class="input mono" id="ob-e-cif" value="'+_wmE(r.cif==null?'':r.cif)+'"></div>'
-    +'<div class="field-group"><span class="field-label">Persona de contacto</span><input class="input" id="ob-e-contacto" value="'+_wmE(r.persona_contacto==null?'':r.persona_contacto)+'"></div>'
-    +'</div>'
-    +'<div class="field-group mb12"><span class="field-label">Notas</span><textarea class="input" id="ob-e-notas" rows="3" style="resize:vertical">'+_wmE(r.notas==null?'':r.notas)+'</textarea></div>'
-    +'<div class="field-group mb12"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px"><span class="field-label" style="margin:0">System prompt de Orion IA (agente)</span><button class="btn btn-ai btn-xs" id="ob-e-genprompt" onclick="_wmObGenPrompt(\''+_wmE(r.id)+'\')" title="Generar con IA a partir de nombre, sector, pack y web">🤖 Generar system prompt</button></div><textarea class="input mono" id="ob-e-agente-prompt" rows="7" style="resize:vertical;font-size:.74rem" placeholder="Genera el system prompt con IA o escríbelo manualmente…">'+_wmE(r.agente_system_prompt==null?'':r.agente_system_prompt)+'</textarea></div>'
-    +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px"><button class="btn btn-p btn-sm" id="ob-e-save" onclick="_wmObSaveEdit(\''+_wmE(r.id)+'\')">💾 Guardar</button><button class="btn btn-ghost btn-sm" onclick="openObDetail(\''+_wmE(r.id)+'\')">Cancelar</button></div>'
-    +'</div>';
-  document.body.appendChild(modal);
-}
-
-async function _wmObSaveEdit(id){
-  function val(i){var el=document.getElementById(i);return el?(el.value||'').trim():''}
-  var nombre=val('ob-e-nombre');
-  if(!nombre){_wmToast('Indica el nombre del cliente');return}
-  var s=_wmSb();
-  if(!s){_wmToast('Supabase no disponible');return}
-  var fecha=val('ob-e-fecha');
-  var rec={
-    cliente_nombre:nombre,
-    cliente_email:val('ob-e-email')||null,
-    cliente_telefono:val('ob-e-telefono')||null,
-    sector:val('ob-e-sector')||null,
-    pack:val('ob-e-pack')||null,
-    url_web_cliente:val('ob-e-url')||null,
-    repo_github:val('ob-e-repo')||null,
-    direccion:val('ob-e-direccion')||null,
-    cif:val('ob-e-cif')||null,
-    persona_contacto:val('ob-e-contacto')||null,
-    notas:val('ob-e-notas')||null,
-    agente_system_prompt:val('ob-e-agente-prompt')||null,
-    fecha_inicio:fecha?new Date(fecha).toISOString():null
-  };
-  var btn=document.getElementById('ob-e-save');
-  if(btn){btn.disabled=true;btn.textContent='Guardando…'}
-  var resp=await s.from('onboarding_clientes').update(rec).eq('id',id).select().single();
-  if(resp.error){if(btn){btn.disabled=false;btn.textContent='💾 Guardar'}_wmToast('Error al guardar: '+_wmE(resp.error.message||resp.error));return}
-  var arr=WM_SB_CACHE.onboarding||[];
-  for(var i=0;i<arr.length;i++){if(String(arr[i].id)===String(id)){arr[i]=resp.data;break}}
-  _wmToast('Cambios guardados');
-  openObDetail(id);
-  if(typeof renderWmOnboarding==='function')renderWmOnboarding();
-}
-
-async function _wmObGenPrompt(id){
-  if(typeof scoutAI!=='function'){_wmToast('Asistente IA no disponible');return}
-  function val(i){var el=document.getElementById(i);return el?(el.value||'').trim():''}
-  var nombre=val('ob-e-nombre');
-  if(!nombre){_wmToast('Indica primero el nombre del cliente');return}
-  var btn=document.getElementById('ob-e-genprompt');
-  if(btn){btn.disabled=true;btn.textContent='Generando…'}
-  try{
-    var d=await scoutAI('onboarding','system_prompt',{
-      cliente_nombre:nombre,
-      sector:val('ob-e-sector'),
-      pack:val('ob-e-pack'),
-      url_web_cliente:val('ob-e-url')
-    });
-    var ta=document.getElementById('ob-e-agente-prompt');
-    if(ta)ta.value=d.system_prompt||'';
-    _wmToast('System prompt generado · revisa y guarda');
-  }catch(e){_wmToast('Error IA: '+(e.message||''))}
-  finally{if(btn){btn.disabled=false;btn.textContent='🤖 Generar system prompt'}}
-}
-
-// Token CDN: WM- + 16 hex aleatorios
-function _wmGenCdnToken(){return 'WM-'+Array.from(crypto.getRandomValues(new Uint8Array(8))).map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
-
-var WM_OB_SECTORS=[['dental','Dental'],['legal','Legal'],['abogados','Abogados'],['restaurante','Restaurante'],['gestoria','Gestoría'],['clinica','Clínica'],['inmobiliaria','Inmobiliaria'],['gimnasio','Gimnasio'],['peluqueria','Peluquería'],['veterinaria','Veterinaria'],['formacion','Formación'],['taller','Taller'],['podologia','Podología'],['automovil','Automóvil']];
-
-function openOnboardModal(){
-  closeModalById('onboard-modal');
-  var sectorOpts=WM_OB_SECTORS.map(function(p){return '<option value="'+p[0]+'">'+_wmE(p[1])+'</option>'}).join('');
-  var packOpts=['spark','core','scale','elite'].map(function(p){return '<option value="'+p+'">'+_wmE(_wmPack(p))+'</option>'}).join('');
-  var modal=document.createElement('div');
-  modal.className='modal-overlay';modal.id='onboard-modal';
-  modal.onclick=function(e){if(e.target===modal)closeModalById('onboard-modal')};
-  modal.innerHTML='<div class="modal-box" style="max-width:520px"><div class="modal-title">🚀 Añadir cliente a onboarding<button class="modal-close" onclick="closeModalById(\'onboard-modal\')">×</button></div>'
-+'<div class="field-group mb12"><span class="field-label">Nombre del cliente</span><input class="input" id="ob-name" placeholder="Nombre del negocio"></div>'
-+'<div class="g2 mb12">'
-+'<div class="field-group"><span class="field-label">Sector</span><select class="select" id="ob-sector"><option value="">— Sin sector —</option>'+sectorOpts+'</select></div>'
-+'<div class="field-group"><span class="field-label">Pack</span><select class="select" id="ob-pack"><option value="">— Sin pack —</option>'+packOpts+'</select></div>'
-+'</div>'
-+'<div class="g2 mb12">'
-+'<div class="field-group"><span class="field-label">Teléfono</span><input class="input mono" id="ob-phone"></div>'
-+'<div class="field-group"><span class="field-label">Email</span><input class="input mono" id="ob-email"></div>'
-+'</div>'
-+'<div id="ob-token-box"></div>'
-+'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-p btn-sm" id="ob-save-btn" onclick="_wmSaveOnboard()">💾 Guardar y generar token</button><button class="btn btn-ghost btn-sm" onclick="closeModalById(\'onboard-modal\')">Cerrar</button></div>'
-+'</div>';
-  document.body.appendChild(modal);
-}
-
-async function _wmSaveOnboard(){
-  var name=(document.getElementById('ob-name').value||'').trim();
-  if(!name){_wmToast('Indica el nombre del cliente');return}
-  var s=_wmSb();
-  if(!s){_wmToast('Supabase no disponible');return}
-  var btn=document.getElementById('ob-save-btn');
-  if(btn){btn.disabled=true;btn.textContent='Guardando…'}
-  var token=_wmGenCdnToken();
-  var rec={cliente_nombre:name,token_cdn:token,estado:'pendiente',dia_actual:0,fecha_inicio:new Date().toISOString()};
-  var sector=document.getElementById('ob-sector').value;if(sector)rec.sector=sector;
-  var pack=document.getElementById('ob-pack').value;if(pack)rec.pack=pack;
-  var phone=(document.getElementById('ob-phone').value||'').trim();if(phone)rec.cliente_telefono=phone;
-  var email=(document.getElementById('ob-email').value||'').trim();if(email)rec.cliente_email=email;
-  var resp=await s.from('onboarding_clientes').insert(rec).select().single();
-  if(resp.error){if(btn){btn.disabled=false;btn.textContent='💾 Guardar y generar token'}_wmToast('Error al guardar: '+_wmE(resp.error.message||resp.error));return}
-  var box=document.getElementById('ob-token-box');
-  if(box){box.innerHTML='<div class="field-group mb12"><span class="field-label">Token CDN generado</span>'
-    +'<div style="display:flex;gap:8px;align-items:center"><input class="input mono" id="ob-token" readonly value="'+_wmE(token)+'" style="flex:1">'
-    +'<button class="btn btn-ghost btn-sm" onclick="copyTxt(\''+token+'\')">📋 Copiar</button></div></div>'}
-  if(btn)btn.style.display='none';
-  _wmToast('Cliente añadido · token generado');
-  renderWmOnboarding();
-}
-
-// ─── CLIENT SUCCESS ───
-async function renderWmSuccess(){
-  var cont=document.getElementById('wm-cs-content'),kpi=document.getElementById('wm-cs-kpis');
-  if(!cont)return;
-  cont.innerHTML='<div class="wm-loading">Calculando salud de clientes…</div>';
-  var s=_wmSb();
-  if(!s){cont.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
-  var r1=await s.from('onboarding_clientes').select('*');
-  if(r1.error){cont.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(r1.error.message||r1.error)+'</div>';return}
-  var r2=await s.from('upsell_oportunidades').select('*');
-  var ob=r1.data||[];WM_SB_CACHE.onboarding=ob;
-  var up=(r2&&r2.data)||[];
-  var upByClient={};
-  up.forEach(function(u){if(u.estado==='detectado'||u.estado==='contactado'){(upByClient[u.cliente_id]=upByClient[u.cliente_id]||[]).push(u)}});
-  var rojo=[],amar=[],verde=[];
-  ob.forEach(function(r){
-    var st=_wmObStatus(r);var ups=upByClient[r.id];
-    if(st.c==='r')rojo.push({r:r,st:st,ups:ups});
-    else if(ups)amar.push({r:r,st:st,ups:ups});
-    else verde.push({r:r,st:st});
-  });
-  if(kpi)kpi.innerHTML=_wmKpi('En riesgo',rojo.length,'#ef4444')+_wmKpi('Oportunidad upsell',amar.length,'#eab308')+_wmKpi('Sanos',verde.length,'#00d4aa')+_wmKpi('Total cartera',ob.length,'#7c3aed');
-  var sbb=document.getElementById('sb-success');if(sbb)sbb.textContent=rojo.length;
-  if(!ob.length){cont.innerHTML='<div class="wm-empty">Sin clientes en cartera todavía.</div>';return}
-  function section(title,color,arr,kind){
-    var body=arr.length?arr.map(function(o){return _wmCsRow(o,kind)}).join(''):'<div class="wm-meta" style="padding:4px 2px 8px">Ninguno.</div>';
-    return '<div class="card mb16"><div class="wm-sub-hd" style="color:'+color+'"><span class="wm-dot wm-dot-'+kind+'"></span>'+title+' ('+arr.length+')</div>'+body+'</div>';
-  }
-  cont.innerHTML=section('Clientes en riesgo','#ef4444',rojo,'r')+section('Oportunidad de upsell','#eab308',amar,'y')+section('Clientes sanos','#00d4aa',verde,'g');
-}
-function _wmCsRow(o,kind){
-  var r=o.r,st=o.st;
-  return '<div class="wm-row"><span class="wm-dot wm-dot-'+st.c+'"></span>'
-    +'<div class="wm-grow"><div class="wm-name">'+_wmE(r.cliente_nombre)+'</div>'
-    +'<div class="wm-meta">'+_wmE(r.sector||'—')+' · '+_wmPack(r.pack)+' · '+_wmE(st.label)+(o.ups?' · '+o.ups.length+' upsell pendiente':'')+'</div></div>'
-    +'<button class="btn btn-ghost btn-xs" onclick="wmCsAlert(\''+r.id+'\',\''+kind+'\')" style="flex-shrink:0">📲 Alerta WhatsApp</button></div>';
-}
-function wmCsAlert(id,kind){
-  var r=(WM_SB_CACHE.onboarding||[]).filter(function(x){return x.id===id})[0];
-  if(!r){_wmToast('Cliente no encontrado');return}
-  var nm=r.cliente_nombre||'';
-  var msg=kind==='r'
-    ?'Hola '+nm+', soy Cris de WhiteMoon. He visto que tu onboarding necesita un pequeño empujón para dejarlo listo. ¿Te ayudo a retomarlo esta semana?'
-    :kind==='y'
-    ?'Hola '+nm+', soy Cris de WhiteMoon. Tengo una mejora que encaja muy bien con lo que ya tienes contratado. ¿Te la enseño en 5 minutos?'
-    :'Hola '+nm+', soy Cris de WhiteMoon. Quería saber cómo va todo y si necesitas cualquier cosa. ¡Aquí estamos!';
-  _wmWa(r.cliente_telefono,msg);
-}
-
-// ─── UPSELL ───
-var WM_UPSELL_ESTADOS=['detectado','contactado','aceptado','rechazado'];
-function _wmUpBadge(e){
-  var m={detectado:'color:#9ca3af;border-color:#9ca3af66;background:#9ca3af14',contactado:'color:#3b82f6;border-color:#3b82f666;background:#3b82f614',aceptado:'color:#00d4aa;border-color:#00d4aa66;background:#00d4aa14',rechazado:'color:#ef4444;border-color:#ef444466;background:#ef444414'};
-  return m[e]||m.detectado;
-}
-async function renderWmUpsell(){
-  var list=document.getElementById('wm-up-list'),kpi=document.getElementById('wm-up-kpis');
-  if(!list)return;
-  list.innerHTML='<div class="wm-loading">Cargando oportunidades…</div>';
-  var s=_wmSb();
-  if(!s){list.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
-  var r=await s.from('upsell_oportunidades').select('*').order('created_at',{ascending:false});
-  if(r.error){list.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(r.error.message||r.error)+'</div>';return}
-  var rows=r.data||[];WM_SB_CACHE.upsell=rows;
-  var ob=WM_SB_CACHE.onboarding;
-  if(!ob||!ob.length){var ro=await s.from('onboarding_clientes').select('*');ob=ro.data||[];WM_SB_CACHE.onboarding=ob}
-  var byId={};ob.forEach(function(o){byId[o.id]=o});
-  var det=rows.filter(function(x){return x.estado==='detectado'}).length;
-  var acc=rows.filter(function(x){return x.estado==='aceptado'}).length;
-  var potencial=rows.filter(function(x){return x.estado==='detectado'||x.estado==='contactado'}).reduce(function(a,x){return a+(x.diferencia_mrr!=null?x.diferencia_mrr:((x.precio_nuevo||0)-(x.precio_actual||0)))},0);
-  var ganado=rows.filter(function(x){return x.estado==='aceptado'}).reduce(function(a,x){return a+(x.diferencia_mrr!=null?x.diferencia_mrr:((x.precio_nuevo||0)-(x.precio_actual||0)))},0);
-  if(kpi)kpi.innerHTML=_wmKpi('Detectadas',det,'#9ca3af')+_wmKpi('Aceptadas',acc,'#00d4aa')+_wmKpi('MRR potencial','+'+potencial+'€','#eab308')+_wmKpi('MRR ganado','+'+ganado+'€','#7c3aed');
-  var sbb=document.getElementById('sb-upsell');if(sbb)sbb.textContent=det;
-  if(!rows.length){list.innerHTML='<div class="wm-empty">Sin oportunidades de upsell detectadas.</div>';return}
-  list.innerHTML=rows.map(function(u){
-    var cli=byId[u.cliente_id]||{};
-    var diff=u.diferencia_mrr!=null?u.diferencia_mrr:((u.precio_nuevo||0)-(u.precio_actual||0));
-    var opts=WM_UPSELL_ESTADOS.map(function(e){return '<option value="'+e+'"'+(u.estado===e?' selected':'')+'>'+e+'</option>'}).join('');
-    return '<div class="wm-row">'
-      +'<span class="wm-badge" style="'+_wmUpBadge(u.estado)+'">'+_wmE(u.estado)+'</span>'
-      +'<div class="wm-grow"><div class="wm-name">'+_wmE(cli.cliente_nombre||'Cliente')+'</div>'
-      +'<div class="wm-meta">'+_wmPack(u.pack_actual)+' <span style="color:var(--accent2)">→</span> <b style="color:#fff">'+_wmPack(u.pack_propuesto)+'</b>'+(u.notas?' · '+_wmE(u.notas):'')+'</div></div>'
-      +'<div style="text-align:right;flex-shrink:0"><div class="wm-name" style="color:#00d4aa">'+(diff>=0?'+':'')+diff+'€/mes</div>'
-      +'<select class="select" style="font-size:.68rem;padding:4px 6px;margin-top:5px;width:auto" onchange="wmUpsellSetEstado(\''+u.id+'\',this.value)">'+opts+'</select></div>'
-      +'</div>';
-  }).join('');
-}
-async function wmUpsellSetEstado(id,estado){
-  var s=_wmSb();if(!s)return;
-  var patch={estado:estado};
-  if(estado==='contactado')patch.fecha_contacto=new Date().toISOString();
-  var r=await s.from('upsell_oportunidades').update(patch).eq('id',id);
-  if(r.error){_wmToast('Error al actualizar: '+(r.error.message||''));return}
-  _wmToast('Oportunidad → '+estado);
-  renderWmUpsell();
-}
 
 // ─── CASOS DE ÉXITO + REFERIDOS ───
 async function renderWmCasos(){
@@ -7014,66 +6005,6 @@ function wmCopyCasoHtml(id){
   if(typeof copyTxt==='function')copyTxt(html);else navigator.clipboard&&navigator.clipboard.writeText(html);
   _wmToast('HTML del testimonio copiado');
 }
-
-// ─── DASHBOARD ───
-async function renderWmDashboard(){
-  var k=document.getElementById('wm-dash-kpis'),o=document.getElementById('wm-dash-okr');
-  if(!k)return;
-  k.innerHTML='<div class="wm-loading">Cargando KPIs…</div>';if(o)o.innerHTML='';
-  var s=_wmSb();
-  if(!s){k.innerHTML='<div class="wm-empty">Supabase no disponible.</div>';return}
-  var r1=await s.from('onboarding_clientes').select('*');
-  if(r1.error){k.innerHTML='<div class="wm-empty">Error al cargar: '+_wmE(r1.error.message||r1.error)+'</div>';return}
-  var ob=r1.data||[];WM_SB_CACHE.onboarding=ob;
-  var r2=await s.from('leads_web').select('created_at');
-  var leads=(r2&&r2.data)||[];
-  var now=new Date();
-  var weekAgo=now.getTime()-7*86400000;
-  var monthStart=new Date(now.getFullYear(),now.getMonth(),1).getTime();
-  var leadsWeek=leads.filter(function(l){return l.created_at&&new Date(l.created_at).getTime()>=weekAgo}).length;
-  var leadsMonth=leads.filter(function(l){return l.created_at&&new Date(l.created_at).getTime()>=monthStart}).length;
-  var completados=ob.filter(function(r){return r.estado==='completado'});
-  var enOb=ob.filter(function(r){return r.estado!=='completado'&&r.estado!=='pausado'}).length;
-  var mrr=completados.reduce(function(sum,r){return sum+(WM_PACK_PRICE[r.pack]||0)},0);
-  var activos=completados.length;
-  k.innerHTML=_wmKpi('MRR actual',mrr+'€','#00d4aa')+_wmKpi('Leads esta semana',leadsWeek,'#7c3aed')+_wmKpi('Clientes activos',activos,'#eab308')+_wmKpi('En onboarding',enOb,'#00c9ff');
-  var okrs=[
-    {label:'Clientes activos',val:activos,goal:10,unit:'',color:'#00d4aa'},
-    {label:'MRR mensual',val:mrr,goal:2000,unit:'€',color:'#7c3aed'},
-    {label:'Leads / mes',val:leadsMonth,goal:50,unit:'',color:'#00c9ff'}
-  ];
-  if(o)o.innerHTML='<div class="sec-hd mb12"><div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>OKRs Q2 2026</div></div>'
-    +okrs.map(function(x){
-      var pct=x.goal>0?Math.min(100,Math.round(x.val*100/x.goal)):0;
-      var pctReal=x.goal>0?Math.round(x.val*100/x.goal):0;
-      return '<div style="margin-bottom:15px"><div style="display:flex;justify-content:space-between;font-size:.74rem;margin-bottom:5px">'
-        +'<span style="color:var(--text2);font-weight:600">'+x.label+'</span>'
-        +'<span style="font-family:\'Space Mono\',monospace;color:#fff;font-weight:700">'+x.val+x.unit+' / '+x.goal+x.unit+' · <span style="color:'+(pctReal>=100?'#00d4aa':x.color)+'">'+pctReal+'%</span></span></div>'
-        +'<div class="wm-prog" style="height:10px"><div style="width:'+pct+'%;background:'+x.color+'"></div></div></div>';
-    }).join('');
-}
-
-// Pre-carga ligera de contadores del sidebar cuando Supabase esté listo
-(function _wmBoot(){
-  function go(){
-    var s=_wmSb();
-    if(!s){setTimeout(go,600);return}
-    s.from('onboarding_clientes').select('*').then(function(resp){
-      var rows=(resp&&resp.data)||[];WM_SB_CACHE.onboarding=rows;
-      var enOb=rows.filter(function(r){return r.estado!=='completado'&&r.estado!=='pausado'}).length;
-      var riesgo=rows.filter(function(r){return _wmObStatus(r).c==='r'}).length;
-      var a=document.getElementById('sb-onboarding');if(a)a.textContent=enOb;
-      var b=document.getElementById('sb-success');if(b)b.textContent=riesgo;
-    }).catch(function(){});
-    s.from('upsell_oportunidades').select('id,estado').then(function(resp){
-      var rows=(resp&&resp.data)||[];
-      var det=rows.filter(function(r){return r.estado==='detectado'}).length;
-      var c=document.getElementById('sb-upsell');if(c)c.textContent=det;
-    }).catch(function(){});
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(go,800)});
-  else setTimeout(go,800);
-})();
 </script>
 
 <script>

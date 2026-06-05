@@ -18,14 +18,6 @@ const SB_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SB_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ??
   Deno.env.get("SUPABASE_ANON_KEY") ?? "";
 
-// Precios de los packs de cliente WhiteMoon (NO son los precios de Scout).
-const WM_PACK_PRICE: Record<string, number> = {
-  spark: 199,
-  core: 199,
-  scale: 449,
-  elite: 599,
-};
-
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -41,7 +33,6 @@ const json = (body: unknown, status = 200) =>
 
 // ── Contexto común de marca ──────────────────────────────────────
 const BRAND = `WhiteMoon es una agencia española que implanta agentes de IA (chatbots) y soluciones digitales para negocios locales (clínicas dentales, restaurantes, despachos legales, gestorías, talleres, inmobiliarias, etc.).
-"Orion IA" es el agente conversacional de IA que WhiteMoon despliega para sus clientes.
 Escribe SIEMPRE en español de España, tono profesional pero cercano, tratando de "tú". Sé concreto y comercial, evita relleno y promesas que no se puedan cumplir. Plazos de entrega: "5-7 días laborables".`;
 
 const clean = (v: unknown) => (v == null ? "" : String(v)).trim();
@@ -67,21 +58,6 @@ function buildRequest(
         `- Origen: ${clean(ctx.origen) || "(desconocido)"}\n` +
         `- Mensaje/interés: ${clean(ctx.mensaje) || "(sin mensaje)"}`;
       return { system, user, json: true, maxTokens: 700 };
-    }
-
-    // ── ONBOARDING: generar system prompt de Orion IA ──────────────
-    case "onboarding": {
-      const system =
-        `${BRAND}\n\nEres un experto en diseño de agentes conversacionales. Generas el SYSTEM PROMPT completo y listo para producción del agente "Orion IA" de un cliente concreto de WhiteMoon.\n` +
-        `El system prompt debe estar escrito en español, en segunda persona dirigida al agente ("Eres Orion IA..."), e incluir: identidad y rol, tono de voz, objetivos (captar/cualificar/agendar), qué datos recoge, qué NO debe hacer (no inventar precios ni diagnósticos, derivar a humano cuando proceda), y estilo de respuesta (breve, una pregunta a la vez).\n` +
-        `Devuelve ÚNICAMENTE el texto del system prompt, sin comentarios, sin markdown, sin comillas envolventes.`;
-      const user =
-        `Genera el system prompt de Orion IA para este cliente:\n` +
-        `- Nombre del cliente/negocio: ${clean(ctx.cliente_nombre) || "(sin nombre)"}\n` +
-        `- Sector: ${clean(ctx.sector) || "(genérico)"}\n` +
-        `- Pack contratado: ${clean(ctx.pack) || "(no especificado)"}\n` +
-        `- Web del cliente: ${clean(ctx.url_web_cliente) || "(sin web)"}`;
-      return { system, user, json: false, maxTokens: 1400 };
     }
 
     // ── CAMPAÑAS: generar 3 creatividades (Meta + Google) ──────────
@@ -212,21 +188,12 @@ async function loadBusinessContext(): Promise<string> {
     authorization: `Bearer ${SB_SERVICE_KEY}`,
   };
   try {
-    const [obResp, leadsResp] = await Promise.all([
-      fetch(`${SB_URL}/rest/v1/onboarding_clientes?select=estado,pack,cliente_nombre`, { headers }),
-      fetch(`${SB_URL}/rest/v1/leads_web?select=atendido,created_at,sector`, { headers }),
-    ]);
-    const ob: Array<Record<string, unknown>> = obResp.ok ? await obResp.json() : [];
+    const leadsResp = await fetch(
+      `${SB_URL}/rest/v1/leads_web?select=atendido,created_at,sector`,
+      { headers },
+    );
     const leads: Array<Record<string, unknown>> = leadsResp.ok ? await leadsResp.json() : [];
 
-    const completados = ob.filter((r) => r.estado === "completado");
-    const enOnboarding = ob.filter((r) =>
-      r.estado !== "completado" && r.estado !== "pausado"
-    );
-    const mrr = completados.reduce(
-      (sum, r) => sum + (WM_PACK_PRICE[String(r.pack)] || 0),
-      0,
-    );
     const pendientes = leads.filter((l) => l.atendido !== true);
     const weekAgo = Date.now() - 7 * 86400000;
     const leadsSemana = leads.filter((l) => {
@@ -236,9 +203,6 @@ async function loadBusinessContext(): Promise<string> {
 
     return [
       `DATOS REALES DE WHITEMOON (en vivo, ${new Date().toISOString().slice(0, 10)}):`,
-      `- Clientes activos (onboarding completado): ${completados.length}`,
-      `- Clientes en onboarding en curso: ${enOnboarding.length}`,
-      `- MRR actual estimado: ${mrr}€/mes`,
       `- Leads totales en BD: ${leads.length}`,
       `- Leads pendientes (sin atender): ${pendientes.length}`,
       `- Leads de los últimos 7 días: ${leadsSemana.length}`,
@@ -263,14 +227,13 @@ CAPACIDADES (ejecútalas cuando te las pidan):
 1. CAMPAÑAS Meta Ads / Google Ads: genera campaña completa (ángulo, creatividades, copy, segmentación y presupuesto sugerido). Aplica buenas prácticas de ad-creative: un ángulo claro por variante (dolor, resultado, prueba social, curiosidad, urgencia, identidad); específico mejor que vago (números y plazos); beneficios antes que características; voz activa; CTA claro; respeta límites (Meta: gancho en ~125 car., titular ≤40; Google RSA: titulares ≤30, descripciones ≤90).
 2. PROPUESTAS / PRESENTACIONES: genera la propuesta completa en HTML autocontenido listo para imprimir o enviar (precios WhiteMoon, beneficios, ROI estimado y casos de uso del sector).
 3. EMAILS y WHATSAPP: mensajes personalizados por sector con estructura AIDA (atención, interés, deseo, acción), listos para copiar.
-4. ANÁLISIS DE PIPELINE: usa los DATOS REALES inyectados abajo para responder (leads de la semana, MRR, conversiones, próximos vencimientos) con un análisis accionable.
-5. SYSTEM PROMPTS de Orion IA: genera el system prompt completo del agente para un sector/cliente, listo para pegar en el panel CDN.
-6. CREACIÓN DE WEBS / LANDINGS: genera HTML/CSS/JS completo en un solo archivo, sin frameworks (stack WhiteMoon), con copy persuasivo y formulario de captación de leads.
-7. ANÁLISIS DE WEBS: cuando te pasen una URL, recibirás su contenido ya extraído. Evalúa SEO, velocidad aparente, si tiene chatbot, formularios y oportunidades de IA. Devuelve una puntuación 0-100 y recomendaciones, e indica si es cliente potencial para WhiteMoon.
-8. PROSPECCIÓN: usa la búsqueda web para encontrar negocios por sector y ciudad, analiza sus webs y devuelve una lista (nombre, web, teléfono, oportunidad detectada) con un mensaje de contacto personalizado por cada uno.
-9. EXTRACCIÓN ESTILO GOOGLE MAPS: busca negocios por sector y ciudad con la búsqueda web; extrae nombre, dirección, teléfono, web, valoración y nº de reseñas si están disponibles; detecta si tienen chatbot; clasifica la oportunidad (SIN WEB = alta, CON WEB SIN CHATBOT = media, CON CHATBOT = descartado); añade un mensaje de WhatsApp por prospecto. Devuelve los prospectos en el BLOQUE JSON de prospección descrito abajo (no en tabla markdown). Avisa de que los datos hay que verificarlos.
-10. INFORMES SEMANALES: consolida leads de la semana, MRR, pipeline, campañas y onboarding en un informe; ofrécelo también en HTML imprimible si te lo piden.
-11. ANÁLISIS DE COMPETENCIA: con búsqueda web, compara agencias de IA (servicios, precios, posicionamiento) y sugiere diferenciadores para WhiteMoon.
+4. ANÁLISIS DE PIPELINE: usa los DATOS REALES inyectados abajo para responder (leads de la semana, conversiones, estado del pipeline) con un análisis accionable.
+5. CREACIÓN DE WEBS / LANDINGS: genera HTML/CSS/JS completo en un solo archivo, sin frameworks (stack WhiteMoon), con copy persuasivo y formulario de captación de leads.
+6. ANÁLISIS DE WEBS: cuando te pasen una URL, recibirás su contenido ya extraído. Evalúa SEO, velocidad aparente, si tiene chatbot, formularios y oportunidades de IA. Devuelve una puntuación 0-100 y recomendaciones, e indica si es cliente potencial para WhiteMoon.
+7. PROSPECCIÓN: usa la búsqueda web para encontrar negocios por sector y ciudad, analiza sus webs y devuelve una lista (nombre, web, teléfono, oportunidad detectada) con un mensaje de contacto personalizado por cada uno.
+8. EXTRACCIÓN ESTILO GOOGLE MAPS: busca negocios por sector y ciudad con la búsqueda web; extrae nombre, dirección, teléfono, web, valoración y nº de reseñas si están disponibles; detecta si tienen chatbot; clasifica la oportunidad (SIN WEB = alta, CON WEB SIN CHATBOT = media, CON CHATBOT = descartado); añade un mensaje de WhatsApp por prospecto. Devuelve los prospectos en el BLOQUE JSON de prospección descrito abajo (no en tabla markdown). Avisa de que los datos hay que verificarlos.
+9. INFORMES SEMANALES: consolida leads de la semana, pipeline y campañas en un informe; ofrécelo también en HTML imprimible si te lo piden.
+10. ANÁLISIS DE COMPETENCIA: con búsqueda web, compara agencias de IA (servicios, precios, posicionamiento) y sugiere diferenciadores para WhiteMoon.
 
 FORMATO DE RESPUESTA:
 - Responde SIEMPRE en markdown bien estructurado (títulos, listas, tablas, **negritas**, bloques de código).
@@ -446,7 +409,7 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  // ── Módulos JSON one-shot (leads, onboarding, campaigns, pipeline) ─
+  // ── Módulos JSON one-shot (leads, campaigns, pipeline) ─
   let reqSpec;
   try {
     reqSpec = buildRequest(module, action, context);
