@@ -740,6 +740,11 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
       🎯 Captación
       <span class="nav-badge nb-p" id="sb-cap">0</span>
     </button>
+    <button class="nav-item" onclick="goPage('p-radar',this);renderRadar()">
+      <div class="nav-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="12" x2="19" y2="5"/></svg></div>
+      📡 Radar
+      <span class="nav-badge nb-o" id="sb-radar">0</span>
+    </button>
   </div>
   <div class="sb-section">
     <div class="sb-label">Pipeline</div>
@@ -1263,6 +1268,79 @@ Todos los planes: Sin permanencia · IVA no incluido
 .camp-ref-note{font-size:.72rem;color:var(--text2);line-height:1.6}
 .camp-ref-note code{font-family:'Space Mono',monospace;background:var(--bg3);padding:1px 6px;border-radius:5px;color:var(--accent2);font-size:.9em}
 </style>
+
+<!-- ═══ RADAR ═══ -->
+<style>
+.rdr-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+@media(max-width:760px){.rdr-form{grid-template-columns:1fr}}
+.rdr-lbl{font-size:.7rem;font-weight:700;color:var(--text2);margin-bottom:6px;letter-spacing:.03em;text-transform:uppercase}
+.rdr-note{font-size:.68rem;color:var(--muted);margin-top:9px;line-height:1.5}
+.rdr-bar{height:6px;border-radius:99px;background:var(--bg3);overflow:hidden;margin-top:11px;display:none}
+.rdr-bar.on{display:block}
+.rdr-bar-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#7c4dff,#9d70ff);transition:width .4s cubic-bezier(.4,0,.2,1)}
+.rdr-filters{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.rdr-filters .input{width:auto;flex:1;min-width:150px;padding:9px 13px;font-size:.78rem}
+.rdr-chk{display:flex;align-items:center;gap:7px;font-size:.74rem;color:var(--text2);cursor:pointer;user-select:none;white-space:nowrap}
+.rdr-chk input{accent-color:#7c4dff;cursor:pointer;width:15px;height:15px}
+.rdr-list{display:flex;flex-direction:column;gap:11px}
+.rdr-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;display:flex;gap:18px;align-items:flex-start;transition:border-color .22s ease,transform .22s ease}
+.rdr-card:hover{border-color:var(--accent-border);transform:translateY(-1px)}
+.rdr-dolor{flex-shrink:0;width:74px;text-align:center}
+.rdr-dolor-n{font-family:'Space Mono',monospace;font-size:2.1rem;font-weight:700;line-height:1}
+.rdr-dolor-l{font-size:.58rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.rdr-red{color:var(--red2)}.rdr-amber{color:var(--gold2)}.rdr-green{color:var(--green2)}.rdr-null{color:var(--muted2)}
+.rdr-body{flex:1;min-width:0}
+.rdr-name{font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:5px;word-break:break-word}
+.rdr-meta{font-size:.72rem;color:var(--text2);display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:9px;font-family:'Space Mono',monospace}
+.rdr-meta a{color:var(--accent2);text-decoration:none;word-break:break-all}
+.rdr-meta a:hover{text-decoration:underline}
+.rdr-chips{display:flex;gap:6px;flex-wrap:wrap}
+.rdr-chip{font-size:.64rem;font-weight:700;padding:3px 9px;border-radius:99px;background:var(--red-s);color:var(--red2);border:1px solid rgba(255,77,109,.25);letter-spacing:.02em}
+.rdr-chip.warn{background:var(--gold-s);color:var(--gold2);border-color:rgba(245,200,66,.25)}
+.rdr-acts{display:flex;flex-direction:column;gap:7px;flex-shrink:0}
+.rdr-err{font-size:.7rem;color:var(--red2);background:var(--red-s);border:1px solid rgba(255,77,109,.25);border-radius:var(--r2);padding:7px 11px;margin-top:8px}
+.rdr-msg{margin-top:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px}
+.rdr-msg-t{font-size:.78rem;color:var(--text);line-height:1.65;white-space:pre-wrap;margin-bottom:10px}
+.rdr-empty{text-align:center;padding:46px 20px;color:var(--muted);font-size:.82rem}
+</style>
+<div class="page" id="p-radar">
+  <div class="page-head">
+    <div class="page-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="12" x2="19" y2="5"/></svg>📡 Radar</div>
+    <div class="page-sub">Descubre negocios de un sector y zona, audita sus webs automáticamente y ordénalos por <b style="color:var(--accent2)">dolor</b>. Los que más duelen, primero.</div>
+  </div>
+
+  <div class="card mb16">
+    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>Buscar negocios</div></div>
+    <div class="rdr-form">
+      <div>
+        <div class="rdr-lbl">Sector</div>
+        <input class="input" id="rdr-sector" placeholder="clínica dental" autocomplete="off">
+      </div>
+      <div>
+        <div class="rdr-lbl">Zona</div>
+        <input class="input" id="rdr-zona" placeholder="Las Rozas" autocomplete="off">
+      </div>
+      <button class="btn btn-p" id="rdr-buscar" onclick="radarBuscar()">🔍 Buscar</button>
+    </div>
+    <div class="rdr-note">Texto libre. Se buscan hasta 20 negocios en España y se encolan los nuevos.</div>
+  </div>
+
+  <div class="card mb16">
+    <div class="sec-hd"><div class="sec-title"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 110-4h.09A1.65 1.65 0 004.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06A1.65 1.65 0 009 3.6 1.65 1.65 0 0010 2.09V2a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06A1.65 1.65 0 0019.4 8v0c.14.35.38.65.69.85.31.2.67.31 1.03.31H21a2 2 0 110 4h-.09c-.36 0-.72.11-1.03.31-.31.2-.55.5-.69.85z"/></svg>Auditoría</div></div>
+    <button class="btn btn-p" id="rdr-procesar" onclick="radarProcesar()">⚙️ Analizar pendientes (<span id="rdr-pend">0</span>)</button>
+    <div class="rdr-note">La primera tanda puede tardar ~1 min (arranque del motor).</div>
+    <div class="rdr-bar" id="rdr-bar"><div class="rdr-bar-fill" id="rdr-bar-fill"></div></div>
+  </div>
+
+  <div class="rdr-filters">
+    <input class="input" id="rdr-f-sector" placeholder="Filtrar por sector…" oninput="radarPaint()" autocomplete="off">
+    <input class="input" id="rdr-f-zona" placeholder="Filtrar por zona…" oninput="radarPaint()" autocomplete="off">
+    <label class="rdr-chk"><input type="checkbox" id="rdr-f-all" onchange="radarPaint()">Mostrar descartados y en pipeline</label>
+  </div>
+
+  <div class="rdr-list" id="rdr-list"></div>
+</div>
+
 <div class="page" id="p-campaigns">
   <div class="page-head">
     <div class="page-title"><svg viewBox="0 0 24 24"><path d="M3 11l15-5v12L3 14z"/><path d="M11.6 16.8a3 3 0 11-5.78-1.5"/><path d="M18 8a4 4 0 010 8"/></svg>📣 Campañas</div>
@@ -6779,6 +6857,183 @@ function wmCopyCasoHtml(id){
       var i2=document.getElementById('asis-input');if(i2)i2.focus();
     });
   };
+})();
+
+// ═══════════════════════════════════════
+// RADAR — descubrimiento (radar-places) + auditoría (radar-worker)
+// ═══════════════════════════════════════
+(function(){
+  var FN=SUPABASE_URL+'/functions/v1/';
+  var prospectos=[];      // último list() conocido
+  var pendientes=0;
+  var mensajes={};        // id → mensaje devuelto por aprobar (se muestra inline)
+  var busy=false;
+
+  function _esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+
+  // Los datos vienen de Google: nunca confiar en el esquema de una URL ajena.
+  function _safeUrl(u){return /^https?:\/\//i.test(String(u||''))?String(u):''}
+
+  async function call(fn,body){
+    // Ambas funciones son verify_jwt:false y su CORS solo permite la cabecera
+    // content-type: mandar apikey/Authorization rompería el preflight.
+    var r=await fetch(FN+fn,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    var d=await r.json().catch(function(){return {}});
+    if(!r.ok||d.ok===false)throw new Error(d.error||('HTTP '+r.status));
+    return d;
+  }
+
+  async function load(){
+    var d=await call('radar-worker',{action:'list'});
+    prospectos=d.prospectos||[];
+    pendientes=d.pendientes||0;
+    var p=$('rdr-pend'),b=$('rdr-procesar'),sb=$('sb-radar');
+    if(p)p.textContent=pendientes;
+    if(b)b.disabled=busy||pendientes===0;
+    if(sb)sb.textContent=pendientes;
+  }
+
+  function dolorClass(d){return d==null?'rdr-null':d>=70?'rdr-red':d>=40?'rdr-amber':'rdr-green'}
+
+  function chips(p){
+    var c=[];
+    if(!p.web)c.push('Sin web');
+    var s=p.senales||{};
+    if(s.sin_ssl)c.push('Sin SSL');
+    if(s.sin_chatbot)c.push('Sin chatbot');
+    if(s.sin_schema)c.push('Sin schema');
+    if(s.sin_llms_txt)c.push('Sin llms.txt');
+    var out=c.map(function(t){return '<span class="rdr-chip">'+_esc(t)+'</span>'});
+    if(p.n_resenas!=null&&p.n_resenas<10)out.push('<span class="rdr-chip warn">&lt;10 reseñas</span>');
+    return out.join('');
+  }
+
+  function card(p){
+    var url=_safeUrl(p.web);
+    var esError=p.estado==='error';
+    var meta=[];
+    if(p.rating!=null)meta.push('⭐ '+_esc(p.rating)+(p.n_resenas!=null?' ('+_esc(p.n_resenas)+')':''));
+    if(p.score_auditoria!=null)meta.push('score '+_esc(p.score_auditoria)+'/100');
+    if(p.telefono)meta.push(_esc(p.telefono));
+    if(url)meta.push('<a href="'+_esc(url)+'" target="_blank" rel="noopener noreferrer">'+_esc(url.replace(/^https?:\/\//,'').slice(0,44))+'</a>');
+    else if(p.web)meta.push(_esc(String(p.web).slice(0,44)));
+
+    var msg=mensajes[p.id];
+    return '<div class="rdr-card">'
+      +'<div class="rdr-dolor"><div class="rdr-dolor-n '+dolorClass(p.dolor)+'">'+(p.dolor==null?'—':_esc(p.dolor))+'</div><div class="rdr-dolor-l">dolor</div></div>'
+      +'<div class="rdr-body">'
+        +'<div class="rdr-name">'+_esc(p.nombre)+'</div>'
+        +'<div class="rdr-meta">'+meta.join('<span style="color:var(--muted2)">·</span>')+'</div>'
+        +'<div class="rdr-chips">'+chips(p)+'</div>'
+        +(esError?'<div class="rdr-err">⚠️ No se pudo auditar la web tras '+_esc(p.intentos)+' intento(s). Sin dolor calculado.</div>':'')
+        +(msg?'<div class="rdr-msg"><div class="rdr-msg-t">'+_esc(msg)+'</div><button class="btn btn-ghost btn-sm" onclick="radarCopiar(\''+_esc(p.id)+'\')">📋 Copiar</button></div>':'')
+      +'</div>'
+      +'<div class="rdr-acts">'
+        +'<button class="btn btn-green btn-sm" onclick="radarAprobar(\''+_esc(p.id)+'\')">→ Pipeline</button>'
+        +'<button class="btn btn-ghost btn-sm" onclick="radarDescartar(\''+_esc(p.id)+'\')">Descartar</button>'
+      +'</div>'
+    +'</div>';
+  }
+
+  function paint(){
+    var el=$('rdr-list');if(!el)return;
+    var fs=($('rdr-f-sector').value||'').trim().toLowerCase();
+    var fz=($('rdr-f-zona').value||'').trim().toLowerCase();
+    var all=$('rdr-f-all').checked;
+
+    var vis=prospectos.filter(function(p){
+      if(fs&&String(p.sector||'').toLowerCase().indexOf(fs)===-1)return false;
+      if(fz&&String(p.zona||'').toLowerCase().indexOf(fz)===-1)return false;
+      // Un recién aprobado sigue visible para poder copiar su mensaje.
+      if(!all&&(p.estado==='descartado'||p.estado==='en_pipeline')&&!mensajes[p.id])return false;
+      return true;
+    });
+
+    // Dolor desc; los no auditados (dolor null) al final, nunca confundidos con dolor bajo.
+    vis.sort(function(a,b){
+      if(a.dolor==null&&b.dolor==null)return 0;
+      if(a.dolor==null)return 1;
+      if(b.dolor==null)return -1;
+      return b.dolor-a.dolor;
+    });
+
+    el.innerHTML=vis.length?vis.map(card).join('')
+      :'<div class="rdr-empty">Sin prospectos. Busca un sector y una zona para empezar.</div>';
+  }
+
+  window.renderRadar=async function(){
+    try{await load();paint()}catch(e){showToast('⚠️ Radar: '+e.message)}
+  };
+  window.radarPaint=paint;
+
+  window.radarBuscar=async function(){
+    if(busy)return;
+    var sector=($('rdr-sector').value||'').trim();
+    var zona=($('rdr-zona').value||'').trim();
+    if(!sector||!zona){showToast('⚠️ Indica sector y zona');return}
+
+    var btn=$('rdr-buscar');busy=true;btn.disabled=true;btn.textContent='🔍 Buscando…';
+    try{
+      var d=await call('radar-places',{sector:sector,zona:zona,max:20});
+      var negocios=d.negocios||[];
+      if(!negocios.length){showToast('Sin resultados para «'+sector+'» en '+zona);return}
+      var e=await call('radar-worker',{action:'encolar',sector:sector,zona:zona,negocios:negocios});
+      showToast('✓ '+e.nuevos+' nuevos · '+e.sin_web+' sin web · '+e.duplicados+' duplicados');
+      await load();paint();
+    }catch(err){showToast('⚠️ '+err.message)}
+    finally{busy=false;btn.disabled=false;btn.textContent='🔍 Buscar';$('rdr-procesar').disabled=pendientes===0}
+  };
+
+  window.radarProcesar=async function(){
+    if(busy||pendientes===0)return;
+    var btn=$('rdr-procesar'),bar=$('rdr-bar'),fill=$('rdr-bar-fill');
+    busy=true;btn.disabled=true;bar.classList.add('on');
+    var total=pendientes,stall=0;
+    try{
+      while(pendientes>0){
+        var antes=pendientes;
+        await call('radar-worker',{action:'procesar',max:3});
+        await load();
+        fill.style.width=Math.round(((total-pendientes)/total)*100)+'%';
+        paint();
+        // Si una tanda no reduce la cola, el worker no avanza: parar en vez de
+        // martillear la función indefinidamente.
+        if(pendientes>=antes){
+          if(++stall>=2){showToast('⚠️ La cola no avanza; quedan '+pendientes+' pendientes');break}
+        }else stall=0;
+      }
+      if(pendientes===0)showToast('✓ Auditoría completada');
+    }catch(e){showToast('⚠️ '+e.message)}
+    finally{busy=false;btn.disabled=pendientes===0;setTimeout(function(){bar.classList.remove('on');fill.style.width='0'},900)}
+  };
+
+  window.radarAprobar=async function(id){
+    if(busy)return;busy=true;
+    try{
+      var d=await call('radar-worker',{action:'aprobar',id:id});
+      mensajes[id]=d.mensaje||'';
+      showToast('✓ Lead creado en el pipeline');
+      await load();paint();
+    }catch(e){showToast('⚠️ '+e.message)}
+    finally{busy=false}
+  };
+
+  window.radarDescartar=async function(id){
+    if(busy)return;busy=true;
+    try{
+      await call('radar-worker',{action:'descartar',id:id});
+      delete mensajes[id];
+      await load();paint();
+      showToast('Prospecto descartado');
+    }catch(e){showToast('⚠️ '+e.message)}
+    finally{busy=false}
+  };
+
+  window.radarCopiar=function(id){if(mensajes[id])copyTxt(mensajes[id])};
 })();
 </script>
 
