@@ -1301,6 +1301,11 @@ Todos los planes: Sin permanencia · IVA no incluido
 .rdr-err{font-size:.7rem;color:var(--red2);background:var(--red-s);border:1px solid rgba(255,77,109,.25);border-radius:var(--r2);padding:7px 11px;margin-top:8px}
 .rdr-msg{margin-top:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:13px 15px}
 .rdr-msg-t{font-size:.78rem;color:var(--text);line-height:1.65;white-space:pre-wrap;margin-bottom:10px}
+.rdr-tpl{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.rdr-tpl-btn{font-size:.66rem;font-weight:700;padding:5px 11px;border-radius:99px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);cursor:pointer;transition:all .18s ease}
+.rdr-tpl-btn:hover{border-color:var(--accent-border);color:var(--text)}
+.rdr-tpl-btn.on{background:var(--accent-dim);color:var(--accent2);border-color:var(--accent-border)}
+.rdr-tpl-auto{font-size:.62rem;color:var(--muted);letter-spacing:.02em}
 .rdr-empty{text-align:center;padding:46px 20px;color:var(--muted);font-size:.82rem}
 </style>
 <div class="page" id="p-radar">
@@ -6866,13 +6871,63 @@ function wmCopyCasoHtml(id){
   var FN=SUPABASE_URL+'/functions/v1/';
   var prospectos=[];      // último list() conocido
   var pendientes=0;
-  var mensajes={};        // id → mensaje devuelto por aprobar (se muestra inline)
+  var mensajes={};        // id → mensaje aprobado (mantiene visible al recién aprobado)
+  var seleccion={};       // id → plantilla elegida a mano ('minicore' | 'auditoria')
   var busy=false;
 
   function _esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 
   // Los datos vienen de Google: nunca confiar en el esquema de una URL ajena.
   function _safeUrl(u){return /^https?:\/\//i.test(String(u||''))?String(u):''}
+
+  function _byId(id){for(var i=0;i<prospectos.length;i++)if(prospectos[i].id===id)return prospectos[i];return null}
+
+  // ── Plantillas de mensaje (cliente) ───────────────────────────────────
+  // Un prospecto SIN web ⇒ se sugiere «Pack Mini Core»; CON web ⇒ «Auditoría»
+  // (comportamiento actual). Ambas quedan elegibles a mano por prospecto.
+  // 'auditoria' es un espejo FIEL de radar-worker.generarMensaje: mismo texto
+  // que ya recibía el comercial, para no romper el flujo de Auditoría.
+  function _sinWeb(p){return !!(p&&((p.senales&&p.senales.sin_web)||!p.web))}
+
+  function _senalPrincipal(s,score){
+    if(s&&s.sin_web)return 'no encontramos web activa';
+    if(s&&s.sin_ssl)return 'la web aparece como "no segura" en el navegador de vuestros clientes';
+    if(s&&s.sin_chatbot)return 'nadie atiende a quien entra en la web fuera de horario';
+    if(typeof score==='number'&&score<50)return 'la web es practicamente invisible en Google y en los buscadores de IA';
+    return 'hay mejoras claras de visibilidad con impacto directo en clientes nuevos';
+  }
+
+  function plantillaAuditoria(p){
+    var s=p.senales||{};
+    var capturas='\n\n📎 [ANTES DE ENVIAR: busca su sector en Google y pregunta a ChatGPT por "'+p.sector+' en '+p.zona+'", haz capturas donde no aparecen y adjuntalas — borra esta linea]';
+    var cierre=' Os preparamos una auditoria gratuita (2 paginas, sin compromiso) para que sepais donde estais y donde podeis llegar. ¿Os la paso por aqui?';
+    if(s.sin_web){
+      return 'Buenas, os escribimos de WhiteMoon Agencia IA, en Majadahonda. Buscando '+p.sector+' en '+p.zona+' hemos visto que '+p.nombre+' no tiene web activa: para el cliente nuevo que busca en Google o pregunta a una IA, hoy no existis — y ese cliente acaba en la competencia.'+cierre+capturas;
+    }
+    var tieneReputacion=typeof p.rating==='number'&&p.rating>=4.5&&typeof p.n_resenas==='number'&&p.n_resenas>=30;
+    if(tieneReputacion){
+      return 'Buenas, os escribimos de WhiteMoon Agencia IA, en Majadahonda. Hemos analizado la presencia online de '+p.nombre+': teneis '+p.rating+'⭐ y '+p.n_resenas+' reseñas — de los mejor valorados de '+p.zona+' — pero vuestra web puntua '+p.score_auditoria+'/100 en visibilidad, y al buscar '+p.sector+' en '+p.zona+' en Google y en ChatGPT no os encuentra el paciente nuevo. Teneis lo dificil hecho; os falta que se os vea.'+cierre+capturas;
+    }
+    return 'Buenas, os escribimos de WhiteMoon Agencia IA, en Majadahonda. Hemos analizado la presencia online de '+p.nombre+': puntua '+p.score_auditoria+'/100 y '+_senalPrincipal(s,p.score_auditoria)+'. Si el cliente nuevo que busca '+p.sector+' en '+p.zona+' no os encuentra, elige a otro.'+cierre+capturas;
+  }
+
+  // Pack Mini Core (sin web): gancho de urgencia perdida, sin precio, sin
+  // prometer rankings de IA. El enlace es un EJEMPLO visual para cualquier autónomo.
+  function plantillaMiniCore(p){
+    var nombre=(p.nombre||'').trim()||'¿qué tal?';
+    var sector=(p.sector||'').trim()||'tu sector';
+    return 'Hola '+nombre+', vi tu ficha de '+sector+' en la zona y que aún no tienes web. Una pregunta: cuando estás ocupado y entra una llamada o un WhatsApp nuevo… ¿lo coges o se te escapa? Ahí se pierde el trabajo. Te montamos una landing con un asistente que responde y te pasa el cliente al móvil 24h, en una semana y sin permanencia. Mira un ejemplo funcionando: https://nexusforgeia.github.io/WHITEMOON-MINI-CORE/ ¿Te lo cuento en 5 min?';
+  }
+
+  // Plantilla activa para un prospecto: manual si el comercial la fijó, si no la sugerida.
+  function tplTipo(p){return seleccion[p.id]||(_sinWeb(p)?'minicore':'auditoria')}
+
+  // Texto listo para copiar/aprobar. null ⇒ Auditoría sobre web aún sin auditar.
+  function previewMsg(p){
+    if(tplTipo(p)==='minicore')return plantillaMiniCore(p);
+    if(!_sinWeb(p)&&p.score_auditoria==null)return null;
+    return plantillaAuditoria(p);
+  }
 
   async function call(fn,body){
     // Ambas funciones son verify_jwt:false y su CORS solo permite la cabecera
@@ -6922,7 +6977,18 @@ function wmCopyCasoHtml(id){
     if(url)meta.push('<a href="'+_esc(url)+'" target="_blank" rel="noopener noreferrer">'+_esc(url.replace(/^https?:\/\//,'').slice(0,44))+'</a>');
     else if(p.web)meta.push(_esc(String(p.web).slice(0,44)));
 
-    var msg=mensajes[p.id];
+    var tipo=tplTipo(p);
+    var pv=previewMsg(p);
+    var toggle='<div class="rdr-tpl">'
+      +'<button type="button" class="rdr-tpl-btn'+(tipo==='minicore'?' on':'')+'" onclick="radarPlantilla(\''+_esc(p.id)+'\',\'minicore\')">📡 Mini Core</button>'
+      +'<button type="button" class="rdr-tpl-btn'+(tipo==='auditoria'?' on':'')+'" onclick="radarPlantilla(\''+_esc(p.id)+'\',\'auditoria\')">🔍 Auditoría</button>'
+      +'<span class="rdr-tpl-auto">'+(_sinWeb(p)?'sin web → sugerida Mini Core':'con web → sugerida Auditoría')+'</span>'
+      +'</div>';
+    var msgBlock='<div class="rdr-msg">'
+      +(pv?'<div class="rdr-msg-t">'+_esc(pv)+'</div>':'<div class="rdr-msg-t" style="color:var(--muted)">Analiza la web (⚙️ Analizar pendientes) para generar el mensaje de Auditoría.</div>')
+      +toggle
+      +(pv?'<button type="button" class="btn btn-ghost btn-sm" onclick="radarCopiar(\''+_esc(p.id)+'\')">📋 Copiar</button>':'')
+      +'</div>';
     return '<div class="rdr-card">'
       +'<div class="rdr-dolor"><div class="rdr-dolor-n '+dolorClass(p.dolor)+'">'+(p.dolor==null?'—':_esc(p.dolor))+'</div><div class="rdr-dolor-l">dolor</div></div>'
       +'<div class="rdr-body">'
@@ -6930,7 +6996,7 @@ function wmCopyCasoHtml(id){
         +'<div class="rdr-meta">'+meta.join('<span style="color:var(--muted2)">·</span>')+'</div>'
         +'<div class="rdr-chips">'+chips(p)+'</div>'
         +(esError?'<div class="rdr-err">⚠️ No se pudo auditar la web tras '+_esc(p.intentos)+' intento(s). Sin dolor calculado.</div>':'')
-        +(msg?'<div class="rdr-msg"><div class="rdr-msg-t">'+_esc(msg)+'</div><button class="btn btn-ghost btn-sm" onclick="radarCopiar(\''+_esc(p.id)+'\')">📋 Copiar</button></div>':'')
+        +msgBlock
       +'</div>'
       +'<div class="rdr-acts">'
         +'<button class="btn btn-green btn-sm" onclick="radarAprobar(\''+_esc(p.id)+'\')">→ Pipeline</button>'
@@ -7011,11 +7077,18 @@ function wmCopyCasoHtml(id){
     finally{busy=false;btn.disabled=pendientes===0;setTimeout(function(){bar.classList.remove('on');fill.style.width='0'},900)}
   };
 
+  window.radarPlantilla=function(id,tipo){
+    if(tipo!=='minicore'&&tipo!=='auditoria')return;
+    seleccion[id]=tipo;paint();
+  };
+
   window.radarAprobar=async function(id){
     if(busy)return;busy=true;
     try{
-      var d=await call('radar-worker',{action:'aprobar',id:id});
-      mensajes[id]=d.mensaje||'';
+      var p=_byId(id);
+      var elegido=p?previewMsg(p):null;   // plantilla activa (sugerida o manual)
+      var d=await call('radar-worker',{action:'aprobar',id:id,mensaje:elegido||undefined});
+      mensajes[id]=d.mensaje||elegido||'';
       showToast('✓ Lead creado en el pipeline');
       await load();paint();
     }catch(e){showToast('⚠️ '+e.message)}
@@ -7033,7 +7106,11 @@ function wmCopyCasoHtml(id){
     finally{busy=false}
   };
 
-  window.radarCopiar=function(id){if(mensajes[id])copyTxt(mensajes[id])};
+  window.radarCopiar=function(id){
+    var p=_byId(id);var m=p?previewMsg(p):null;
+    if(!m){showToast('Analiza la web para generar el mensaje de Auditoría');return}
+    copyTxt(m);
+  };
 })();
 </script>
 
