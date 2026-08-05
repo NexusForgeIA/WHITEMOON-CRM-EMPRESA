@@ -3592,12 +3592,17 @@ document.addEventListener('DOMContentLoaded',function(){
 // SUPABASE — Auth + persistencia BD
 // ═══════════════════════════════════════
 var SUPABASE_URL='https://mlaqtniujnvfxcvcourm.supabase.co';
-var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sYXF0bml1am52ZnhjdmNvdXJtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4MzUyMzIsImV4cCI6MjA5MzQxMTIzMn0.Neh7VUS8ADsxf0DPab0JoJyGXOAXnLIaXzXbKzj2BGs';
+// Clave publishable (rol anon). Solo identifica el proyecto: a partir del
+// login, supabase-js adjunta el access_token del usuario en cada petición,
+// así que los datos viajan como "authenticated", no como público.
+var SUPABASE_KEY='sb_publishable_6no6BuOgiA_2nonTJntAuQ_DTqEgrcV';
 var sb=null;
 var currentUser=null;
 
 function _initSb(){
-  if(!sb && window.supabase) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  if(!sb && window.supabase) sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'wm_scout_auth'}
+  });
   return sb;
 }
 function _parseJSON(s){try{return JSON.parse(s||'[]')}catch(e){return []}}
@@ -3655,36 +3660,71 @@ function showApp(){
   }
 }
 
+// Perfil de negocio (tabla users). La autenticación ya la ha hecho Supabase
+// Auth; esto solo aporta nombre e id interno. Nunca se lee password_hash.
+async function _loadProfile(s,authUser){
+  var prof={
+    id:authUser.id,
+    email:authUser.email||'',
+    name:(authUser.user_metadata&&authUser.user_metadata.name)||authUser.email||'',
+    active:true
+  };
+  try{
+    var r=await s.from('users').select('id,email,name,active').eq('email',(authUser.email||'').toLowerCase()).maybeSingle();
+    if(r&&r.data){
+      prof.id=r.data.id;
+      prof.email=r.data.email||prof.email;
+      prof.name=r.data.name||prof.email;
+      prof.active=r.data.active!==false;
+    }
+  }catch(e){console.warn('perfil users:',e)}
+  return prof;
+}
+
+// Entra al panel con una sesión de Supabase Auth ya válida.
+async function _enterApp(authUser){
+  var s=_initSb();
+  var prof=await _loadProfile(s,authUser);
+  if(!prof.active){
+    try{await s.auth.signOut()}catch(e){}
+    showToast('Usuario desactivado — contacta cris@whitemoon.es');
+    return false;
+  }
+  currentUser=prof;
+  showApp();
+  await Promise.all([loadProspectsFromBD()]);
+  renderProsResults();
+  updateCounters();
+  renderPipeline();
+  if(typeof window.wmLeadsStart==='function')window.wmLeadsStart();
+  return true;
+}
+
 async function login(){
   var email=$('login-email').value.trim().toLowerCase();
-  var pass=$('login-pass').value.trim();
+  var pass=$('login-pass').value;
   if(!email||!pass){showToast('Introduce email y contraseña');return}
   var s=_initSb();if(!s){showToast('Supabase no cargó');return}
-  console.log('Supabase client:',s);
   var btn=$('login-btn');if(btn){btn.disabled=true;btn.textContent='Entrando...'}
   try{
-    var resp=await s.from('users').select('*').eq('email',email).single();
-    console.log('Login result:',resp.data,'Error:',resp.error);
-    if(resp.error||!resp.data){
-      showToast(resp.error&&resp.error.code==='PGRST116'?'Email no encontrado':'Email incorrecto');
+    var resp=await s.auth.signInWithPassword({email:email,password:pass});
+    if(resp.error||!resp.data||!resp.data.user){
+      showToast('Email o contraseña incorrectos');
       return;
     }
-    if(resp.data.password_hash!==pass){showToast('Contraseña incorrecta');return}
-    if(!resp.data.active){showToast('Usuario desactivado — contacta cris@whitemoon.es');return}
-    currentUser=resp.data;
-    sessionStorage.setItem('wm_user',JSON.stringify(resp.data));
-    showApp();
-    await Promise.all([loadProspectsFromBD()]);
-    renderProsResults();
-    updateCounters();
-    renderPipeline();
+    var ok=await _enterApp(resp.data.user);
+    if(!ok)return;
+    if($('login-pass'))$('login-pass').value='';
     showToast('Bienvenido/a, '+(currentUser.name||currentUser.email));
-  }catch(e){console.error('Login exception:',e);showToast('Error de conexión: '+(e.message||'desconocido'))}
+  }catch(e){console.error('Login exception:',e);showToast('Error de conexión')}
   finally{if(btn){btn.disabled=false;btn.textContent='Entrar'}}
 }
 
-function logout(){
-  sessionStorage.removeItem('wm_user');
+async function logout(){
+  if(typeof window.wmLeadsStop==='function')window.wmLeadsStop();
+  var s=_initSb();
+  try{if(s)await s.auth.signOut()}catch(e){console.warn('signOut:',e)}
+  try{sessionStorage.removeItem('wm_user')}catch(e){}
   currentUser=null;
   prosResults=[];
   S={analyzed:0,prompts:0,proposals:0};
@@ -3859,18 +3899,19 @@ async function _syncProspectStatus(domain,status,notes,lastContact){
 
 // ═══ Init ═══
 document.addEventListener('DOMContentLoaded',async function(){
-  // Hide layout/header until auth check completes
-  var stored=sessionStorage.getItem('wm_user');
-  if(stored){try{currentUser=JSON.parse(stored)}catch(e){currentUser=null}}
-  if(currentUser){
-    showApp();
-    await Promise.all([loadProspectsFromBD()]);
-    renderProsResults();
-    updateCounters();
-    renderPipeline();
-  }else{
-    showLogin();
+  // Restos del login antiguo (perfil cacheado en sessionStorage): ya no se usa.
+  try{sessionStorage.removeItem('wm_user')}catch(e){}
+  // La única fuente de verdad es la sesión de Supabase Auth.
+  var s=_initSb();
+  var authUser=null;
+  if(s){
+    try{
+      var g=await s.auth.getSession();
+      authUser=(g&&g.data&&g.data.session)?g.data.session.user:null;
+    }catch(e){console.warn('getSession:',e)}
   }
+  var ok=authUser?await _enterApp(authUser):false;
+  if(!ok)showLogin();
 });
 
 // ═══════════════════════════════════════
@@ -5806,7 +5847,8 @@ async function generateWebDemo(idx){
     lwTimer=setInterval(function(){loadLeadsWeb(false)},REFRESH_MS);
   };
 
-  // Carga inicial silenciosa: realtime + polling como fallback.
+  // Arranque tras el login: realtime + polling como fallback.
+  // No se dispara solo — sin sesión de Supabase Auth no se piden leads.
   function _bootLeadsWeb(){
     if(!_getSb()){setTimeout(_bootLeadsWeb,500);return}
     loadLeadsWeb(false);
@@ -5820,8 +5862,18 @@ async function generateWebDemo(idx){
       }
     }catch(e){}
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(_bootLeadsWeb,400)});
-  else setTimeout(_bootLeadsWeb,400);
+  window.wmLeadsStart=_bootLeadsWeb;
+
+  // Al cerrar sesión: parar polling/realtime y vaciar los leads de memoria.
+  window.wmLeadsStop=function(){
+    if(lwTimer){clearInterval(lwTimer);lwTimer=null}
+    if(lwChannel){try{_getSb().removeChannel(lwChannel)}catch(e){}lwChannel=null}
+    leadsCache=[];
+    lwLoaded=false;
+    var errBox=document.getElementById('lw-error-box');
+    if(errBox)errBox.innerHTML='';
+    try{renderLeadsWebAll()}catch(e){}
+  };
 })();
 </script>
 
