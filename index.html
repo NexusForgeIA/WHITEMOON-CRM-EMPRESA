@@ -474,10 +474,10 @@ html,body{height:100%;font-family:'Sora',sans-serif;background:#08080d;color:#f0
 
 /* Captación tabla */
 .cap-table{display:flex;flex-direction:column;gap:0;background:var(--bg2);border-radius:9px;overflow:hidden;border:1px solid var(--border2)}
-.cap-row{display:grid;grid-template-columns:1.5fr 1.1fr 1fr 1fr .9fr 1.1fr 1.3fr 1.6fr .9fr .6fr;gap:10px;padding:11px 14px;align-items:center;border-bottom:1px solid var(--border2);font-size:.74rem}
+.cap-row{display:grid;grid-template-columns:1.5fr 1.2fr 1.1fr 1fr 1fr .9fr 1.1fr 1.3fr 1.6fr .9fr .6fr;gap:10px;padding:11px 14px;align-items:center;border-bottom:1px solid var(--border2);font-size:.74rem}
 .cap-row:last-child{border-bottom:none}
 .cap-row.cap-head{background:var(--bg3);font-size:.58rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
-.cap-tel{display:flex;align-items:center;gap:6px}.cap-call{text-decoration:none;font-size:.9rem}
+.cap-tel{display:flex;align-items:center;gap:6px}.cap-call{text-decoration:none;font-size:.9rem}.cap-copy{background:none;border:none;cursor:pointer;font-size:.9rem;padding:0}
 .cap-row .cap-name{font-weight:700;color:var(--text)}
 .cap-row .cap-meta{font-size:.62rem;color:var(--muted);margin-top:2px;font-family:'Space Mono',monospace}
 .cap-input{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Sora',sans-serif;font-size:.72rem;padding:5px 8px;border-radius:6px;outline:none;width:100%}
@@ -5090,7 +5090,7 @@ async function generateWebDemo(idx){
   window.capAdd=function(){
     var arr=capLoad();
     arr.unshift({
-      id:capUid(),negocio:'',telefono:'',sector:'',zona:'',canal:'WhatsApp',
+      id:capUid(),negocio:'',telefono:'',web:'',sector:'',zona:'',canal:'WhatsApp',
       estado:'contactado',d1:false,d3:false,d7:false,
       notas:'',importe:199,fecha:new Date().toISOString()
     });
@@ -5110,6 +5110,12 @@ async function generateWebDemo(idx){
     if(sb){try{sb.from('wm_captacion').delete().eq('id',id)}catch(e){}}
     renderCaptacion();
   };
+
+  window.capCopy=function(btn,txt){
+    var done=function(){var o=btn.textContent;btn.textContent='✅';setTimeout(function(){btn.textContent=o},1200)};
+    try{navigator.clipboard.writeText(txt).then(done,function(){capCopyFb(txt);done()})}catch(e){capCopyFb(txt);done()}
+  };
+  function capCopyFb(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.opacity='0';document.body.appendChild(a);a.select();try{document.execCommand('copy')}catch(e){}a.remove()}
 
   window.capUpdate=function(id,field,value){
     var arr=capLoad();
@@ -5237,11 +5243,12 @@ async function generateWebDemo(idx){
     var statusLabel=function(k){for(var i=0;i<CAP_STATUS.length;i++)if(CAP_STATUS[i].k===k)return CAP_STATUS[i].label;return k};
 
     var html='<div class="cap-table">';
-    html+='<div class="cap-row cap-head"><div>Negocio</div><div>Teléfono</div><div>Sector</div><div>Zona</div><div>Canal</div><div>D1 / D3 / D7</div><div>Estado</div><div>Notas</div><div>Importe (€)</div><div></div></div>';
+    html+='<div class="cap-row cap-head"><div>Negocio</div><div>Teléfono</div><div>Web</div><div>Sector</div><div>Zona</div><div>Canal</div><div>D1 / D3 / D7</div><div>Estado</div><div>Notas</div><div>Importe (€)</div><div></div></div>';
     arr.forEach(function(p){
       html+='<div class="cap-row">';
       html+='<div><input class="cap-input" placeholder="Nombre del negocio" value="'+_esc(p.negocio)+'" onchange="capUpdate(\''+p.id+'\',\'negocio\',this.value)"></div>';
-      html+='<div class="cap-tel"><input class="cap-input" type="tel" inputmode="tel" placeholder="Móvil" value="'+_esc(p.telefono||'')+'" onchange="capUpdate(\''+p.id+'\',\'telefono\',this.value)" style="font-family:Space Mono,monospace">'+(p.telefono?'<a class="cap-call" href="tel:'+_esc(String(p.telefono).replace(/[^\d+]/g,''))+'" title="Llamar">📞</a>':'')+'</div>';
+      html+='<div class="cap-tel"><input class="cap-input" type="tel" inputmode="tel" placeholder="Móvil" value="'+_esc(p.telefono||'')+'" onchange="capUpdate(\''+p.id+'\',\'telefono\',this.value)" style="font-family:Space Mono,monospace">'+(p.telefono?'<a class="cap-call" href="tel:'+_esc(String(p.telefono).replace(/[^\d+]/g,''))+'" title="Llamar">📞</a><button type="button" class="cap-copy" onclick="capCopy(this,\''+_esc(String(p.telefono).replace(/[^\d+]/g,''))+'\')" title="Copiar teléfono">📋</button>':'')+'</div>';
+      html+='<div class="cap-tel"><input class="cap-input" placeholder="web.es" value="'+_esc(p.web||'')+'" onchange="capUpdate(\''+p.id+'\',\'web\',this.value)">'+(p.web?'<a class="cap-call" target="_blank" rel="noopener" href="'+_esc(/^https?:/i.test(p.web)?p.web:'https://'+p.web)+'" title="Abrir web">🔗</a>':'')+'</div>';
       html+='<div><select class="cap-select" onchange="capUpdate(\''+p.id+'\',\'sector\',this.value)">'+buildOpts(CAP_SECTORS,p.sector,'—')+'</select></div>';
       html+='<div><input class="cap-input" placeholder="Madrid…" value="'+_esc(p.zona)+'" onchange="capUpdate(\''+p.id+'\',\'zona\',this.value)"></div>';
       html+='<div><select class="cap-select" onchange="capUpdate(\''+p.id+'\',\'canal\',this.value)">'+buildOpts(CAP_CHANNELS,p.canal,null)+'</select></div>';
@@ -5941,6 +5948,7 @@ async function saveCapItem(item){
       id:item.id,
       negocio:item.negocio||'',
       telefono:item.telefono||'',
+      web:item.web||'',
       sector:item.sector||'',
       zona:item.zona||'',
       canal:item.canal||'WhatsApp',
